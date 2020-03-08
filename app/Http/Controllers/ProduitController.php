@@ -396,4 +396,13 @@ class ProduitController extends Controller
         ];
         return response()->json($objet);
     }
+
+    public function save_ref(Request $request)
+    {
+       $scr = Souscription::find($request->id);
+        $scr->equip_ref = $request->value;
+        $scr->save();
+
+        return response()->json($scr);
+    }
 }

@@ -360,16 +360,15 @@ class ClientController extends Controller
             $souscriptions[] = [
                 'id' => $agence->id,
                 'produits'  => DB::table('views_detail_souscription')
-                                ->select('prod_id', 'prod_nom','prod_etat')
-                                ->groupBy('prod_id','prod_etat')
-                                ->where('agence_id', $agence->id)
-                                ->get()
+                    ->select('prod_id', 'prod_nom', 'prod_etat')
+                    ->groupBy('prod_id', 'prod_etat')
+                    ->where('agence_id', $agence->id)
+                    ->get()
 
             ];
-                            
         }
 
-        
+
         $objet =  [
             'agences' => $agences,
             'chefs' => $chefs,
@@ -380,10 +379,10 @@ class ClientController extends Controller
         return response()->json($objet);
     }
 
-   
 
 
-    public function delete_agence($id_c,$id_d, $id)
+
+    public function delete_agence($id_c, $id_d, $id)
     {
 
         $done = false;
@@ -404,10 +403,10 @@ class ClientController extends Controller
         $souscription = [
             'id' => $agence->id,
             'produits'  => DB::table('views_detail_souscription')
-                            ->select('prod_id', 'prod_nom','prod_etat')
-                            ->groupBy('prod_id','prod_etat')
-                            ->where('agence_id', $agence->id)
-                            ->get()
+                ->select('prod_id', 'prod_nom', 'prod_etat')
+                ->groupBy('prod_id', 'prod_etat')
+                ->where('agence_id', $agence->id)
+                ->get()
 
         ];
 
@@ -427,7 +426,7 @@ class ClientController extends Controller
         ];
         return response()->json($objet);
     }
-    public function restore_agence($id_c,$id_d, $id)
+    public function restore_agence($id_c, $id_d, $id)
     {
 
         $done = false;
@@ -451,10 +450,10 @@ class ClientController extends Controller
         $souscription = [
             'id' => $agence->id,
             'produits'  => DB::table('views_detail_souscription')
-                            ->select('prod_id', 'prod_nom','prod_etat')
-                            ->groupBy('prod_id','prod_etat')
-                            ->where('agence_id', $agence->id)
-                            ->get()
+                ->select('prod_id', 'prod_nom', 'prod_etat')
+                ->groupBy('prod_id', 'prod_etat')
+                ->where('agence_id', $agence->id)
+                ->get()
 
         ];
 
@@ -475,7 +474,7 @@ class ClientController extends Controller
         return response()->json($objet);
     }
 
-    public function edit_agence(Request $request, $id_c,$id_d, $id)
+    public function edit_agence(Request $request, $id_c, $id_d, $id)
     {
         $done = false;
 
@@ -487,7 +486,7 @@ class ClientController extends Controller
         $agence->tel = $request->tel;
         $agence->adress = $request->adress;
         $agence->ville_id = $request->ville;
-        
+
         $agence->save();
         $done = true;
 
@@ -499,10 +498,10 @@ class ClientController extends Controller
         $souscription = [
             'id' => $agence->id,
             'produits'  => DB::table('views_detail_souscription')
-                            ->select('prod_id', 'prod_nom','prod_etat')
-                            ->groupBy('prod_id','prod_etat')
-                            ->where('agence_id', $agence->id)
-                            ->get()
+                ->select('prod_id', 'prod_nom', 'prod_etat')
+                ->groupBy('prod_id', 'prod_etat')
+                ->where('agence_id', $agence->id)
+                ->get()
 
         ];
 
@@ -523,7 +522,7 @@ class ClientController extends Controller
         return response()->json($objet);
     }
 
-    public function store_agence(Request $request, $id_c,$id_d)
+    public function store_agence(Request $request, $id_c, $id_d)
     {
         $agence = new Agence();
         $agence->departement_id = $id_d;
@@ -549,7 +548,7 @@ class ClientController extends Controller
         ];
         return response()->json($objet);
     }
-    public function affecter_agence(Request $request, $id_c,$id_d)
+    public function affecter_agence(Request $request, $id_c, $id_d)
     {
         if ($request->current_u != 0) {
             $current_user =  Clientuser::where('id', $request->current_u)
@@ -575,13 +574,23 @@ class ClientController extends Controller
             ->where('id', $request->id_a)
             ->first();
 
+        $souscription = [
+            'id' => $agence->id,
+            'produits'  => DB::table('views_detail_souscription')
+                ->select('prod_id', 'prod_nom', 'prod_etat')
+                ->groupBy('prod_id', 'prod_etat')
+                ->where('agence_id', $agence->id)
+                ->get()
+
+        ];
+
         $objet =  [
             'agence' => $agence,
             'chef' => $user,
+            'souscription' => $souscription,
             'ville' => $agence->ville
 
         ];
         return response()->json($objet);
     }
-
 }
