@@ -200,7 +200,7 @@ $( document ).ready(function() {
                     }).responseText;
                    
                     jsonData = JSON.parse(StringData);
-                    console.log(jsonData)
+                     
                     message("role","activé",jsonData.check);
                     if(jsonData.role.deleted_at  != null){
                             buttonacive = "<button  class=\"btn btn-secondary\" style=\"margin: 10px\"  onclick=\"restor("+jsonData.role.id+","+ind+")\">restorer</button>"
@@ -225,7 +225,7 @@ $( document ).ready(function() {
                     }).responseText;
                     
                     jsonData = JSON.parse(StringData);
-                    console.log(jsonData)
+                     
                     message("role","désactivé",jsonData.check);
                     if(jsonData.role.deleted_at  != null){
                             buttonacive = "<button  class=\"btn btn-secondary\" style=\"margin: 10px\"  onclick=\"restor("+jsonData.role.id+","+ind+")\">restorer</button>"
@@ -260,7 +260,7 @@ $( document ).ready(function() {
                         data: inputs
                     }).responseText;
                     jsonData = JSON.parse(StringData);
-                    console.log(jsonData)
+                     
                     $('#exampleModal').modal('hide');
                     message("role","modifié",jsonData.check);
                     if(jsonData.role.deleted_at  != null){

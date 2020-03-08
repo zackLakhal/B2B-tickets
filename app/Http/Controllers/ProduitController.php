@@ -397,6 +397,55 @@ class ProduitController extends Controller
         return response()->json($objet);
     }
 
+    public function detach_prod(Request $request)
+    {
+        $done = false;
+       
+    //    $scrs =
+        Souscription::where([
+            ['agence_id', '=', $request->agence],
+            ['produit_id', "=", $request->produit],
+        ])->delete();
+        // foreach ($scrs as $scr) {
+        //     $scr->delete()
+        // }
+        $done = true;
+        $agence = Agence::withTrashed()
+            ->where('id', $request->agence)
+            ->first();
+
+        $chef = Clientuser::where([
+            ['clientable_id', '=', $agence->id],
+            ['clientable_type', "=", "agence"],
+        ])->first();
+
+        $souscription = [
+            'id' => $agence->id,
+            'produits'  => DB::table('views_detail_souscription')
+                ->select('prod_id', 'prod_nom', 'prod_etat')
+                ->groupBy('prod_id', 'prod_etat')
+                ->where('agence_id', $agence->id)
+                ->get()
+
+        ];
+
+        $check;
+        if (!$done) {
+            $check = "faile";
+        } else {
+            $check = "done";
+        }
+
+        $objet =  [
+            'check' => $check,
+            'agence' => $agence,
+            'chef' => $chef,
+            'souscription' => $souscription,
+            'ville' => $agence->ville
+        ];
+        return response()->json($objet);
+    }
+
     public function save_ref(Request $request)
     {
        $scr = Souscription::find($request->id);

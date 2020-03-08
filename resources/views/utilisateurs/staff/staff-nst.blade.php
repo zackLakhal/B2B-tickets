@@ -125,7 +125,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData);
+         
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.users.length; ind++) {
             if (jsonData.users[ind].deleted_at == null) {
@@ -182,7 +182,7 @@
             async: false,
         }).responseText;
         jsonData1 = JSON.parse(StringData1);
-        console.log(jsonData1);
+         
         for (let ind = 0; ind < jsonData1.length; ind++) {
             $('#role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
         }
@@ -236,7 +236,7 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             
             $('#exampleModal').modal('hide');
             if (jsonData.user.deleted_at == null) {
                 buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-trash\"></i></a></li>";
@@ -299,7 +299,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
         if (jsonData.user.deleted_at == null) {
             buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
         } else {
@@ -358,7 +358,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
         if (jsonData.user.deleted_at == null) {
             buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
         } else {
@@ -451,7 +451,7 @@
                 contentType: false
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             
             $('#exampleModal').modal('hide');
             if (jsonData.user.deleted_at == null) {
                 buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";

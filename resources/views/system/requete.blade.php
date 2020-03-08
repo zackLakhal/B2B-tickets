@@ -104,7 +104,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
         $('#exampleModal').modal('hide');
         if (jsonData.rqt.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-inverse\"  onclick=\"traiter(" + jsonData.rqt.id + "," + ind + ")\">traiter</button>"
@@ -137,7 +137,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
 
         $('#modalbody').html(
             "<h2 class=\"card-title\">" + jsonData.nom + "</h2>" +

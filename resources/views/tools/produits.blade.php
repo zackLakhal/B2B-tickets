@@ -140,7 +140,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData);
+         
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.length; ind++) {
             $('#accordionexample' + ind).html("");
@@ -251,7 +251,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             
             $('#exampleModal').modal('hide');
             equips = "";
             $('#accordionexample' + jsonData.count).html("");
@@ -354,7 +354,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
         if (jsonData.produit.deleted_at == null) {
             buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
         } else {
@@ -452,7 +452,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
         if (jsonData.produit.deleted_at == null) {
             buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
         } else {
@@ -559,7 +559,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             
             $('#exampleModal').modal('hide');
             if (jsonData.produit.deleted_at == null) {
                 buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
@@ -673,7 +673,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             
             $('#equipementmodal').modal('hide');
             if (jsonData.produit.deleted_at == null) {
                 buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
@@ -788,7 +788,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             
             $('#equipementmodal').modal('hide');
             if (jsonData.produit.deleted_at == null) {
                 buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"

@@ -122,7 +122,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData);
+         
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.departements.length; ind++) {
 
@@ -193,7 +193,7 @@
                 data: inputs
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             
             $('#exampleModal').modal('hide');
 
             if (jsonData.chef == null) {
@@ -255,7 +255,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
 
         if (jsonData.chef == null) {
             chef = " <span id=\"chef"+ind+"\" value=\"0\"> pas de chef de département</span>"
@@ -311,7 +311,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
         if (jsonData.chef == null) {
             chef = " <span id=\"chef"+ind+"\" value=\"0\"> pas de chef de département</span>"
             buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">affecter un chef</button>"
@@ -379,7 +379,7 @@
                 data: inputs
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             
             $('#exampleModal').modal('hide');
             if (jsonData.chef == null) {
                 chef = " <span id=\"chef"+ind+"\" value=\"0\"> pas de chef de département</span>"
@@ -435,7 +435,7 @@
             async: false,
         }).responseText;
         jsonData1 = JSON.parse(StringData1);
-        console.log(jsonData1);
+         
         $('#created_by').html("");
         for (let ind = 0; ind < jsonData1.users.length; ind++) {
             $('#created_by').append("<a  class=\"list-group-item value=\"" + jsonData1.users[ind].id + "\" onclick=\"select(" + id + "," + jsonData1.users[ind].id + "," + place + ")\"> <span class=\"mytooltip tooltip-effect-5\">" +
@@ -477,7 +477,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
         $('#affectation').modal('hide');
         if (jsonData.chef == null) {
             chef = " <span id=\"chef"+ind+"\" value=\"0\"> pas de chef de département</span>"

@@ -200,7 +200,7 @@ $( document ).ready(function() {
                     }).responseText;
                    
                     jsonData = JSON.parse(StringData);
-                    console.log(jsonData)
+                     
                     message("état","activé",jsonData.check);
                     if(jsonData.etat.deleted_at  != null){
                             buttonacive = "<button  class=\"btn btn-secondary\" style=\"margin: 10px\"  onclick=\"restor("+jsonData.etat.id+","+ind+")\">restorer</button>"
@@ -225,7 +225,7 @@ $( document ).ready(function() {
                     }).responseText;
                     
                     jsonData = JSON.parse(StringData);
-                    console.log(jsonData)
+                     
                     message("état","désactivé",jsonData.check);
                     if(jsonData.etat.deleted_at  != null){
                             buttonacive = "<button  class=\"btn btn-secondary\" style=\"margin: 10px\"  onclick=\"restor("+jsonData.etat.id+","+ind+")\">restorer</button>"
@@ -260,7 +260,7 @@ $( document ).ready(function() {
                         data: inputs
                     }).responseText;
                     jsonData = JSON.parse(StringData);
-                    console.log(jsonData)
+                     
                     $('#exampleModal').modal('hide');
                     message("état","modifié",jsonData.check);
                     if(jsonData.etat.deleted_at  != null){

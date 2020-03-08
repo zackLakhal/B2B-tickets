@@ -172,7 +172,7 @@ $( document ).ready(function() {
                         data: inputs
                     }).responseText;
                     jsonData = JSON.parse(StringData);
-                    console.log(jsonData);
+                     
                     $('#exampleModal').modal('hide');
                     message("ville","ajouté",jsonData.check);
                     if(jsonData.ville.deleted_at  != null){
@@ -201,7 +201,7 @@ $( document ).ready(function() {
                     }).responseText;
                    
                     jsonData = JSON.parse(StringData);
-                    console.log(jsonData)
+                     
                     message("ville","activé",jsonData.check);
                     if(jsonData.ville.deleted_at  != null){
                             buttonacive = "<button  class=\"btn btn-secondary\" style=\"margin: 10px\"  onclick=\"restor("+jsonData.ville.id+","+ind+")\">restorer</button>"
@@ -226,7 +226,7 @@ $( document ).ready(function() {
                     }).responseText;
                     
                     jsonData = JSON.parse(StringData);
-                    console.log(jsonData)
+                     
                     message("ville","désactivé",jsonData.check);
                     if(jsonData.ville.deleted_at  != null){
                             buttonacive = "<button  class=\"btn btn-secondary\" style=\"margin: 10px\"  onclick=\"restor("+jsonData.ville.id+","+ind+")\">restorer</button>"
@@ -261,7 +261,7 @@ $( document ).ready(function() {
                         data: inputs
                     }).responseText;
                     jsonData = JSON.parse(StringData);
-                    console.log(jsonData)
+                     
                     $('#exampleModal').modal('hide');
                     message("ville","modifié",jsonData.check);
                     if(jsonData.ville.deleted_at  != null){

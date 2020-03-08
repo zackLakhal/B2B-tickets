@@ -168,6 +168,7 @@ Route::prefix('/outils')->group(function () {
         Route::get('/index', 'ProduitController@index')->middleware('auth:nst');
         Route::get('/equip_prod', 'ProduitController@equip_prod')->middleware('auth:nst');
         Route::get('/attach_prod', 'ProduitController@attach_prod')->middleware('auth:nst');
+        Route::get('/detach_prod', 'ProduitController@detach_prod')->middleware('auth:nst');
         Route::get('/active_index', 'ProduitController@active_produits')->middleware('auth:nst');
         Route::get('/save_ref', 'ProduitController@save_ref')->middleware('auth:nst');
         Route::post('/edit/{id_c}', 'ProduitController@edit_produit')->middleware('auth:nst');

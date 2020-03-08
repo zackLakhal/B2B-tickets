@@ -171,7 +171,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             
             $('#exampleModal').modal('hide');
             if (jsonData.client.deleted_at == null) {
                 butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
@@ -214,7 +214,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
         if (jsonData.client.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
             butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
@@ -253,7 +253,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         
         if (jsonData.client.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
             butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
@@ -316,7 +316,7 @@ form_data.append("adress", $('#adress').val());
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             
             $('#exampleModal').modal('hide');
             if (jsonData.client.deleted_at == null) {
                 buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
