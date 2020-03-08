@@ -21,8 +21,11 @@
     <link rel="stylesheet" href="{{ asset('plugins/dropify/dist/css/dropify.min.css') }}">
     <!-- You can change the theme colors from here -->
     <link href="{{ asset('css/colors/green.css') }}" id="theme" rel="stylesheet">
-    <link href=".{{ asset('plugins/icheck/skins/all.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/icheck/skins/all.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+    
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -370,6 +373,7 @@
     <!-- ============================================================== -->
     <script src="{{ asset('plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
     <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('plugins/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js') }}" type="text/javascript"></script>
 
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>

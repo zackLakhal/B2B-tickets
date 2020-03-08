@@ -400,8 +400,16 @@ class ClientController extends Controller
         $chef = Clientuser::where([
             ['clientable_id', '=', $agence->id],
             ['clientable_type', "=", "agence"],
-        ])
-            ->first();
+        ])->first();
+        $souscription = [
+            'id' => $agence->id,
+            'produits'  => DB::table('views_detail_souscription')
+                            ->select('prod_id', 'prod_nom','prod_etat')
+                            ->groupBy('prod_id','prod_etat')
+                            ->where('agence_id', $agence->id)
+                            ->get()
+
+        ];
 
         $check;
         if (!$done) {
@@ -414,6 +422,7 @@ class ClientController extends Controller
             'check' => $check,
             'agence' => $agence,
             'chef' => $chef,
+            'souscription' => $souscription,
             'ville' => $agence->ville
         ];
         return response()->json($objet);
@@ -437,8 +446,17 @@ class ClientController extends Controller
         $chef = Clientuser::where([
             ['clientable_id', '=', $agence->id],
             ['clientable_type', "=", "agence"],
-        ])
-            ->first();
+        ])->first();
+
+        $souscription = [
+            'id' => $agence->id,
+            'produits'  => DB::table('views_detail_souscription')
+                            ->select('prod_id', 'prod_nom','prod_etat')
+                            ->groupBy('prod_id','prod_etat')
+                            ->where('agence_id', $agence->id)
+                            ->get()
+
+        ];
 
         $check;
         if (!$done) {
@@ -451,6 +469,7 @@ class ClientController extends Controller
             'check' => $check,
             'agence' => $agence,
             'chef' => $chef,
+            'souscription' => $souscription,
             'ville' => $agence->ville
         ];
         return response()->json($objet);
@@ -475,8 +494,17 @@ class ClientController extends Controller
         $chef = Clientuser::where([
             ['clientable_id', '=', $agence->id],
             ['clientable_type', "=", "agence"],
-        ])
-            ->first();
+        ])->first();
+
+        $souscription = [
+            'id' => $agence->id,
+            'produits'  => DB::table('views_detail_souscription')
+                            ->select('prod_id', 'prod_nom','prod_etat')
+                            ->groupBy('prod_id','prod_etat')
+                            ->where('agence_id', $agence->id)
+                            ->get()
+
+        ];
 
         $check;
         if (!$done) {
@@ -489,6 +517,7 @@ class ClientController extends Controller
             'check' => $check,
             'agence' => $agence,
             'chef' => $chef,
+            'souscription' => $souscription,
             'ville' => $agence->ville
         ];
         return response()->json($objet);

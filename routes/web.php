@@ -168,6 +168,7 @@ Route::prefix('/outils')->group(function(){
         
         Route::get('/index', 'ProduitController@index')->middleware('auth:nst');
         Route::get('/equip_prod', 'ProduitController@equip_prod')->middleware('auth:nst');
+        Route::get('/attach_prod', 'ProduitController@attach_prod')->middleware('auth:nst');
         Route::get('/active_index', 'ProduitController@active_produits')->middleware('auth:nst');
         Route::post('/edit/{id_c}', 'ProduitController@edit_produit')->middleware('auth:nst');
         Route::post('/delete/{id_c}', 'ProduitController@delete_produit')->middleware('auth:nst');
@@ -177,7 +178,7 @@ Route::prefix('/outils')->group(function(){
             return view('tools.produits');
         })->middleware('auth:nst');
         Route::prefix('{id_p}/equipements')->group(function(){ 
-        
+            Route::get('/index', 'ProduitController@index_equipement')->middleware('auth:nst');
             Route::post('/edit/{id_a}', 'ProduitController@edit_equipement')->middleware('auth:nst');
             Route::post('/delete/{id_a}', 'ProduitController@delete_equipement')->middleware('auth:nst');
             Route::post('/restore/{id_a}', 'ProduitController@restore_equipement')->middleware('auth:nst');               
