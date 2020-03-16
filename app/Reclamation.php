@@ -11,9 +11,9 @@ class Reclamation extends Model
     {
         return $this->belongsTo('App\Clientuser');
     }
-    public function produit()
+    public function souscription()
     {
-        return $this->belongsTo('App\Produit');
+        return $this->belongsTo('App\Souscription');
     }
     public function affectation()
     {

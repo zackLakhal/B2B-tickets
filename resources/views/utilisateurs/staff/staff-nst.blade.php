@@ -174,7 +174,7 @@
                 "</div>");
         }
 
-        $('#role').html("<option <option value=\"0\"selected disabled >selectioner un role </option>")
+        $('#role').html(" <option  value=\"0\"selected disabled >selectioner un role </option>")
         var StringData1 = $.ajax({
             url: "http://127.0.0.1:8000/system/role/active_index",
             dataType: "json",

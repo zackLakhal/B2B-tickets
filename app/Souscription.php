@@ -19,4 +19,8 @@ class Souscription extends Model
     {
         return $this->belongsTo('App\Equipement');
     }
+    public function reclamations()
+    {
+        return $this->hasMany('App\Reclamation');
+    }
 }

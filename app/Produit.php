@@ -7,10 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Produit extends Model
 {
     use SoftDeletes;
-    public function reclamations()
-    {
-        return $this->hasMany('App\Reclamation');
-    }
+    
     public function agences()
     {
         return $this->belongsToMany('App\Agence');

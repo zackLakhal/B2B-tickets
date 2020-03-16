@@ -15,16 +15,16 @@ class CreateReclamationsTable extends Migration
     {
         Schema::create('reclamations', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('produit_id'); 
+            $table->bigInteger('souscription_id');
             $table->bigInteger('clientuser_id');
-            $table->bigInteger('etat_id'); 
-            $table->bigInteger('anomalie_id'); 
-            $table->text('commentaire');
+            $table->bigInteger('etat_id')->default(1);
+            $table->bigInteger('anomalie_id');
+            $table->text('commentaire')->nullable();
             $table->dateTime('checked_at')->nullable();
             $table->dateTime('finished_at')->nullable();
             $table->timestamps();
-$table->softDeletes();
-});
+            $table->softDeletes();
+        });
     }
 
     /**

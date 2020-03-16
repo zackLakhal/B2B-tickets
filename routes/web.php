@@ -2,6 +2,7 @@
 
 use App\Client;
 use App\Departement;
+use App\Agence;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -187,4 +188,24 @@ Route::prefix('/outils')->group(function () {
             Route::post('/create', 'ProduitController@store_equipement')->middleware('auth:nst');
         });
     });
+
+    Route::prefix('espace-client')->group(function () {
+        Route::get('/', function () {
+            return view('tools.espace.index');
+        })->middleware('auth:nst');
+        Route::get('/index', 'EspaceController@all_agences')->middleware('auth:nst');
+        Route::get('/agence/{id}', function ($id) {
+            $agence = Agence::find($id);
+            return view('tools.espace.agence',['agence' => $agence]);
+        })->middleware('auth:nst');
+        Route::get('/agence/{id}/detail', 'EspaceController@detail_agence')->middleware('auth:nst');
+        Route::get('/agence/{id_a}/get_equipements/{id_p}', 'EspaceController@get_equipements')->middleware('auth:nst');
+        Route::get('/agence/{id_a}/get_refs', 'EspaceController@get_refs')->middleware('auth:nst');
+        Route::get('/agence/{id_a}/reclamer', 'EspaceController@add_reclamation')->middleware('auth:nst');
+
+
+    });
+
+
+
 });

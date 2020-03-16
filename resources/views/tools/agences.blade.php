@@ -321,7 +321,7 @@
                 "</div>" +
                 "</div>");
         }
-        $('#ville').html("<option <option value=\"0\"selected disabled >selectioner une ville </option>")
+        $('#ville').html(" <option  value=\"0\"selected disabled >selectioner une ville </option>")
         var StringData1 = $.ajax({
             url: "http://127.0.0.1:8000/system/ville/active_index",
             dataType: "json",
@@ -1443,7 +1443,6 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
         produit = "";
             if (jsonData.chef == null) {
                 chef = " <span id=\"chef" + place + "\" value=\"0\"> pas de chef d'agence</span>"
