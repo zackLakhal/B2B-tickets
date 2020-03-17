@@ -261,7 +261,7 @@
 
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-email-alert"></i><span class="hide-menu"> Réclamations</span></a>
                             <ul aria-expanded="false" class="collapse">
-                                <li><a href="/famille_stock">Gérer les réclamations</a></li>
+                                <li><a href="/reclamation/recls">Gérer les réclamations</a></li>
                                 <li><a href="/reclamation/anomalie">Gérer les anomalies</a></li>
                                 <li><a href="/reclamation/etat">Gérer les états</a></li>
 

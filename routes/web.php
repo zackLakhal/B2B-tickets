@@ -96,6 +96,15 @@ Route::prefix('/reclamation')->group(function () {
             return view('reclamation.anomalie');
         })->middleware('auth:nst');
     });
+
+    Route::prefix('/recls')->group(function () {
+        Route::get('/index', 'ReclamationController@index')->middleware('auth:nst');
+        Route::get('/{edit}/{id}', 'EtatController@edit')->middleware('auth:nst');
+        Route::get('/create', 'EtatController@store')->middleware('auth:nst');
+        Route::get('/', function () {
+            return view('reclamation.recls');
+        })->middleware('auth:nst');
+    });
 });
 
 Route::prefix('/utilisateur')->group(function () {

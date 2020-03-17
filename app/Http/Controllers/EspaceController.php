@@ -108,12 +108,14 @@ class EspaceController extends Controller
     public function add_reclamation(Request $request,$id_a)
     {
         $reclamation = new Reclamation();
+        
         $reclamation->clientuser_id = Auth::id();
         $reclamation->souscription_id = $request->souscription_id;
         $reclamation->anomalie_id = $request->anomalie_id;
         $reclamation->commentaire = $request->commentaire;
         $reclamation->save();
-
+        $reclamation->ref = "".date('year')."-R".time()."-".$reclamation->id;
+        $reclamation->save();
         $check;
         if (is_null($reclamation)) {
             $check = "faile";

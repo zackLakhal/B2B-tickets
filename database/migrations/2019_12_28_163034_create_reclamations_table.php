@@ -15,6 +15,7 @@ class CreateReclamationsTable extends Migration
     {
         Schema::create('reclamations', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('ref')->nullable();
             $table->bigInteger('souscription_id');
             $table->bigInteger('clientuser_id');
             $table->bigInteger('etat_id')->default(1);

@@ -15,10 +15,11 @@ class CreatePvsTable extends Migration
     {
         Schema::create('pvs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('affctation_id');
-            $table->text('commentaire');
+            $table->bigInteger('affectation_id');
+            $table->text('commentaire')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
-$table->softDeletes();
+            $table->softDeletes();
 });
     }
 

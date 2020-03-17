@@ -19,7 +19,7 @@ class CreateAffectationsTable extends Migration
             $table->string('nstuser_id');
             $table->boolean('accepted')->default(false);
             $table->timestamps();
-$table->softDeletes();
+            $table->softDeletes();
 });
     }
 
