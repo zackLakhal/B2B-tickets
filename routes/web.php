@@ -15,8 +15,24 @@ use App\Agence;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('old_nst.index');
 });
+Route::get('/about', function () {
+    return view('old_nst.about');
+});
+Route::get('/clients', function () {
+    return view('old_nst.clients');
+});
+Route::get('/contacts', function () {
+    return view('old_nst.contacts');
+});
+Route::get('/projects', function () {
+    return view('old_nst.projects');
+});
+Route::get('/services', function () {
+    return view('old_nst.services');
+});
+
 
 Auth::routes();
 

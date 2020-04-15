@@ -1,0 +1,66 @@
+Il existe de nombreuses methodes. Je t'en propose une:
+1. Tu fais une page HTML avec un POST:
+
+<FORM method=post action="Envoyer.php">
+<span>VOTRE MESSAGE: </span>
+<TABLE BORDER=0>
+<TR>
+<TD><span>NOM</span></TD>
+<TD>
+<INPUT type=text size="40" name="nom"> </TD>
+</TR>
+<TR>
+<TD COLSPAN=2><div align="center">
+<input name="submit" type="submit" value="Envoyer" />
+</div></TD>
+</TR>
+</TABLE>
+</FORM>
+
+Le code bouton d'envoi du message est:
+input name="submit" type="submit" value="Envoyer" />
+
+2. Tu fais une page Envoyer.php qui va traiter les données et envoyer le message:
+
+lorsque tu cliques sur la bouton "Envoyer" la page Envoyer.php est appelée et les données entrées lui sont passées en paramètre:
+<FORM method=post action="Envoyer.php">
+
+
+Voici le code de la page Envoyer.php
+<?php
+$formNom = $_POST['nom'];
+
+if(!empty($formNom))
+{
+
+$MessageInfo='Nom:'.utf8_decode($formNom)."\n";
+
+if( mail('tonadresse@mail.fr','Message',$MessageInfo) )
+{
+echo 'les informations ont bien été envoyées!';
+}
+else
+{
+echo 'une erreur est survenu lors de l\'envoi du message'; }
+}
+else
+{
+//il y a des champs vide
+echo 'merci de remplir le champs nom';
+}
+?>
+
+la ligne:
+$formNom = $_POST['nom'];
+permet de récupérer la valeur du champs NOM
+
+la ligne:
+$MessageInfo='Nom:'.utf8_decode($formNom)."\n";
+permet de mettre en forme le message en traitant les accents
+
+et enfin, la fonction magique:
+mail('tonadresse@mail.fr','Messaage',$MessageInfo)
+permet d'envoyer le message
+
+j'ai mis cet exemple en ligne:
+http://www.artweweb.com/Forum/ExempleEnvoyer.html
