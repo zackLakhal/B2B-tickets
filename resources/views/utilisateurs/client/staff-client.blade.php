@@ -386,6 +386,7 @@
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/utilisateur/staff-client/restore/" + id,
             dataType: "json",
+            type: "POST",
             async: false,
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -395,7 +396,6 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-         
         if (jsonData.user.deleted_at == null) {
             buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
         } else {
