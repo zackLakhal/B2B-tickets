@@ -106,7 +106,7 @@
     </div>
     <!--==============================footer=================================-->
     <footer>
-        <p>Copyright © 2017 - MAROC NST</p>
+        <p>Copyright © 2020 - MAROC NST</p>
         <p>Site Web : <a href="http://www.marocnst.ma" target="_blank" rel="nofollow">www.marocnst.ma</a> - @ : <a href="marocnst@gmail.com" target="_blank" rel="nofollow">marocnst@gmail.com</a></p>
         <p>SAV : <a href="http://contact@marocnst.ma" target="_blank" rel="nofollow">contact@marocnst.ma</a></p>
     </footer>
