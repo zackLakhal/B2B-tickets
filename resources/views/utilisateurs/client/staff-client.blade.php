@@ -452,7 +452,7 @@
         $('#modalhead').html("<h4 class=\"modal-title\" >Modifier staff-client</h4>" +
             "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
         $('#modalfooter').html("<button type=\"button\" class=\"btn btn-info\" id=\"edit\">Enregistrer</button>");
-
+        
         $('#pic_id').html("<label for=\"avatar\">avatar</label>" +
             "<input type=\"file\" id=\"avatar\" name=\"avatar\" class=\"dropify\" data-default-file=\"" + $('#avatar' + ind).attr('src') + "\"  />");
         $('.dropify').dropify();

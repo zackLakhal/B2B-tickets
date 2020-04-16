@@ -81,9 +81,11 @@
                 buttonacive = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>traité</a>"
             }
             $('#bodytab').append("<div class=\"col-md-4\" id=\"card" + ind + "\">" +
+               
                 "<div class=\"card text-center\">" +
                 "<div class=\"card-body\">" +
-                "<h2 class=\"card-title\">" + jsonData[ind].nom + "</h2>" +
+                "<h3 class=\"card-title\"> Ref : <b> " + jsonData[ind].ref + "</b></h3> <hr>" +
+                "<h4 class=\"card-title\">" + jsonData[ind].nom + "</h4>" +
                 "<h4 class=\"card-title\">" + jsonData[ind].email + "</h4>" +
                 "<h4 class=\"card-title\">" + jsonData[ind].tel + "</h4>" +
                 "<p class=\"card-text\">" + jsonData[ind].message + "</p>" +
@@ -113,6 +115,7 @@
         }
         $('#card' + ind).html("<div class=\"card text-center\">" +
             "<div class=\"card-body\">" +
+            "<h3 class=\"card-title\"> Ref : <b> " + jsonData.ref + "</b></h3> <hr>" +
             "<h2 class=\"card-title\">" + jsonData.rqt.nom + "</h2>" +
             "<h4 class=\"card-title\">" + jsonData.rqt.email + "</h4>" +
             "<h4 class=\"card-title\">" + jsonData.rqt.tel + "</h4>" +
@@ -126,8 +129,7 @@
     function detail(id, ind) {
 
         var buttonacive; 
-        $('#modalhead').html("<h4 class=\"modal-title\" >detail request</h4>" +
-            "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+       
         
 
         var StringData = $.ajax({
@@ -138,6 +140,8 @@
         }).responseText;
         jsonData = JSON.parse(StringData);
          
+        $('#modalhead').html("<h3 class=\"modal-title\"> Ref : <b> " + jsonData.ref + "</b></h3> <hr>" +
+            "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
 
         $('#modalbody').html(
             "<h2 class=\"card-title\">" + jsonData.nom + "</h2>" +

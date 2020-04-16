@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 use App\Etat;
@@ -27,6 +28,16 @@ class EtatController extends Controller
 
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+
+            'value' => 'required|unique:etats',
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
         $etat = new Etat();
         $etat->value = $request->value;
         $etat->save();
@@ -41,7 +52,8 @@ class EtatController extends Controller
         $objet =  [
             'check' => $check,
             'count' => $count -1,
-            'etat' => $etat
+            'etat' => $etat,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
@@ -65,6 +77,17 @@ class EtatController extends Controller
 
         }
         if($edit == "edit") {
+            $validator = Validator::make($request->all(), [
+
+                'value' => 'required|unique:etats',
+            ]);
+    
+    
+            if ($validator->fails()) {
+    
+                return response()->json(['error' => $validator->errors()]);
+            }
+
             $etat = Etat::withTrashed()
                         ->where('id', $id)
                         ->first();
@@ -87,7 +110,8 @@ class EtatController extends Controller
        
         $objet =  [
             'check' => $check,
-            'etat' => $etat
+            'etat' => $etat,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }

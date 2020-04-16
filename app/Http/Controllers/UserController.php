@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 use App\Clientuser;
@@ -41,19 +42,56 @@ class UserController extends Controller
             $done = true;
         }
         if ($edit == "edit") {
+
             $user = Nstuser::withTrashed()
                 ->where('id', $id)
                 ->first();
+
+            $validator = null ;
+            
+            if ($request->filled('email') && $request->email == $user->email) {
+                $validator = Validator::make($request->all(), [
+
+                    'email' => 'required',
+                    'role' => 'required|gt:0',
+                ]);
+            }else{
+                $validator = Validator::make($request->all(), [
+
+                    'email' => 'required|unique:nstusers',
+                    'role' => 'required|gt:0',
+                ]);
+
+            }
+    
+            if ($validator->fails()) {
+    
+                return response()->json(['error' => $validator->errors()]);
+            }
+
+            
             $temp = explode("@", $request->email);
             $user->name = $temp[0];
-            $user->nom = $request->nom;
-            $user->prénom = $request->prenom;
             $user->email = $request->email;
-            $user->tel = $request->tel;
-            $user->adress = $request->adress;
             $user->role_id = $request->role;
             $user->save();
-            $file = $request->file('avatar');
+
+            if ($request->filled('nom')) {
+                $user->nom = $request->nom;
+            }
+            if ($request->filled('prenom')) {
+                $user->prénom = $request->prenom;
+            }
+            if ($request->filled('tel')) {
+                $user->tel = $request->tel;
+            }
+            if ($request->filled('adress')) {
+                $user->adress = $request->adress;
+            }
+            
+            
+            if ($request->file('avatar')) {
+                $file = $request->file('avatar');
             $image = time() . '.' . $file->getClientOriginalExtension();
             $path = $request->file('avatar')->storeAs(
                 'avatars',
@@ -61,6 +99,11 @@ class UserController extends Controller
             );
             $user->photo = $path;
             $user->save();
+            }else{
+                $user->photo = "avatars/placeholder.jpg";
+            $user->save();
+            }
+            
             $done = true;
         }
 
@@ -78,7 +121,8 @@ class UserController extends Controller
         $objet =  [
             'check' => $check,
             'user' => $user,
-            'role' => $user->role
+            'role' => $user->role,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
@@ -86,28 +130,53 @@ class UserController extends Controller
     public function nst_store(Request $request)
     {
 
-        
+        $validator = Validator::make($request->all(), [
+
+            'email' => 'required|unique:nstusers',
+            'password' => 'required|min:8',
+            'role' => 'required|gt:0',
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
       
         $user = new Nstuser();
         $temp = explode("@", $request->email);
-        $user->name = $temp[0];
-        $user->nom = $request->nom;
-        $user->prénom = $request->prenom;
-        $user->email = $request->email;
-        $user->password = $request->password;
-        $user->tel = $request->tel;
-        $user->adress = $request->adress;
-        $user->role_id = $request->role;
-        $user->save();
+            $user->name = $temp[0];
+            $user->email = $request->email;
+            $user->role_id = $request->role;
+            $user->save();
 
-        $file = $request->file('avatar');
-        $image = time() . '.' . $file->getClientOriginalExtension();
-        $path = $request->file('avatar')->storeAs(
-            'avatars',
-            $user->id."_" . $image
-        );
-        $user->photo = $path;
-        $user->save();
+            if ($request->filled('nom')) {
+                $user->nom = $request->nom;
+            }
+            if ($request->filled('prenom')) {
+                $user->prénom = $request->prenom;
+            }
+            if ($request->filled('tel')) {
+                $user->tel = $request->tel;
+            }
+            if ($request->filled('adress')) {
+                $user->adress = $request->adress;
+            }
+            
+            
+            if ($request->file('avatar')) {
+                $file = $request->file('avatar');
+            $image = time() . '.' . $file->getClientOriginalExtension();
+            $path = $request->file('avatar')->storeAs(
+                'avatars',
+                $user->id."_" . $image
+            );
+            $user->photo = $path;
+            $user->save();
+            }else{
+                $user->photo = "avatars/placeholder.jpg";
+            $user->save();
+            }
 
         $check;
         $count = Nstuser::all()->count();
@@ -121,7 +190,8 @@ class UserController extends Controller
             'check' => $check,
             'count' => $count - 1,
             'user' => $user,
-            'role' => $user->role
+            'role' => $user->role,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }

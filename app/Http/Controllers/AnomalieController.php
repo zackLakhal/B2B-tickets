@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 use App\Anomalie;
@@ -27,6 +28,17 @@ class AnomalieController extends Controller
 
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+
+            'value' => 'required|unique:anomalies',
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
+
         $anomalie = new Anomalie();
         $anomalie->value = $request->value;
         $anomalie->save();
@@ -41,7 +53,8 @@ class AnomalieController extends Controller
         $objet =  [
             'check' => $check,
             'count' => $count -1,
-            'anomalie' => $anomalie
+            'anomalie' => $anomalie,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
@@ -65,6 +78,18 @@ class AnomalieController extends Controller
 
         }
         if($edit == "edit") {
+
+            $validator = Validator::make($request->all(), [
+
+                'value' => 'required|unique:anomalies',
+            ]);
+    
+    
+            if ($validator->fails()) {
+    
+                return response()->json(['error' => $validator->errors()]);
+            }
+
             $anomalie = Anomalie::withTrashed()
                         ->where('id', $id)
                         ->first();
@@ -87,7 +112,8 @@ class AnomalieController extends Controller
        
         $objet =  [
             'check' => $check,
-            'anomalie' => $anomalie
+            'anomalie' => $anomalie,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }

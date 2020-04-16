@@ -58,27 +58,32 @@
             </div>
             <div class="modal-body " id="modalbody">
 
-                <div class="form-group">
+                <div class="form-group" id="err-email">
                     <label for="email" class="control-label"><b>email:</b></label>
                     <input type="text" class="form-control" id="email" name="email">
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group" id="password_div">
+                <div class="form-group" id="err-password" >
                     <label for="password" class="control-label"><b>mot de passe:</b></label>
                     <input type="password" class="form-control" id="password" name="password">
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-role">
                     <label class="control-label">Role</label>
                     <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="role" id="role">
 
                     </select>
+                    <small class="form-control-feedback"> </small>
                 </div>
                 <div class="form-group">
                     <label for="nom" class="control-label"><b>nom:</b></label>
                     <input type="text" class="form-control" id="nom" name="nom">
+
                 </div>
                 <div class="form-group">
                     <label for="prenom" class="control-label"><b>prénom:</b></label>
                     <input type="text" class="form-control" id="prenom" name="prenom">
+
                 </div>
 
                 <div class="form-group">
@@ -89,23 +94,32 @@
                     <label for="adress" class="control-label"><b>adress:</b></label>
                     <input type="text" class="form-control" id="adress" name="adress">
                 </div>
-                <div class="form-group" id="pic_id">
-
+                <div class="form-group"  id="pic_id">
                     <label for="avatar">avatar</label>
                     <input type="file" id="avatar" name="avatar" class="dropify" data-default-file="{{ asset('storage/avatars/placeholder.jpg') }}" />
                 </div>
-
-
-
-
-
-
             </div>
             <div class="modal-footer" id="modalfooter">
             </div>
         </div>
     </div>
 </div>
+
+<!-- /.modal 2-->
+<div class="modal fade bs-example-modal-sm" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Message</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body" id="content"> content will be here </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal 2 -->
 
 @endsection
 
@@ -114,6 +128,18 @@
     $(document).ready(function() {
         init()
     });
+
+    function message(objet, action, statut) {
+        var message;
+        if (statut == "done") {
+            message = "votre " + objet + " est " + action + " avec succès";
+        } else {
+            message = "votre " + objet + " n'est pas " + action;
+        }
+        $('#content').html(message);
+        $('#messagebox').modal('show');
+
+    }
 
     function init() {
 
@@ -125,7 +151,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-         
+
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.users.length; ind++) {
             if (jsonData.users[ind].deleted_at == null) {
@@ -182,7 +208,7 @@
             async: false,
         }).responseText;
         jsonData1 = JSON.parse(StringData1);
-         
+
         for (let ind = 0; ind < jsonData1.length; ind++) {
             $('#role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
         }
@@ -202,7 +228,7 @@
         $('#email').val("");
         $('#tel').val("");
         $('#adress').val("");
-        $('#password_div').show();
+        $('#err-password').show();
         $('#password').val("");
         $('#exampleModal').modal('show');
 
@@ -236,52 +262,59 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
-             
-            $('#exampleModal').modal('hide');
-            if (jsonData.user.deleted_at == null) {
-                buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-trash\"></i></a></li>";
+            console.log(jsonData)
+            if ($.isEmptyObject(jsonData.error)) {
+
+                clearInputs(jsonData.inputs);
+                $('#exampleModal').modal('hide');
+                message("staff-nst", "ajouté", jsonData.check);
+                if (jsonData.user.deleted_at == null) {
+                    buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-trash\"></i></a></li>";
+                } else {
+                    buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-reload\"></i></a></li>"
+                }
+                $('#bodytab').append("<div class=\"col-lg-4 col-md-6\" id=\"card" + jsonData.count + "\">" +
+                    "<div class=\"card\" >" +
+                    "<div class=\"el-card-item\">" +
+                    "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + jsonData.count + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
+                    "<div class=\"el-overlay scrl-up\">" +
+                    "<ul class=\"el-info\">" +
+                    "<li><a class=\"btn default btn-warning\"  onclick=\"modifier(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-wrench\"></i></a></li>" +
+                    buttonacive +
+                    "</ul>" +
+                    "</div>" +
+                    "</div>" +
+                    "<div class=\"el-card-content\">" +
+                    "<h3 class=\"box-title\" id=\"full_name" + jsonData.count + "\">" + jsonData.user.nom + " " + jsonData.user.prénom + "</h3>" +
+                    "<div id=\"accordion" + jsonData.count + "\" role=\"tablist\" class=\"minimal-faq\" aria-multiselectable=\"true\">" +
+                    "<div class=\"card-header\" role=\"tab\" id=\"headingOne" + jsonData.count + "\">" +
+                    "<h4 class=\"mb-0\">" +
+                    "<a class=\"btn waves-effect waves-light btn-primary\" style=\"color:white\" data-toggle=\"collapse\" data-parent=\"#accordion" + jsonData.count + "\" href=\"#collapseOne" + jsonData.count + "\" aria-expanded=\"false\" aria-controls=\"collapseOne" + jsonData.count + "\">" +
+                    "Informations" +
+                    "</a>" +
+                    "</h4>" +
+                    "</div>" +
+                    "<div id=\"collapseOne" + jsonData.count + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"headingOne" + jsonData.count + "\">" +
+                    "<div class=\"card-body\">" +
+                    "<div class=\"list-group\">" +
+                    "<a class=\"list-group-item \"id=\"email" + jsonData.count + "\">" + jsonData.user.email + "</a>" +
+                    "<a class=\"list-group-item\" id=\"tel" + jsonData.count + "\">" + jsonData.user.tel + "</a>" +
+                    "<a class=\"list-group-item\" id=\"adress" + jsonData.count + "\">" + jsonData.user.adress + "</a>" +
+                    "<a class=\"list-group-item\" id=\"role" + jsonData.count + "\" value=\"" + jsonData.role.id + "\">" + jsonData.role.value + "</a>" +
+                    "</div>" +
+                    "<div class=\"button-group text-center\">" +
+                    "<br>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>");
             } else {
-                buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-reload\"></i></a></li>"
+                printErrorMsg(jsonData.error);
             }
-            $('#bodytab').append("<div class=\"col-lg-4 col-md-6\" id=\"card" + jsonData.count + "\">" +
-                "<div class=\"card\" >" +
-                "<div class=\"el-card-item\">" +
-                "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + jsonData.count + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
-                "<div class=\"el-overlay scrl-up\">" +
-                "<ul class=\"el-info\">" +
-                "<li><a class=\"btn default btn-warning\"  onclick=\"modifier(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                buttonacive +
-                "</ul>" +
-                "</div>" +
-                "</div>" +
-                "<div class=\"el-card-content\">" +
-                "<h3 class=\"box-title\" id=\"full_name" + jsonData.count + "\">" + jsonData.user.nom + " " + jsonData.user.prénom + "</h3>" +
-                "<div id=\"accordion" + jsonData.count + "\" role=\"tablist\" class=\"minimal-faq\" aria-multiselectable=\"true\">" +
-                "<div class=\"card-header\" role=\"tab\" id=\"headingOne" + jsonData.count + "\">" +
-                "<h4 class=\"mb-0\">" +
-                "<a class=\"btn waves-effect waves-light btn-primary\" style=\"color:white\" data-toggle=\"collapse\" data-parent=\"#accordion" + jsonData.count + "\" href=\"#collapseOne" + jsonData.count + "\" aria-expanded=\"false\" aria-controls=\"collapseOne" + jsonData.count + "\">" +
-                "Informations" +
-                "</a>" +
-                "</h4>" +
-                "</div>" +
-                "<div id=\"collapseOne" + jsonData.count + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"headingOne" + jsonData.count + "\">" +
-                "<div class=\"card-body\">" +
-                "<div class=\"list-group\">" +
-                "<a class=\"list-group-item \"id=\"email" + jsonData.count + "\">" + jsonData.user.email + "</a>" +
-                "<a class=\"list-group-item\" id=\"tel" + jsonData.count + "\">" + jsonData.user.tel + "</a>" +
-                "<a class=\"list-group-item\" id=\"adress" + jsonData.count + "\">" + jsonData.user.adress + "</a>" +
-                "<a class=\"list-group-item\" id=\"role" + jsonData.count + "\" value=\"" + jsonData.role.id + "\">" + jsonData.role.value + "</a>" +
-                "</div>" +
-                "<div class=\"button-group text-center\">" +
-                "<br>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>");
         });
     });
 
@@ -299,7 +332,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-         
+
         if (jsonData.user.deleted_at == null) {
             buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
         } else {
@@ -358,7 +391,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-         
+
         if (jsonData.user.deleted_at == null) {
             buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
         } else {
@@ -422,7 +455,7 @@
         $('#email').val($('#email' + ind).html());
         $('#tel').val($('#tel' + ind).html());
         $('#adress').val($('#adress' + ind).html());
-        $('#password_div').hide();
+        $('#err-password').hide();
         $('#role').val($('#role' + ind).attr('value'));
         $('#role').selectpicker('refresh');
         $('#exampleModal').modal('show');
@@ -451,52 +484,84 @@
                 contentType: false
             }).responseText;
             jsonData = JSON.parse(StringData);
-             
-            $('#exampleModal').modal('hide');
-            if (jsonData.user.deleted_at == null) {
-                buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
+            console.log(jsonData)
+            if ($.isEmptyObject(jsonData.error)) {
+
+                clearInputs(jsonData.inputs);
+
+                $('#exampleModal').modal('hide');
+                message("état", "modifié", jsonData.check);
+                if (jsonData.user.deleted_at == null) {
+                    buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
+                } else {
+                    buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-reload\"></i></a></li>"
+                }
+                $('#card' + ind).html("<div class=\"card\" >" +
+                    "<div class=\"el-card-item\">" +
+                    "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
+                    "<div class=\"el-overlay scrl-up\">" +
+                    "<ul class=\"el-info\">" +
+                    "<li><a class=\"btn default btn-warning\"  onclick=\"modifier(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
+                    buttonacive +
+                    "</ul>" +
+                    "</div>" +
+                    "</div>" +
+                    "<div class=\"el-card-content\">" +
+                    "<h3 class=\"box-title\" id=\"full_name" + ind + "\">" + jsonData.user.nom + " " + jsonData.user.prénom + "</h3>" +
+                    "<div id=\"accordion" + ind + "\" role=\"tablist\" class=\"minimal-faq\" aria-multiselectable=\"true\">" +
+                    "<div class=\"card-header\" role=\"tab\" id=\"headingOne" + ind + "\">" +
+                    "<h4 class=\"mb-0\">" +
+                    "<a class=\"btn waves-effect waves-light btn-primary\" style=\"color:white\" data-toggle=\"collapse\" data-parent=\"#accordion" + ind + "\" href=\"#collapseOne" + ind + "\" aria-expanded=\"false\" aria-controls=\"collapseOne" + ind + "\">" +
+                    "Informations" +
+                    "</a>" +
+                    "</h4>" +
+                    "</div>" +
+                    "<div id=\"collapseOne" + ind + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"headingOne" + ind + "\">" +
+                    "<div class=\"card-body\">" +
+                    "<div class=\"list-group\">" +
+                    "<a class=\"list-group-item \"id=\"email" + ind + "\">" + jsonData.user.email + "</a>" +
+                    "<a class=\"list-group-item\" id=\"tel" + ind + "\">" + jsonData.user.tel + "</a>" +
+                    "<a class=\"list-group-item\" id=\"adress" + ind + "\">" + jsonData.user.adress + "</a>" +
+                    "<a class=\"list-group-item\" id=\"role" + ind + "\" value=\"" + jsonData.role.id + "\">" + jsonData.role.value + "</a>" +
+                    "</div>" +
+                    "<div class=\"button-group text-center\">" +
+                    "<br>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>");
             } else {
-                buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-reload\"></i></a></li>"
+                printErrorMsg(jsonData.error);
             }
-            $('#card' + ind).html("<div class=\"card\" >" +
-                "<div class=\"el-card-item\">" +
-                "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
-                "<div class=\"el-overlay scrl-up\">" +
-                "<ul class=\"el-info\">" +
-                "<li><a class=\"btn default btn-warning\"  onclick=\"modifier(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                buttonacive +
-                "</ul>" +
-                "</div>" +
-                "</div>" +
-                "<div class=\"el-card-content\">" +
-                "<h3 class=\"box-title\" id=\"full_name" + ind + "\">" + jsonData.user.nom + " " + jsonData.user.prénom + "</h3>" +
-                "<div id=\"accordion" + ind + "\" role=\"tablist\" class=\"minimal-faq\" aria-multiselectable=\"true\">" +
-                "<div class=\"card-header\" role=\"tab\" id=\"headingOne" + ind + "\">" +
-                "<h4 class=\"mb-0\">" +
-                "<a class=\"btn waves-effect waves-light btn-primary\" style=\"color:white\" data-toggle=\"collapse\" data-parent=\"#accordion" + ind + "\" href=\"#collapseOne" + ind + "\" aria-expanded=\"false\" aria-controls=\"collapseOne" + ind + "\">" +
-                "Informations" +
-                "</a>" +
-                "</h4>" +
-                "</div>" +
-                "<div id=\"collapseOne" + ind + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"headingOne" + ind + "\">" +
-                "<div class=\"card-body\">" +
-                "<div class=\"list-group\">" +
-                "<a class=\"list-group-item \"id=\"email" + ind + "\">" + jsonData.user.email + "</a>" +
-                "<a class=\"list-group-item\" id=\"tel" + ind + "\">" + jsonData.user.tel + "</a>" +
-                "<a class=\"list-group-item\" id=\"adress" + ind + "\">" + jsonData.user.adress + "</a>" +
-                "<a class=\"list-group-item\" id=\"role" + ind + "\" value=\"" + jsonData.role.id + "\">" + jsonData.role.value + "</a>" +
-                "</div>" +
-                "<div class=\"button-group text-center\">" +
-                "<br>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>");
 
         });
+    }
+
+    function printErrorMsg(msg) {
+
+
+        $.each(msg, function(key, value) {
+
+            $("#err-" + key).addClass('has-danger');
+            $("#err-" + key).find("small").html(value);
+
+        });
+
+    }
+
+    function clearInputs(msg) {
+
+
+        $.each(msg, function(key, value) {
+
+            $("#err-" + key).removeClass('has-danger');
+            $("#err-" + key).find("small").html("");
+
+        });
+
     }
 </script>
 @endsection

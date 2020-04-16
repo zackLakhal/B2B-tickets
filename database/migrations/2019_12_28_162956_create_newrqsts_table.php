@@ -15,6 +15,7 @@ class CreateNewrqstsTable extends Migration
     {
         Schema::create('newrqsts', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('ref');
             $table->string('nom');
             $table->string('email');
             $table->string('tel');

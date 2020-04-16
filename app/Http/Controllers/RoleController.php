@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 use App\Role;
@@ -48,6 +49,17 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+
+            'value' => 'required|unique:roles',
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
+
         $role = new Role();
         $role->value = $request->value;
         $role->save();
@@ -62,7 +74,8 @@ class RoleController extends Controller
         $objet =  [
             'check' => $check,
             'count' => $count -1,
-            'role' => $role
+            'role' => $role,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
@@ -105,6 +118,17 @@ class RoleController extends Controller
 
         }
         if($edit == "edit") {
+            $validator = Validator::make($request->all(), [
+
+                'value' => 'required|unique:roles',
+            ]);
+
+
+            if ($validator->fails()) {
+
+                return response()->json(['error' => $validator->errors()]);
+            }
+
             $role = Role::withTrashed()
                         ->where('id', $id)
                         ->first();
@@ -127,7 +151,8 @@ class RoleController extends Controller
        
         $objet =  [
             'check' => $check,
-            'role' => $role
+            'role' => $role,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }

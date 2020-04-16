@@ -15,6 +15,7 @@ class CreatePvsTable extends Migration
     {
         Schema::create('pvs', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('ref');
             $table->bigInteger('affectation_id');
             $table->text('commentaire')->nullable();
             $table->string('image')->nullable();

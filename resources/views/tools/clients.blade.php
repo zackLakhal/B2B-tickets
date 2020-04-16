@@ -149,7 +149,7 @@
         $('#exampleModal').modal('show');
 
         $('#save').click(function() {
-            
+
             form_data = new FormData();
 
             form_data.append("avatar", $('#avatar')[0].files[0]);
@@ -157,7 +157,7 @@
             form_data.append("email", $('#email').val());
             form_data.append("tel", $('#tel').val());
             form_data.append("adress", $('#adress').val());
-          
+
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/clients/create",
                 dataType: "json",
@@ -171,7 +171,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-             
+
             $('#exampleModal').modal('hide');
             if (jsonData.client.deleted_at == null) {
                 butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
@@ -205,16 +205,16 @@
             url: "http://127.0.0.1:8000/outils/clients/delete/" + id,
             dataType: "json",
             type: "POST",
-                async: false,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                processData: false,
-                contentType: false,
+            async: false,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            processData: false,
+            contentType: false,
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-         
+
         if (jsonData.client.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
             butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
@@ -244,16 +244,16 @@
             url: "http://127.0.0.1:8000/outils/clients/restore/" + id,
             dataType: "json",
             type: "POST",
-                async: false,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                processData: false,
-                contentType: false,
+            async: false,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            processData: false,
+            contentType: false,
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-         
+
         if (jsonData.client.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
             butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
@@ -283,7 +283,7 @@
         $('#modalhead').html("<h4 class=\"modal-title\" >Modifier client</h4>" +
             "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
         $('#modalfooter').html("<button type=\"button\" class=\"btn btn-info\" id=\"edit\">Enregistrer</button>");
-        
+
         $('#pic_id').html("<label for=\"avatar\">avatar</label>" +
             "<input type=\"file\" id=\"avatar\" name=\"avatar\" class=\"dropify\" data-default-file=\"" + $('#avatar' + ind).attr('src') + "\"  />");
         $('.dropify').dropify();
@@ -296,16 +296,16 @@
         $('#edit').click(function() {
             form_data = new FormData();
 
-form_data.append("avatar", $('#avatar')[0].files[0]);
-form_data.append("nom", $('#nom').val());
-form_data.append("email", $('#email').val());
-form_data.append("tel", $('#tel').val());
-form_data.append("adress", $('#adress').val());
-           
+            form_data.append("avatar", $('#avatar')[0].files[0]);
+            form_data.append("nom", $('#nom').val());
+            form_data.append("email", $('#email').val());
+            form_data.append("tel", $('#tel').val());
+            form_data.append("adress", $('#adress').val());
+
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/clients/edit/" + id,
                 dataType: "json",
-                type: "GET",
+
                 type: "POST",
                 async: false,
                 headers: {
@@ -316,7 +316,7 @@ form_data.append("adress", $('#adress').val());
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-             
+
             $('#exampleModal').modal('hide');
             if (jsonData.client.deleted_at == null) {
                 buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"

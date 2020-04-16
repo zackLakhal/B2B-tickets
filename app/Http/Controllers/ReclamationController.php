@@ -22,8 +22,34 @@ class ReclamationController extends Controller
         ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
         ->leftJoin('clients', 'departements.client_id', '=', 'clients.id')
         ->leftJoin('clientusers', 'agences.id', '=', 'clientusers.clientable_id')
-        ->select('reclamations.id as reclamation_id','reclamations.ref as reclamation_ref', 'reclamations.commentaire as reclam_commentaire', 'reclamations.checked_at', 'reclamations.finished_at','anomalies.value as anomalie', 'etats.value as etat', 'affectations.accepted','pvs.image as pv_image', 'clientusers.nom as chef_nom', 'clientusers.prénom as chef_prenom', 'clientusers.email as chef_email','clientusers.photo as chef_photo', 'clientusers.tel as chef_tel', 'nstusers.nom as tech_nom', 'nstusers.prénom as tech_prenom', 'nstusers.email as tech_email','nstusers.photo as tech_photo', 'nstusers.tel as tech_tel', 'souscriptions.id as ref_id', 'souscriptions.equip_ref as equip_ref','produits.nom as prod_nom', 'equipements.nom as equip_nom', 'agences.nom as agence_nom', 'departements.nom as depart_nom','clients.nom as client_nom')
-        ->groupBy('reclamations.id')->get();
+        ->select('reclamations.id as reclamation_id',
+        'reclamations.ref as reclamation_ref',
+         'reclamations.commentaire as reclam_commentaire',
+          'reclamations.checked_at',
+           'reclamations.finished_at',
+           'anomalies.value as anomalie',
+            'etats.value as etat', 
+             'affectations.accepted',
+              'pvs.image as pv_image',
+               'clientusers.nom as chef_nom',
+                'clientusers.prénom as chef_prenom',
+                 'clientusers.email as chef_email',
+                  'clientusers.photo as chef_photo',
+                   'clientusers.tel as chef_tel',
+                    'nstusers.nom as tech_nom',
+                     'nstusers.prénom as tech_prenom',
+                      'nstusers.email as tech_email',
+                       'nstusers.photo as tech_photo',
+                        'nstusers.tel as tech_tel',
+                         'souscriptions.id as ref_id',
+                          'souscriptions.equip_ref as equip_ref',
+                           'produits.nom as prod_nom',
+                            'equipements.nom as equip_nom',
+                             'agences.nom as agence_nom',
+                              'departements.nom as depart_nom',
+                              'clients.nom as client_nom')
+        ->groupBy('reclamations.id')
+        ->orderBy('reclamation_ref', 'desc')->get();
        
         return response()->json($reclamations);
     }

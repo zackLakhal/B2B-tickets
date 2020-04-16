@@ -66,7 +66,7 @@
     function init() {
         var chef;
         var tech;
-        var affect ;
+        var affect;
         var buttonacive;
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/reclamation/recls/index",
@@ -111,11 +111,11 @@
                 case null:
                     affect = " indéterminé "
                     break;
-            
-                    case 1:
+
+                case 1:
                     affect = " oui "
                     break;
-                    case 0:
+                case 0:
                     affect = " non "
                     break;
             }
@@ -148,13 +148,37 @@
                 "<div class=\"card-body\">" +
                 "<h4 id=\"anomalie" + ind + "\" class=\"card-title\"> <strong> anomalie </strong>: " + jsonData[ind].anomalie + "</h4>" +
                 "<h4 id=\"etat" + ind + "\" class=\"card-title\"> <strong> etat </strong>: " + jsonData[ind].etat + "</h4>" +
+                "<h4 id=\"reclam_commentaire" + ind + "\" class=\"card-title\"> <strong> commentaire </strong>: " + jsonData[ind].reclam_commentaire + "</h4>" +
+                "<h4><strong> technicien </strong> :  " + tech + " </h4>" +
                 "<h4 id=\"acceptation" + ind + "\" class=\"card-title\"> <strong>prise en charge </strong>: " + affect + "</h4>" +
                 "<h4 id=\"checked_at" + ind + "\" class=\"card-title\"> <strong> depuis  </strong>: " + jsonData[ind].checked_at + "</h4>" +
                 "<h4 id=\"finished_at" + ind + "\" class=\"card-title\"> <strong> terminé en </strong>: " + jsonData[ind].finished_at + "</h4>" +
                 "<h4 id=\"pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>: " + jsonData[ind].pv_image + "</h4>" +
-                "<h4 id=\"reclam_commentaire" + ind + "\" class=\"card-title\"> <strong> commentaire </strong>: " + jsonData[ind].reclam_commentaire + "</h4>" +
-                "<h4><strong> technicien </strong> :  " + tech + " </h4>" +
 
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+
+                "<div id=\"tach_button"+ind+"\" role=\"tablist\" aria-multiselectable=\"false\">" +
+                "<div class=\"card m-b-0\">" +
+                "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne"+ind+"\">" +
+                "<h5 class=\"mb-0\">" +
+                "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button"+ind+"\" href=\"#tach_coll"+ind+"\" aria-expanded=\"true\" aria-controls=\"tach_coll"+ind+"\">" +
+                "Effectuer un traitement" +
+                "</a>" +
+                "</h5>" +
+                "</div>" +
+                "<div id=\"tach_coll"+ind+"\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"tacheOne"+ind+"\">" +
+                "<div class=\"card-body\">" +
+                "<div class=\"button-group text-center\">" +
+                "<button type=\"button\" class=\"btn waves-effect waves-light btn-success\" >Accepter</button>" +
+                "<button type=\"button\" class=\"btn waves-effect waves-light btn-primary\" >Exporter PDF</button>" +
+                "<button type=\"button\" class=\"btn waves-effect waves-light btn-secondary\" >Upload PV</button>" +
+                "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\" >Affecter</button>" +
+                "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\" >Changer état</button>" +    
+                "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" >Annuler</button>" +
+                "</div>" +
                 "</div>" +
                 "</div>" +
                 "</div>" +

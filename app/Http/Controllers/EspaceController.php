@@ -114,7 +114,7 @@ class EspaceController extends Controller
         $reclamation->anomalie_id = $request->anomalie_id;
         $reclamation->commentaire = $request->commentaire;
         $reclamation->save();
-        $reclamation->ref = "".date('year')."-R".time()."-".$reclamation->id;
+        $reclamation->ref = "".date('Y')."-R".time()."-".$reclamation->id;
         $reclamation->save();
         $check;
         if (is_null($reclamation)) {
