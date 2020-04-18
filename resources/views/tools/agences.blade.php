@@ -255,7 +255,7 @@
                                 "</span>" +
                                 "<br>" +
                                 "</div>" +
-                                "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" class=\"form-control-feedback\"> </small>";
+                                 "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" > </small>"; 
                             if (jsonData1.refs[f].ref_ne != 0) {
                                 qt_ne++;
                             }
@@ -271,6 +271,7 @@
                         refs +
                         "</div>" +
                         "</div>";
+                        
 
                 }
                 var color = "";
@@ -553,7 +554,7 @@
                             "<span class=\"input-group-btn\">" +
                             "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                             "</span>" +
-                            "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" class=\"form-control-feedback\"> </small>";
+                             "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" > </small>"; 
 
                         "</div>";
                         if (jsonData1.refs[f].ref_ne != 0) {
@@ -723,7 +724,7 @@
                             "<span class=\"input-group-btn\">" +
                             "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                             "</span>" +
-                            "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" class=\"form-control-feedback\"> </small>";
+                             "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" > </small>"; 
 
                         "</div>";
                         if (jsonData1.refs[f].ref_ne != 0) {
@@ -915,7 +916,7 @@
                                     "<span class=\"input-group-btn\">" +
                                     "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                     "</span>" +
-                                    "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" class=\"form-control-feedback\"> </small>";
+                                     "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" > </small>"; 
 
                                 "</div>";
                                 if (jsonData1.refs[f].ref_ne != 0) {
@@ -1130,7 +1131,7 @@
                             "<span class=\"input-group-btn\">" +
                             "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                             "</span>" +
-                            "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" class=\"form-control-feedback\"> </small>";
+                             "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" > </small>"; 
 
                         "</div>";
                         if (jsonData1.refs[f].ref_ne != 0) {
@@ -1378,7 +1379,7 @@
                                     "<span class=\"input-group-btn\">" +
                                     "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                     "</span>" +
-                                    "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" class=\"form-control-feedback\"> </small>";
+                                     "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" > </small>"; 
 
                                 "</div>";
                                 if (jsonData1.refs[f].ref_ne != 0) {
@@ -1579,7 +1580,7 @@
                             "<span class=\"input-group-btn\">" +
                             "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                             "</span>" +
-                            "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" class=\"form-control-feedback\"> </small>";
+                             "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" > </small>"; 
 
                         "</div>";
                         if (jsonData1.refs[f].ref_ne != 0) {
