@@ -19,12 +19,12 @@ class CreateNstusersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->bigInteger('role_id');
-            $table->string('nom')->nullable();
-            $table->string('prénom')->nullable();
-            $table->string('tel')->nullable();
-            $table->string('adress')->nullable();
-            $table->string('photo')->nullable();
+            $table->bigInteger('role_id')->nullable();
+            $table->string('nom')->default("");
+            $table->string('prénom')->default("");
+            $table->string('tel')->default("");
+            $table->string('adress')->default("");
+            $table->string('photo')->default("");
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

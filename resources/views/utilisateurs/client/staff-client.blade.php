@@ -58,25 +58,29 @@
             </div>
             <div class="modal-body " id="modalbody">
 
-                <div class="form-group">
+                <div class="form-group" id="err-email">
                     <label for="email" class="control-label"><b>email:</b></label>
                     <input type="text" class="form-control" id="email" name="email">
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group" id="password_div">
+                <div class="form-group" id="err-password">
                     <label for="password" class="control-label"><b>mot de passe:</b></label>
                     <input type="password" class="form-control" id="password" name="password">
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-role">
                     <label class="control-label">Role</label>
                     <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="role" id="role">
 
                     </select>
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-created_by">
                     <label class="control-label">travail pour </label>
                     <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="created_by" id="created_by">
 
                     </select>
+                    <small class="form-control-feedback"> </small>
                 </div>
                 <div class="form-group">
                     <label for="nom" class="control-label"><b>nom:</b></label>
@@ -110,6 +114,22 @@
     </div>
 </div>
 
+<!-- /.modal 2-->
+<div class="modal fade bs-example-modal-sm" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Message</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body" id="content"> content will be here </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal 2 -->
+
 @endsection
 
 @section('script')
@@ -117,6 +137,18 @@
     $(document).ready(function() {
         init()
     });
+
+    function message(objet, action, statut) {
+        var message;
+        if (statut == "done") {
+            message = "votre " + objet + " est " + action + " avec succès";
+        } else {
+            message = "votre " + objet + " n'est pas " + action;
+        }
+        $('#content').html(message);
+        $('#messagebox').modal('show');
+
+    }
 
     function init() {
 
@@ -129,7 +161,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-         
+
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.users.length; ind++) {
             if (jsonData.users[ind].deleted_at == null) {
@@ -194,7 +226,7 @@
             async: false,
         }).responseText;
         jsonData1 = JSON.parse(StringData1);
-         
+
         for (let ind = 0; ind < jsonData1.length; ind++) {
             $('#role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
         }
@@ -208,7 +240,7 @@
             async: false,
         }).responseText;
         jsonData1 = JSON.parse(StringData1);
-         
+
         for (let ind = 0; ind < jsonData1.length; ind++) {
             $('#created_by').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].nom + "</option>");
         }
@@ -230,7 +262,7 @@
         $('#email').val("");
         $('#tel').val("");
         $('#adress').val("");
-        $('#password_div').show();
+        $('#err-password').show();
         $('#password').val("");
         $('#exampleModal').modal('show');
         $('#save').click(function() {
@@ -260,59 +292,70 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-             
-            $('#exampleModal').modal('hide');
-            if (jsonData.user.deleted_at == null) {
-                buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-trash\"></i></a></li>";
+
+            if ($.isEmptyObject(jsonData.error)) {
+
+                clearInputs(jsonData.inputs);
+
+                $('#exampleModal').modal('hide');
+
+                message("staff-client", "ajouté", jsonData.check);
+
+                if (jsonData.user.deleted_at == null) {
+                    buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-trash\"></i></a></li>";
+                } else {
+                    buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-reload\"></i></a></li>"
+                }
+                if (jsonData.user.is_affected) {
+                    affectation = "<a class=\"list-group-item\" id=\"affected" + jsonData.count + "\" style=\"color:green;\" value=\"" + jsonData.user.is_affected + "\">état : affecté</a>";
+                } else {
+                    affectation = "<a class=\"list-group-item\" id=\"affected" + jsonData.count + "\" style=\"color:red;\" value=\"" + jsonData.user.is_affected + "\">état : non affecté</a>";
+                }
+                $('#bodytab').append("<div class=\"col-lg-4 col-md-6\" id=\"card" + jsonData.count + "\">" +
+                    "<div class=\"card\" >" +
+                    "<div class=\"el-card-item\">" +
+                    "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + jsonData.count + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
+                    "<div class=\"el-overlay scrl-up\">" +
+                    "<ul class=\"el-info\">" +
+                    "<li><a class=\"btn default btn-warning\"  onclick=\"modifier(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-wrench\"></i></a></li>" +
+                    buttonacive +
+                    "</ul>" +
+                    "</div>" +
+                    "</div>" +
+                    "<div class=\"el-card-content\">" +
+                    "<h3 class=\"box-title\" id=\"full_name" + jsonData.count + "\">" + jsonData.user.nom + " " + jsonData.user.prénom + "</h3>" +
+                    "<div id=\"accordion" + jsonData.count + "\" role=\"tablist\" class=\"minimal-faq\" aria-multiselectable=\"true\">" +
+                    "<div class=\"card-header\" role=\"tab\" id=\"headingOne" + jsonData.count + "\">" +
+                    "<h4 class=\"mb-0\">" +
+                    "<a class=\"btn waves-effect waves-light btn-primary\" style=\"color:white\" data-toggle=\"collapse\" data-parent=\"#accordion" + jsonData.count + "\" href=\"#collapseOne" + jsonData.count + "\" aria-expanded=\"false\" aria-controls=\"collapseOne" + jsonData.count + "\">" +
+                    "Informations" +
+                    "</a>" +
+                    "</h4>" +
+                    "</div>" +
+                    "<div id=\"collapseOne" + jsonData.count + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"headingOne" + jsonData.count + "\">" +
+                    "<div class=\"card-body\">" +
+                    "<div class=\"list-group\">" +
+                    "<a class=\"list-group-item \"id=\"email" + jsonData.count + "\">" + jsonData.user.email + "</a>" +
+                    "<a class=\"list-group-item\" id=\"tel" + jsonData.count + "\">" + jsonData.user.tel + "</a>" +
+                    "<a class=\"list-group-item\" id=\"adress" + jsonData.count + "\">" + jsonData.user.adress + "</a>" +
+                    "<a class=\"list-group-item\" id=\"role" + jsonData.count + "\" value=\"" + jsonData.role.id + "\">" + jsonData.role.value + "</a>" +
+                    "<a class=\"list-group-item\" id=\"created_by" + jsonData.count + "\" value=\"" + jsonData.client.id + "\"> travail chez : " + jsonData.client.nom + "</a>" +
+                    affectation +
+                    "</div>" +
+                    "<div class=\"button-group text-center\">" +
+                    "<br>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>");
+
             } else {
-                buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-reload\"></i></a></li>"
+                printErrorMsg(jsonData.error);
             }
-            if (jsonData.user.is_affected) {
-                affectation = "<a class=\"list-group-item\" id=\"affected" + jsonData.count + "\" style=\"color:green;\" value=\"" + jsonData.user.is_affected + "\">état : affecté</a>";
-            } else {
-                affectation = "<a class=\"list-group-item\" id=\"affected" + jsonData.count + "\" style=\"color:red;\" value=\"" + jsonData.user.is_affected + "\">état : non affecté</a>";
-            }
-            $('#bodytab').append("<div class=\"col-lg-4 col-md-6\" id=\"card" + jsonData.count + "\">" +
-                "<div class=\"card\" >" +
-                "<div class=\"el-card-item\">" +
-                "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + jsonData.count + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
-                "<div class=\"el-overlay scrl-up\">" +
-                "<ul class=\"el-info\">" +
-                "<li><a class=\"btn default btn-warning\"  onclick=\"modifier(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                buttonacive +
-                "</ul>" +
-                "</div>" +
-                "</div>" +
-                "<div class=\"el-card-content\">" +
-                "<h3 class=\"box-title\" id=\"full_name" + jsonData.count + "\">" + jsonData.user.nom + " " + jsonData.user.prénom + "</h3>" +
-                "<div id=\"accordion" + jsonData.count + "\" role=\"tablist\" class=\"minimal-faq\" aria-multiselectable=\"true\">" +
-                "<div class=\"card-header\" role=\"tab\" id=\"headingOne" + jsonData.count + "\">" +
-                "<h4 class=\"mb-0\">" +
-                "<a class=\"btn waves-effect waves-light btn-primary\" style=\"color:white\" data-toggle=\"collapse\" data-parent=\"#accordion" + jsonData.count + "\" href=\"#collapseOne" + jsonData.count + "\" aria-expanded=\"false\" aria-controls=\"collapseOne" + jsonData.count + "\">" +
-                "Informations" +
-                "</a>" +
-                "</h4>" +
-                "</div>" +
-                "<div id=\"collapseOne" + jsonData.count + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"headingOne" + jsonData.count + "\">" +
-                "<div class=\"card-body\">" +
-                "<div class=\"list-group\">" +
-                "<a class=\"list-group-item \"id=\"email" + jsonData.count + "\">" + jsonData.user.email + "</a>" +
-                "<a class=\"list-group-item\" id=\"tel" + jsonData.count + "\">" + jsonData.user.tel + "</a>" +
-                "<a class=\"list-group-item\" id=\"adress" + jsonData.count + "\">" + jsonData.user.adress + "</a>" +
-                "<a class=\"list-group-item\" id=\"role" + jsonData.count + "\" value=\"" + jsonData.role.id + "\">" + jsonData.role.value + "</a>" +
-                "<a class=\"list-group-item\" id=\"created_by" + jsonData.count + "\" value=\"" + jsonData.client.id + "\"> travail chez : " + jsonData.client.nom + "</a>" +
-                affectation +
-                "</div>" +
-                "<div class=\"button-group text-center\">" +
-                "<br>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>");
         });
     });
 
@@ -330,7 +373,10 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-         
+
+        message("staff-client", "supprimé", jsonData.check);
+
+
         if (jsonData.user.deleted_at == null) {
             buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
         } else {
@@ -396,6 +442,9 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
+
+        message("staff-client", "restoré", jsonData.check);
+
         if (jsonData.user.deleted_at == null) {
             buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
         } else {
@@ -452,7 +501,7 @@
         $('#modalhead').html("<h4 class=\"modal-title\" >Modifier staff-client</h4>" +
             "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
         $('#modalfooter').html("<button type=\"button\" class=\"btn btn-info\" id=\"edit\">Enregistrer</button>");
-        
+
         $('#pic_id').html("<label for=\"avatar\">avatar</label>" +
             "<input type=\"file\" id=\"avatar\" name=\"avatar\" class=\"dropify\" data-default-file=\"" + $('#avatar' + ind).attr('src') + "\"  />");
         $('.dropify').dropify();
@@ -463,7 +512,7 @@
         $('#email').val($('#email' + ind).html());
         $('#tel').val($('#tel' + ind).html());
         $('#adress').val($('#adress' + ind).html());
-        $('#password_div').hide();
+        $('#err-password').hide();
         $('#role').val($('#role' + ind).attr('value'));
         $('#role').selectpicker('refresh');
         $('#created_by').val($('#created_by' + ind).attr('value'));
@@ -496,59 +545,92 @@
                 contentType: false
             }).responseText;
             jsonData = JSON.parse(StringData);
-             
-            $('#exampleModal').modal('hide');
-            if (jsonData.user.deleted_at == null) {
-                buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
+            if ($.isEmptyObject(jsonData.error)) {
+
+                clearInputs(jsonData.inputs);
+                $('#exampleModal').modal('hide');
+
+                message("staff-client", "modifié", jsonData.check);
+
+                if (jsonData.user.deleted_at == null) {
+                    buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
+                } else {
+                    buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-reload\"></i></a></li>"
+                }
+                if (jsonData.user.is_affected) {
+                    affectation = "<a class=\"list-group-item\" id=\"affected" + ind + "\" style=\"color:green;\" value=\"" + jsonData.user.is_affected + "\">état : affecté</a>";
+                } else {
+                    affectation = "<a class=\"list-group-item\" id=\"affected" + ind + "\" style=\"color:red;\" value=\"" + jsonData.user.is_affected + "\">état : non affecté</a>";
+                }
+                $('#card' + ind).html("<div class=\"card\" >" +
+                    "<div class=\"el-card-item\">" +
+                    "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
+                    "<div class=\"el-overlay scrl-up\">" +
+                    "<ul class=\"el-info\">" +
+                    "<li><a class=\"btn default btn-warning\"  onclick=\"modifier(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
+                    buttonacive +
+                    "</ul>" +
+                    "</div>" +
+                    "</div>" +
+                    "<div class=\"el-card-content\">" +
+                    "<h3 class=\"box-title\" id=\"full_name" + ind + "\">" + jsonData.user.nom + " " + jsonData.user.prénom + "</h3>" +
+                    "<div id=\"accordion" + ind + "\" role=\"tablist\" class=\"minimal-faq\" aria-multiselectable=\"true\">" +
+                    "<div class=\"card-header\" role=\"tab\" id=\"headingOne" + ind + "\">" +
+                    "<h4 class=\"mb-0\">" +
+                    "<a class=\"btn waves-effect waves-light btn-primary\" style=\"color:white\" data-toggle=\"collapse\" data-parent=\"#accordion" + ind + "\" href=\"#collapseOne" + ind + "\" aria-expanded=\"false\" aria-controls=\"collapseOne" + ind + "\">" +
+                    "Informations" +
+                    "</a>" +
+                    "</h4>" +
+                    "</div>" +
+                    "<div id=\"collapseOne" + ind + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"headingOne" + ind + "\">" +
+                    "<div class=\"card-body\">" +
+                    "<div class=\"list-group\">" +
+                    "<a class=\"list-group-item \"id=\"email" + ind + "\">" + jsonData.user.email + "</a>" +
+                    "<a class=\"list-group-item\" id=\"tel" + ind + "\">" + jsonData.user.tel + "</a>" +
+                    "<a class=\"list-group-item\" id=\"adress" + ind + "\">" + jsonData.user.adress + "</a>" +
+                    "<a class=\"list-group-item\" id=\"role" + ind + "\" value=\"" + jsonData.role.id + "\">" + jsonData.role.value + "</a>" +
+                    "<a class=\"list-group-item\" id=\"created_by" + ind + "\" value=\"" + jsonData.client.id + "\"> travail chez : " + jsonData.client.nom + "</a>" +
+                    affectation +
+                    "</div>" +
+                    "<div class=\"button-group text-center\">" +
+                    "<br>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>");
+
             } else {
-                buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-reload\"></i></a></li>"
+                printErrorMsg(jsonData.error);
             }
-            if (jsonData.user.is_affected) {
-                affectation = "<a class=\"list-group-item\" id=\"affected" + ind + "\" style=\"color:green;\" value=\"" + jsonData.user.is_affected + "\">état : affecté</a>";
-            } else {
-                affectation = "<a class=\"list-group-item\" id=\"affected" + ind + "\" style=\"color:red;\" value=\"" + jsonData.user.is_affected + "\">état : non affecté</a>";
-            }
-            $('#card' + ind).html("<div class=\"card\" >" +
-                "<div class=\"el-card-item\">" +
-                "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
-                "<div class=\"el-overlay scrl-up\">" +
-                "<ul class=\"el-info\">" +
-                "<li><a class=\"btn default btn-warning\"  onclick=\"modifier(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                buttonacive +
-                "</ul>" +
-                "</div>" +
-                "</div>" +
-                "<div class=\"el-card-content\">" +
-                "<h3 class=\"box-title\" id=\"full_name" + ind + "\">" + jsonData.user.nom + " " + jsonData.user.prénom + "</h3>" +
-                "<div id=\"accordion" + ind + "\" role=\"tablist\" class=\"minimal-faq\" aria-multiselectable=\"true\">" +
-                "<div class=\"card-header\" role=\"tab\" id=\"headingOne" + ind + "\">" +
-                "<h4 class=\"mb-0\">" +
-                "<a class=\"btn waves-effect waves-light btn-primary\" style=\"color:white\" data-toggle=\"collapse\" data-parent=\"#accordion" + ind + "\" href=\"#collapseOne" + ind + "\" aria-expanded=\"false\" aria-controls=\"collapseOne" + ind + "\">" +
-                "Informations" +
-                "</a>" +
-                "</h4>" +
-                "</div>" +
-                "<div id=\"collapseOne" + ind + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"headingOne" + ind + "\">" +
-                "<div class=\"card-body\">" +
-                "<div class=\"list-group\">" +
-                "<a class=\"list-group-item \"id=\"email" + ind + "\">" + jsonData.user.email + "</a>" +
-                "<a class=\"list-group-item\" id=\"tel" + ind + "\">" + jsonData.user.tel + "</a>" +
-                "<a class=\"list-group-item\" id=\"adress" + ind + "\">" + jsonData.user.adress + "</a>" +
-                "<a class=\"list-group-item\" id=\"role" + ind + "\" value=\"" + jsonData.role.id + "\">" + jsonData.role.value + "</a>" +
-                "<a class=\"list-group-item\" id=\"created_by" + ind + "\" value=\"" + jsonData.client.id + "\"> travail chez : " + jsonData.client.nom + "</a>" +
-                affectation +
-                "</div>" +
-                "<div class=\"button-group text-center\">" +
-                "<br>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>");
 
         });
+    }
+
+    function printErrorMsg(msg) {
+
+
+        $.each(msg, function(key, value) {
+
+            $("#err-" + key).addClass('has-danger');
+            $("#err-" + key).find("small").html(value);
+
+        });
+
+    }
+
+    function clearInputs(msg) {
+
+
+        $.each(msg, function(key, value) {
+
+            $("#err-" + key).removeClass('has-danger');
+            $("#err-" + key).find("small").html("");
+
+        });
+
     }
 </script>
 @endsection

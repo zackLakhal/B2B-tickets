@@ -24,7 +24,7 @@
     <link href="{{ asset('plugins/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
-    
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -239,7 +239,7 @@
                         <li>
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="true"><i class="mdi mdi-file-chart"></i><span class="hide-menu">Statistiques </span></a>
                             <ul aria-expanded="true" class="collapse">
-                                <li class="active"><a class="active" href="/type">Consulter les statistiques</a></li>
+                                <li class="active"><a class="active" href="/statistiques">Consulter les statistiques</a></li>
                             </ul>
                         </li>
                         <li>
@@ -254,7 +254,7 @@
                                 <li><a href="/outils/espace-client">Espace client</a></li>
                                 <li><a href="/outils/clients">Gérer les clients</a></li>
                                 <li><a href="/outils/produits">Gérer les produits</a></li>
-                                
+
                             </ul>
                         </li>
 
@@ -359,10 +359,19 @@
     <!--Menu sidebar -->
     <script src="{{ asset('js/sidebarmenu.js') }}"></script>
     <!--stickey kit -->
+
+    <!-- Chart JS -->
+    <script src="{{ asset('plugins/Chart.js/chartjs.init.js') }}"></script>
+    <script src="{{ asset('plugins/Chart.js/Chart.min.js') }}"></script>
+
+
+
     <script src="{{ asset('plugins/sticky-kit-master/dist/sticky-kit.min.js') }}"></script>
     <script src="{{ asset('plugins/sparkline/jquery.sparkline.min.js') }}"></script>
     <!--Custom JavaScript -->
     <script src="{{ asset('js/custom.min.js') }}"></script>
+
+
 
 
     @yield('script')

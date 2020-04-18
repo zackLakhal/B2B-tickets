@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 use App\Agence;
@@ -107,13 +108,31 @@ class EspaceController extends Controller
 
     public function add_reclamation(Request $request,$id_a)
     {
+
+        $validator = Validator::make($request->all(), [
+
+            'ref' => 'required',
+            'anomalie' => 'required',
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
+
         $reclamation = new Reclamation();
         
         $reclamation->clientuser_id = Auth::id();
-        $reclamation->souscription_id = $request->souscription_id;
-        $reclamation->anomalie_id = $request->anomalie_id;
-        $reclamation->commentaire = $request->commentaire;
+        $reclamation->souscription_id = $request->ref;
+        $reclamation->anomalie_id = $request->anomalie;
+
+        if ($request->filled('info_p')) {
+            $reclamation->commentaire = $request->commentaire;
+        }
+
         $reclamation->save();
+
         $reclamation->ref = "".date('Y')."-R".time()."-".$reclamation->id;
         $reclamation->save();
         $check;
@@ -125,7 +144,8 @@ class EspaceController extends Controller
        
         $objet =  [
             'check' => $check,
-            'reclamation' => $reclamation
+            'reclamation' => $reclamation,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }

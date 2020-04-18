@@ -20,7 +20,7 @@ class CreateReclamationsTable extends Migration
             $table->bigInteger('clientuser_id');
             $table->bigInteger('etat_id')->default(1);
             $table->bigInteger('anomalie_id');
-            $table->text('commentaire')->nullable();
+            $table->text('commentaire')->default("");
             $table->dateTime('checked_at')->nullable();
             $table->dateTime('finished_at')->nullable();
             $table->timestamps();

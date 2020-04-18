@@ -63,7 +63,7 @@
                     <input type="text" class="form-control" id="email" name="email">
                     <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group" id="err-password" >
+                <div class="form-group" id="err-password">
                     <label for="password" class="control-label"><b>mot de passe:</b></label>
                     <input type="password" class="form-control" id="password" name="password">
                     <small class="form-control-feedback"> </small>
@@ -94,7 +94,7 @@
                     <label for="adress" class="control-label"><b>adress:</b></label>
                     <input type="text" class="form-control" id="adress" name="adress">
                 </div>
-                <div class="form-group"  id="pic_id">
+                <div class="form-group" id="pic_id">
                     <label for="avatar">avatar</label>
                     <input type="file" id="avatar" name="avatar" class="dropify" data-default-file="{{ asset('storage/avatars/placeholder.jpg') }}" />
                 </div>
@@ -262,7 +262,6 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -332,7 +331,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-
+        message("staff-nst", "supprimé", jsonData.check);
         if (jsonData.user.deleted_at == null) {
             buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
         } else {
@@ -391,7 +390,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-
+        message("staff-nst", "restoré", jsonData.check);
         if (jsonData.user.deleted_at == null) {
             buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
         } else {
@@ -490,7 +489,7 @@
                 clearInputs(jsonData.inputs);
 
                 $('#exampleModal').modal('hide');
-                message("état", "modifié", jsonData.check);
+                message("staff-nst", "modifié", jsonData.check);
                 if (jsonData.user.deleted_at == null) {
                     buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
                 } else {

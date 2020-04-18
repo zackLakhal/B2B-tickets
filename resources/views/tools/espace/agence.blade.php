@@ -66,30 +66,35 @@
                 <div class="form-group text-center">
                     <h3 class="control-label" id="equip_nom"></h3>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-ref">
                     <label class="control-label">Référence</label>
                     <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="ref" id="ref">
 
                     </select>
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-anomalie">
                     <label class="control-label">Anomalie</label>
                     <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="anomalie" id="anomalie">
 
                     </select>
+                    <small class="form-control-feedback"> </small>
                 </div>
                 <div class="form-group">
                     <label for="commentaire" class="control-label"><b>commentaire</b></label>
                     <textarea class="form-control" id="commentaire" name="commentaire" rows="5"></textarea>
                 </div>
-
             </div>
             <div class="modal-footer" id="modalfooter">
                 <button type="button" class="btn btn-info" id="save">Enregistrer</button>
             </div>
         </div>
+
+
     </div>
+
 </div>
+
 <!-- /.modal 2-->
 <div class="modal fade bs-example-modal-sm" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-sm">
@@ -294,24 +299,56 @@
         $('#save').click(function() {
 
             var inputs = {
-                "souscription_id": $('#ref').val(),
-                "anomalie_id": $('#anomalie').val(),
+                "ref": $('#ref').val(),
+                "anomalie": $('#anomalie').val(),
                 "commentaire": $('#commentaire').val()
 
             };
 
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/espace-client/agence/" + $('#id_a').val() + "/reclamer",
-                dataType: "json",
-                type: "GET",
+                type: "POST",
+                async: false,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
                 data: inputs,
-                async: false
             }).responseText;
             jsonData = JSON.parse(StringData);
             console.log(jsonData)
-            $('#exampleModal').modal('hide');
-            message("réclamation", "ajouté", jsonData.check);
+            if ($.isEmptyObject(jsonData.error)) {
+
+                clearInputs(jsonData.inputs);
+                $('#exampleModal').modal('hide');
+                message("réclamation", "ajouté", jsonData.check);
+            } else {
+                printErrorMsg(jsonData.error);
+            }
         });
+    }
+
+    function printErrorMsg(msg) {
+
+
+        $.each(msg, function(key, value) {
+
+            $("#err-" + key).addClass('has-danger');
+            $("#err-" + key).find("small").html(value);
+
+        });
+
+    }
+
+    function clearInputs(msg) {
+
+
+        $.each(msg, function(key, value) {
+
+            $("#err-" + key).removeClass('has-danger');
+            $("#err-" + key).find("small").html("");
+
+        });
+
     }
 </script>
 @endsection

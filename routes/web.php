@@ -33,6 +33,10 @@ Route::get('/services', function () {
     return view('old_nst.services');
 });
 
+Route::get('/statistiques', function () {
+    return view('statistique.index');
+})->middleware('auth:nst');
+
 
 Auth::routes();
 
@@ -226,6 +230,6 @@ Route::prefix('/outils')->group(function () {
         Route::get('/agence/{id}/detail', 'EspaceController@detail_agence')->middleware('auth:nst');
         Route::get('/agence/{id_a}/get_equipements/{id_p}', 'EspaceController@get_equipements')->middleware('auth:nst');
         Route::get('/agence/{id_a}/get_refs', 'EspaceController@get_refs')->middleware('auth:nst');
-        Route::get('/agence/{id_a}/reclamer', 'EspaceController@add_reclamation')->middleware('auth:nst');
+        Route::post('/agence/{id_a}/reclamer', 'EspaceController@add_reclamation')->middleware('auth:nst');
     });
 });

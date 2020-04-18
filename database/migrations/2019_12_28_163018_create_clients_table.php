@@ -19,7 +19,7 @@ class CreateClientsTable extends Migration
             $table->string('email');
             $table->string('tel');
             $table->string('adress');
-            $table->string('photo')->nullable();
+            $table->string('photo')->default("");
             $table->timestamps();
             $table->softDeletes();
 });

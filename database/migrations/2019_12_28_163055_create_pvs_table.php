@@ -17,8 +17,8 @@ class CreatePvsTable extends Migration
             $table->bigIncrements('id');
             $table->string('ref');
             $table->bigInteger('affectation_id');
-            $table->text('commentaire')->nullable();
-            $table->string('image')->nullable();
+            $table->text('commentaire')->default("");
+            $table->string('image')->default("");
             $table->timestamps();
             $table->softDeletes();
 });

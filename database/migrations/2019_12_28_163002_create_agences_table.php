@@ -22,8 +22,8 @@ class CreateAgencesTable extends Migration
             $table->string('adress');
             $table->bigInteger('ville_id');
             $table->timestamps();
-$table->softDeletes();
-});
+            $table->softDeletes();
+        });
     }
 
     /**

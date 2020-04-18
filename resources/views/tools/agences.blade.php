@@ -206,7 +206,7 @@
                     data: inputs
                 }).responseText;
                 jsonData1 = JSON.parse(StringData1);
-                 
+                console.log(jsonData1)
                 for (let k = 0; k < jsonData1.equipements.length; k++) {
                     refs = "";
 

@@ -59,9 +59,10 @@
             </div>
             <div class="modal-body" id="modalbody">
 
-                <div class="form-group">
+                <div class="form-group" id="err-nom_p">
                     <label for="nom_p" class="control-label"><b>nom:</b></label>
                     <input type="text" class="form-control" id="nom_p" name="nom_p">
+                    <small class="form-control-feedback"> </small>
                 </div>
                 <div class="form-group">
                     <label for="info_p" class="control-label"><b>informations :</b></label>
@@ -89,18 +90,21 @@
             </div>
             <div class="modal-body" id="equipementbody">
 
-                <div class="form-group">
+                <div class="form-group" id="err-nom_e">
                     <label for="nom_e" class="control-label"><b>nom:</b></label>
                     <input type="text" class="form-control" id="nom_e" name="nom_e">
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-marque_e">
                     <label for="marque_e" class="control-label"><b>marke :</b></label>
                     <input type="text" class="form-control" id="marque_e" name="marque_e">
+                    <small class="form-control-feedback"> </small>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="err-modele_e">
                     <label for="modele_e" class="control-label"><b>modèle:</b></label>
                     <input type="text" class="form-control" id="modele_e" name="modele_e">
+                    <small class="form-control-feedback"> </small>
                 </div>
                 <div class="form-group">
                     <label for="info_e" class="control-label"><b>informations :</b></label>
@@ -121,12 +125,40 @@
     </div>
 </div>
 
+<!-- /.modal 2-->
+<div class="modal fade bs-example-modal-sm" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Message</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body" id="content"> content will be here </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal 2 -->
+
 @endsection
 @section('script')
 <script>
     $(document).ready(function() {
         init()
     });
+
+    function message(objet, action, statut) {
+        var message;
+        if (statut == "done") {
+            message = "votre " + objet + " est " + action + " avec succès";
+        } else {
+            message = "votre " + objet + " n'est pas " + action;
+        }
+        $('#content').html(message);
+        $('#messagebox').modal('show');
+
+    }
 
     function init() {
 
@@ -140,7 +172,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-         
+
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.length; ind++) {
             $('#accordionexample' + ind).html("");
@@ -235,8 +267,8 @@
             form_data = new FormData();
 
             form_data.append("produit", $('#produit')[0].files[0]);
-            form_data.append("nom", $('#nom_p').val());
-            form_data.append("info", $('#info_p').val());
+            form_data.append("nom_p", $('#nom_p').val());
+            form_data.append("info_p", $('#info_p').val());
 
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/produits/create",
@@ -251,81 +283,89 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-             
-            $('#exampleModal').modal('hide');
-            equips = "";
-            $('#accordionexample' + jsonData.count).html("");
-            if (jsonData.deleted_at == null) {
-                buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.id + "," + jsonData.count + ", -1)\">supprimer</button>"
-            } else {
-                buttonaciveproduit = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('produit'," + jsonData.id + "," + jsonData.count + ", -1)\">restorer</button>"
-            }
+            console.log(jsonData)
+            if ($.isEmptyObject(jsonData.error)) {
 
-            for (let j = 0; j < jsonData.produit.equipements.length; j++) {
-                if (jsonData.produit.equipements[j].active == 1) {
-                    buttonaciveequipement = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('equipement'," + jsonData.produit.id + "," + jsonData.count + "," + jsonData.produit.equipements[j].id + ")\">supprimer</button>"
+                clearInputs(jsonData.inputs);
+
+                $('#exampleModal').modal('hide');
+                message("produit", "ajouté", jsonData.check);
+                equips = "";
+                $('#accordionexample' + jsonData.count).html("");
+                if (jsonData.produit.deleted_at == null) {
+                    buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + jsonData.count + ", -1)\">supprimer</button>"
                 } else {
-                    buttonaciveequipement = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('equipement'," + jsonData.produit.id + "," + jsonData.count + "," + jsonData.produit.equipements[j].id + ")\">restorer</button>"
+                    buttonaciveproduit = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('produit'," + jsonData.produit.id + "," + jsonData.count + ", -1)\">restorer</button>"
                 }
-                equips = equips +
+
+                for (let j = 0; j < jsonData.produit.equipements.length; j++) {
+                    if (jsonData.produit.equipements[j].active == 1) {
+                        buttonaciveequipement = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('equipement'," + jsonData.produit.id + "," + jsonData.count + "," + jsonData.produit.equipements[j].id + ")\">supprimer</button>"
+                    } else {
+                        buttonaciveequipement = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('equipement'," + jsonData.produit.id + "," + jsonData.count + "," + jsonData.produit.equipements[j].id + ")\">restorer</button>"
+                    }
+                    equips = equips +
+                        "<div class=\"card\">" +
+                        "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                        "<h5 class=\"mb-0 text-center\">" +
+                        "<a id=\"nom_e" + jsonData.produit.equipements[j].id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + jsonData.count + "\" href=\"#collapseex" + jsonData.produit.equipements[j].id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData.produit.equipements[j].id + "\">" +
+                        jsonData.produit.equipements[j].nom +
+                        "</a>" +
+                        "</h5>" +
+                        "</div>" +
+
+                        "<div id=\"collapseex" + jsonData.produit.equipements[j].id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                        "<div class=\"card-body\">" +
+
+                        "<img class=\"card-img-top\" id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
+                        "<div class=\"card-body\">" +
+                        "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
+                        "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
+                        "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
+                        jsonData.produit.equipements[j].info +
+                        "</p>" +
+                        "<div class=\"button-group text-center\">" +
+                        "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + jsonData.count + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
+                        buttonaciveequipement +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>"
+                }
+                $('#bodytab').append("<div class=\"col-12 \" id=\"pd_" + jsonData.count + "\">" +
                     "<div class=\"card\">" +
-                    "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData.produit.equipements[j].id + "\">" +
-                    "<h5 class=\"mb-0 text-center\">" +
-                    "<a id=\"nom_e" + jsonData.produit.equipements[j].id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + jsonData.count + "\" href=\"#collapseex" + jsonData.produit.equipements[j].id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData.produit.equipements[j].id + "\">" +
-                    jsonData.produit.equipements[j].nom +
-                    "</a>" +
-                    "</h5>" +
-                    "</div>" +
-
-                    "<div id=\"collapseex" + jsonData.produit.equipements[j].id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.produit.equipements[j].id + "\">" +
                     "<div class=\"card-body\">" +
 
-                    "<img class=\"card-img-top\" id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
-                    "<div class=\"card-body\">" +
-                    "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
-                    "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
-                    "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
-                    jsonData.produit.equipements[j].info +
+
+                    "<div class=\"row\">" +
+                    "<div class=\"col-lg-4 col-md-4\"><img id=\"produit" + jsonData.count + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.image + "\" class=\"img-responsive img-thumbnail\" /></div>" +
+                    "<div class=\"col-lg-4 col-md-4\">" +
+                    "<div class=\"card-title text-center\">" +
+                    "<h2 id=\"nom_p" + jsonData.count + "\">" + jsonData.produit.nom + "</h2>" +
+                    "<p id=\"info_p" + jsonData.count + "\">" +
+                    jsonData.produit.info +
                     "</p>" +
-                    "<div class=\"button-group text-center\">" +
-                    "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + jsonData.count + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
-                    buttonaciveequipement +
+                    "<div class=\"button-group\" style=\"position: absolute; bottom: 0;  left: 0%;right: 0%; \">" +
+                    "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier_produit(" + jsonData.produit.id + "," + jsonData.count + ")\">modifier</button>" +
+                    buttonaciveproduit +
+                    "</div>" +
+
+                    "</div>" +
+                    "</div>" +
+                    "<div class=\"col-lg-4 col-md-4 text-center\" >" +
+                    "<button  class=\"btn  btn-success \" style=\"margin-bottom: 10px\" onclick=\"ajouter(" + jsonData.produit.id + "," + jsonData.count + ")\"> nouveau equipement</button>" +
+                    "<div id=\"accordionexample" + jsonData.count + "\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
+                    equips +
                     "</div>" +
                     "</div>" +
                     "</div>" +
                     "</div>" +
-                    "</div>"
+                    "</div>" +
+                    "</div>");
+            } else {
+                printErrorMsg(jsonData.error);
             }
-            $('#bodytab').append("<div class=\"col-12 \" id=\"pd_" + jsonData.count + "\">" +
-                "<div class=\"card\">" +
-                "<div class=\"card-body\">" +
-
-
-                "<div class=\"row\">" +
-                "<div class=\"col-lg-4 col-md-4\"><img id=\"produit" + jsonData.count + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.image + "\" class=\"img-responsive img-thumbnail\" /></div>" +
-                "<div class=\"col-lg-4 col-md-4\">" +
-                "<div class=\"card-title text-center\">" +
-                "<h2 id=\"nom_p" + jsonData.count + "\">" + jsonData.produit.nom + "</h2>" +
-                "<p id=\"info_p" + jsonData.count + "\">" +
-                jsonData.produit.info +
-                "</p>" +
-                "<div class=\"button-group\" style=\"position: absolute; bottom: 0;  left: 0%;right: 0%; \">" +
-                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier_produit(" + jsonData.produit.id + "," + jsonData.count + ")\">modifier</button>" +
-                buttonaciveproduit +
-                "</div>" +
-
-                "</div>" +
-                "</div>" +
-                "<div class=\"col-lg-4 col-md-4 text-center\" >" +
-                "<button  class=\"btn  btn-success \" style=\"margin-bottom: 10px\" onclick=\"ajouter(" + jsonData.produit.id + "," + jsonData.count + ")\"> nouveau equipement</button>" +
-                "<div id=\"accordionexample" + jsonData.count + "\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
-                equips +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>");
         });
     });
 
@@ -354,7 +394,8 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-         
+        console.log(jsonData)
+        message(type, "supprimé", jsonData.check);
         if (jsonData.produit.deleted_at == null) {
             buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
         } else {
@@ -452,7 +493,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-         
+        message(type, "restoré", jsonData.check);
         if (jsonData.produit.deleted_at == null) {
             buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
         } else {
@@ -544,8 +585,8 @@
             form_data = new FormData();
 
             form_data.append("produit", $('#produit')[0].files[0]);
-            form_data.append("nom", $('#nom_p').val());
-            form_data.append("info", $('#info_p').val());
+            form_data.append("nom_p", $('#nom_p').val());
+            form_data.append("info_p", $('#info_p').val());
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/produits/edit/" + id,
                 dataType: "json",
@@ -559,79 +600,85 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-             
-            $('#exampleModal').modal('hide');
-            if (jsonData.produit.deleted_at == null) {
-                buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
-            } else {
-                buttonaciveproduit = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">restorer</button>"
-            }
+            if ($.isEmptyObject(jsonData.error)) {
 
-            for (let j = 0; j < jsonData.produit.equipements.length; j++) {
-                if (jsonData.produit.equipements[j].active == 1) {
-                    buttonaciveequipement = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">supprimer</button>"
+                clearInputs(jsonData.inputs);
+                $('#exampleModal').modal('hide');
+                message("produit", "modifié", jsonData.check);
+                if (jsonData.produit.deleted_at == null) {
+                    buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
                 } else {
-                    buttonaciveequipement = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">restorer</button>"
+                    buttonaciveproduit = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">restorer</button>"
                 }
-                equips = equips +
-                    "<div class=\"card\">" +
-                    "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData.produit.equipements[j].id + "\">" +
-                    "<h5 class=\"mb-0 text-center\">" +
-                    "<a id=\"nom_e" + jsonData.produit.equipements[j].id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + ind + "\" href=\"#collapseex" + jsonData.produit.equipements[j].id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData.produit.equipements[j].id + "\">" +
-                    jsonData.produit.equipements[j].nom +
-                    "</a>" +
-                    "</h5>" +
-                    "</div>" +
 
-                    "<div id=\"collapseex" + jsonData.produit.equipements[j].id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                for (let j = 0; j < jsonData.produit.equipements.length; j++) {
+                    if (jsonData.produit.equipements[j].active == 1) {
+                        buttonaciveequipement = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">supprimer</button>"
+                    } else {
+                        buttonaciveequipement = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">restorer</button>"
+                    }
+                    equips = equips +
+                        "<div class=\"card\">" +
+                        "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                        "<h5 class=\"mb-0 text-center\">" +
+                        "<a id=\"nom_e" + jsonData.produit.equipements[j].id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + ind + "\" href=\"#collapseex" + jsonData.produit.equipements[j].id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData.produit.equipements[j].id + "\">" +
+                        jsonData.produit.equipements[j].nom +
+                        "</a>" +
+                        "</h5>" +
+                        "</div>" +
+
+                        "<div id=\"collapseex" + jsonData.produit.equipements[j].id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                        "<div class=\"card-body\">" +
+
+                        "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
+                        "<div class=\"card-body\">" +
+                        "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
+                        "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
+                        "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
+                        jsonData.produit.equipements[j].info +
+                        "</p>" +
+                        "<div class=\"button-group text-center\">" +
+                        "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
+                        buttonaciveequipement +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>"
+                }
+                $('#accordionexample' + ind).html("");
+                $('#pd_' + ind).html("<div class=\"card\">" +
                     "<div class=\"card-body\">" +
 
-                    "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
-                    "<div class=\"card-body\">" +
-                    "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
-                    "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
-                    "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
-                    jsonData.produit.equipements[j].info +
+
+                    "<div class=\"row\">" +
+                    "<div class=\"col-lg-4 col-md-4\"><img id=\"produit" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.image + "\" class=\"img-responsive img-thumbnail\" /></div>" +
+                    "<div class=\"col-lg-4 col-md-4\">" +
+                    "<div class=\"card-title text-center\">" +
+                    "<h2 id=\"nom_p" + ind + "\">" + jsonData.produit.nom + "</h2>" +
+                    "<p id=\"info_p" + ind + "\">" +
+                    jsonData.produit.info +
                     "</p>" +
-                    "<div class=\"button-group text-center\">" +
-                    "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
-                    buttonaciveequipement +
+                    "<div class=\"button-group\" style=\"position: absolute; bottom: 0;  left: 0%;right: 0%; \">" +
+                    "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier_produit(" + jsonData.produit.id + "," + ind + ")\">modifier</button>" +
+                    buttonaciveproduit +
+                    "</div>" +
+
+                    "</div>" +
+                    "</div>" +
+                    "<div class=\"col-lg-4 col-md-4 text-center\" >" +
+                    "<button  class=\"btn  btn-success \" style=\"margin-bottom: 10px\" onclick=\"ajouter(" + jsonData.produit.id + "," + ind + ")\"> nouveau equipement</button>" +
+                    "<div id=\"accordionexample" + ind + "\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
+                    equips +
                     "</div>" +
                     "</div>" +
                     "</div>" +
                     "</div>" +
-                    "</div>"
+                    "</div>" +
+                    "</div>");
+            } else {
+                printErrorMsg(jsonData.error);
             }
-            $('#accordionexample' + ind).html("");
-            $('#pd_' + ind).html("<div class=\"card\">" +
-                "<div class=\"card-body\">" +
-
-
-                "<div class=\"row\">" +
-                "<div class=\"col-lg-4 col-md-4\"><img id=\"produit" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.image + "\" class=\"img-responsive img-thumbnail\" /></div>" +
-                "<div class=\"col-lg-4 col-md-4\">" +
-                "<div class=\"card-title text-center\">" +
-                "<h2 id=\"nom_p" + ind + "\">" + jsonData.produit.nom + "</h2>" +
-                "<p id=\"info_p" + ind + "\">" +
-                jsonData.produit.info +
-                "</p>" +
-                "<div class=\"button-group\" style=\"position: absolute; bottom: 0;  left: 0%;right: 0%; \">" +
-                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier_produit(" + jsonData.produit.id + "," + ind + ")\">modifier</button>" +
-                buttonaciveproduit +
-                "</div>" +
-
-                "</div>" +
-                "</div>" +
-                "<div class=\"col-lg-4 col-md-4 text-center\" >" +
-                "<button  class=\"btn  btn-success \" style=\"margin-bottom: 10px\" onclick=\"ajouter(" + jsonData.produit.id + "," + ind + ")\"> nouveau equipement</button>" +
-                "<div id=\"accordionexample" + ind + "\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
-                equips +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>");
 
         });
     }
@@ -655,10 +702,10 @@
             form_data = new FormData();
 
             form_data.append("equip", $('#equip')[0].files[0]);
-            form_data.append("nom", $('#nom_e').val());
-            form_data.append("info", $('#info_e').val());
-            form_data.append("modele", $('#modele_e').val());
-            form_data.append("marque", $('#marque_e').val());
+            form_data.append("nom_e", $('#nom_e').val());
+            form_data.append("info_e", $('#info_e').val());
+            form_data.append("modele_e", $('#modele_e').val());
+            form_data.append("marque_e", $('#marque_e').val());
 
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/produits/" + id + "/equipements/create",
@@ -673,79 +720,86 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-             
-            $('#equipementmodal').modal('hide');
-            if (jsonData.produit.deleted_at == null) {
-                buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
-            } else {
-                buttonaciveproduit = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">restorer</button>"
-            }
+            if ($.isEmptyObject(jsonData.error)) {
 
-            for (let j = 0; j < jsonData.produit.equipements.length; j++) {
-                if (jsonData.produit.equipements[j].active == 1) {
-                    buttonaciveequipement = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">supprimer</button>"
+                clearInputs(jsonData.inputs);
+                $('#equipementmodal').modal('hide');
+                message("equipement", "ajouté", jsonData.check);
+                if (jsonData.produit.deleted_at == null) {
+                    buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
                 } else {
-                    buttonaciveequipement = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">restorer</button>"
+                    buttonaciveproduit = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">restorer</button>"
                 }
-                equips = equips +
-                    "<div class=\"card\">" +
-                    "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData.produit.equipements[j].id + "\">" +
-                    "<h5 class=\"mb-0 text-center\">" +
-                    "<a id=\"nom_e" + jsonData.produit.equipements[j].id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + ind + "\" href=\"#collapseex" + jsonData.produit.equipements[j].id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData.produit.equipements[j].id + "\">" +
-                    jsonData.produit.equipements[j].nom +
-                    "</a>" +
-                    "</h5>" +
-                    "</div>" +
 
-                    "<div id=\"collapseex" + jsonData.produit.equipements[j].id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                for (let j = 0; j < jsonData.produit.equipements.length; j++) {
+                    if (jsonData.produit.equipements[j].active == 1) {
+                        buttonaciveequipement = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">supprimer</button>"
+                    } else {
+                        buttonaciveequipement = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">restorer</button>"
+                    }
+                    equips = equips +
+                        "<div class=\"card\">" +
+                        "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                        "<h5 class=\"mb-0 text-center\">" +
+                        "<a id=\"nom_e" + jsonData.produit.equipements[j].id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + ind + "\" href=\"#collapseex" + jsonData.produit.equipements[j].id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData.produit.equipements[j].id + "\">" +
+                        jsonData.produit.equipements[j].nom +
+                        "</a>" +
+                        "</h5>" +
+                        "</div>" +
+
+                        "<div id=\"collapseex" + jsonData.produit.equipements[j].id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                        "<div class=\"card-body\">" +
+
+                        "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
+                        "<div class=\"card-body\">" +
+                        "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
+                        "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
+                        "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
+                        jsonData.produit.equipements[j].info +
+                        "</p>" +
+                        "<div class=\"button-group text-center\">" +
+                        "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
+                        buttonaciveequipement +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>"
+                }
+                $('#accordionexample' + ind).html("");
+                $('#pd_' + ind).html("<div class=\"card\">" +
                     "<div class=\"card-body\">" +
 
-                    "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
-                    "<div class=\"card-body\">" +
-                    "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
-                    "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
-                    "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
-                    jsonData.produit.equipements[j].info +
+
+                    "<div class=\"row\">" +
+                    "<div class=\"col-lg-4 col-md-4\"><img id=\"produit" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.image + "\" class=\"img-responsive img-thumbnail\" /></div>" +
+                    "<div class=\"col-lg-4 col-md-4\">" +
+                    "<div class=\"card-title text-center\">" +
+                    "<h2 id=\"nom_p" + ind + "\">" + jsonData.produit.nom + "</h2>" +
+                    "<p id=\"info_p" + ind + "\">" +
+                    jsonData.produit.info +
                     "</p>" +
-                    "<div class=\"button-group text-center\">" +
-                    "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
-                    buttonaciveequipement +
+                    "<div class=\"button-group\" style=\"position: absolute; bottom: 0;  left: 0%;right: 0%; \">" +
+                    "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier_produit(" + jsonData.produit.id + "," + ind + ")\">modifier</button>" +
+                    buttonaciveproduit +
+                    "</div>" +
+
+                    "</div>" +
+                    "</div>" +
+                    "<div class=\"col-lg-4 col-md-4 text-center\" >" +
+                    "<button  class=\"btn  btn-success \" style=\"margin-bottom: 10px\" onclick=\"ajouter(" + jsonData.produit.id + "," + ind + ")\"> nouveau equipement</button>" +
+                    "<div id=\"accordionexample" + ind + "\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
+                    equips +
                     "</div>" +
                     "</div>" +
                     "</div>" +
                     "</div>" +
-                    "</div>"
+                    "</div>" +
+                    "</div>");
+
+            } else {
+                printErrorMsg(jsonData.error);
             }
-            $('#accordionexample' + ind).html("");
-            $('#pd_' + ind).html("<div class=\"card\">" +
-                "<div class=\"card-body\">" +
-
-
-                "<div class=\"row\">" +
-                "<div class=\"col-lg-4 col-md-4\"><img id=\"produit" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.image + "\" class=\"img-responsive img-thumbnail\" /></div>" +
-                "<div class=\"col-lg-4 col-md-4\">" +
-                "<div class=\"card-title text-center\">" +
-                "<h2 id=\"nom_p" + ind + "\">" + jsonData.produit.nom + "</h2>" +
-                "<p id=\"info_p" + ind + "\">" +
-                jsonData.produit.info +
-                "</p>" +
-                "<div class=\"button-group\" style=\"position: absolute; bottom: 0;  left: 0%;right: 0%; \">" +
-                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier_produit(" + jsonData.produit.id + "," + ind + ")\">modifier</button>" +
-                buttonaciveproduit +
-                "</div>" +
-
-                "</div>" +
-                "</div>" +
-                "<div class=\"col-lg-4 col-md-4 text-center\" >" +
-                "<button  class=\"btn  btn-success \" style=\"margin-bottom: 10px\" onclick=\"ajouter(" + jsonData.produit.id + "," + ind + ")\"> nouveau equipement</button>" +
-                "<div id=\"accordionexample" + ind + "\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
-                equips +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>");
 
         });
     }
@@ -771,10 +825,10 @@
             form_data = new FormData();
 
             form_data.append("equip", $('#equip')[0].files[0]);
-            form_data.append("nom", $('#nom_e').val());
-            form_data.append("info", $('#info_e').val());
-            form_data.append("modele", $('#modele_e').val());
-            form_data.append("marque", $('#marque_e').val());
+            form_data.append("nom_e", $('#nom_e').val());
+            form_data.append("info_e", $('#info_e').val());
+            form_data.append("modele_e", $('#modele_e').val());
+            form_data.append("marque_e", $('#marque_e').val());
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/produits/" + id + "/equipements/edit/" + id_e,
                 dataType: "json",
@@ -788,82 +842,114 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-             
-            $('#equipementmodal').modal('hide');
-            if (jsonData.produit.deleted_at == null) {
-                buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
-            } else {
-                buttonaciveproduit = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">restorer</button>"
-            }
+            if ($.isEmptyObject(jsonData.error)) {
 
-            for (let j = 0; j < jsonData.produit.equipements.length; j++) {
-                if (jsonData.produit.equipements[j].active == 1) {
-                    buttonaciveequipement = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">supprimer</button>"
+                clearInputs(jsonData.inputs);
+
+                $('#equipementmodal').modal('hide');
+                message("equipement", "modifié", jsonData.check);
+                if (jsonData.produit.deleted_at == null) {
+                    buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"
                 } else {
-                    buttonaciveequipement = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">restorer</button>"
+                    buttonaciveproduit = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">restorer</button>"
                 }
-                equips = equips +
-                    "<div class=\"card\">" +
-                    "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData.produit.equipements[j].id + "\">" +
-                    "<h5 class=\"mb-0 text-center\">" +
-                    "<a id=\"nom_e" + jsonData.produit.equipements[j].id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + ind + "\" href=\"#collapseex" + jsonData.produit.equipements[j].id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData.produit.equipements[j].id + "\">" +
-                    jsonData.produit.equipements[j].nom +
-                    "</a>" +
-                    "</h5>" +
-                    "</div>" +
 
-                    "<div id=\"collapseex" + jsonData.produit.equipements[j].id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                for (let j = 0; j < jsonData.produit.equipements.length; j++) {
+                    if (jsonData.produit.equipements[j].active == 1) {
+                        buttonaciveequipement = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">supprimer</button>"
+                    } else {
+                        buttonaciveequipement = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('equipement'," + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">restorer</button>"
+                    }
+                    equips = equips +
+                        "<div class=\"card\">" +
+                        "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                        "<h5 class=\"mb-0 text-center\">" +
+                        "<a id=\"nom_e" + jsonData.produit.equipements[j].id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + ind + "\" href=\"#collapseex" + jsonData.produit.equipements[j].id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData.produit.equipements[j].id + "\">" +
+                        jsonData.produit.equipements[j].nom +
+                        "</a>" +
+                        "</h5>" +
+                        "</div>" +
+
+                        "<div id=\"collapseex" + jsonData.produit.equipements[j].id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.produit.equipements[j].id + "\">" +
+                        "<div class=\"card-body\">" +
+
+                        "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
+                        "<div class=\"card-body\">" +
+                        "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
+                        "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
+                        "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
+                        jsonData.produit.equipements[j].info +
+                        "</p>" +
+                        "<div class=\"button-group text-center\">" +
+                        "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
+                        buttonaciveequipement +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>"
+                }
+                $('#accordionexample' + ind).html("");
+                $('#pd_' + ind).html("<div class=\"card\">" +
                     "<div class=\"card-body\">" +
 
-                    "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
-                    "<div class=\"card-body\">" +
-                    "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
-                    "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
-                    "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
-                    jsonData.produit.equipements[j].info +
+
+                    "<div class=\"row\">" +
+                    "<div class=\"col-lg-4 col-md-4\"><img id=\"produit" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.image + "\" class=\"img-responsive img-thumbnail\" /></div>" +
+                    "<div class=\"col-lg-4 col-md-4\">" +
+                    "<div class=\"card-title text-center\">" +
+                    "<h2 id=\"nom_p" + ind + "\">" + jsonData.produit.nom + "</h2>" +
+                    "<p id=\"info_p" + ind + "\">" +
+                    jsonData.produit.info +
                     "</p>" +
-                    "<div class=\"button-group text-center\">" +
-                    "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
-                    buttonaciveequipement +
+                    "<div class=\"button-group\" style=\"position: absolute; bottom: 0;  left: 0%;right: 0%; \">" +
+                    "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier_produit(" + jsonData.produit.id + "," + ind + ")\">modifier</button>" +
+                    buttonaciveproduit +
+                    "</div>" +
+
+                    "</div>" +
+                    "</div>" +
+                    "<div class=\"col-lg-4 col-md-4 text-center\" >" +
+                    "<button  class=\"btn  btn-success \" style=\"margin-bottom: 10px\" onclick=\"ajouter(" + jsonData.produit.id + "," + ind + ")\"> nouveau equipement</button>" +
+                    "<div id=\"accordionexample" + ind + "\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
+                    equips +
                     "</div>" +
                     "</div>" +
                     "</div>" +
                     "</div>" +
-                    "</div>"
+                    "</div>" +
+                    "</div>");
+
+            } else {
+                printErrorMsg(jsonData.error);
             }
-            $('#accordionexample' + ind).html("");
-            $('#pd_' + ind).html("<div class=\"card\">" +
-                "<div class=\"card-body\">" +
-
-
-                "<div class=\"row\">" +
-                "<div class=\"col-lg-4 col-md-4\"><img id=\"produit" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.image + "\" class=\"img-responsive img-thumbnail\" /></div>" +
-                "<div class=\"col-lg-4 col-md-4\">" +
-                "<div class=\"card-title text-center\">" +
-                "<h2 id=\"nom_p" + ind + "\">" + jsonData.produit.nom + "</h2>" +
-                "<p id=\"info_p" + ind + "\">" +
-                jsonData.produit.info +
-                "</p>" +
-                "<div class=\"button-group\" style=\"position: absolute; bottom: 0;  left: 0%;right: 0%; \">" +
-                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier_produit(" + jsonData.produit.id + "," + ind + ")\">modifier</button>" +
-                buttonaciveproduit +
-                "</div>" +
-
-                "</div>" +
-                "</div>" +
-                "<div class=\"col-lg-4 col-md-4 text-center\" >" +
-                "<button  class=\"btn  btn-success \" style=\"margin-bottom: 10px\" onclick=\"ajouter(" + jsonData.produit.id + "," + ind + ")\"> nouveau equipement</button>" +
-                "<div id=\"accordionexample" + ind + "\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
-                equips +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>");
 
 
         });
+    }
+
+    function printErrorMsg(msg) {
+
+
+        $.each(msg, function(key, value) {
+
+            $("#err-" + key).addClass('has-danger');
+            $("#err-" + key).find("small").html(value);
+
+        });
+
+    }
+
+    function clearInputs(msg) {
+
+
+        $.each(msg, function(key, value) {
+
+            $("#err-" + key).removeClass('has-danger');
+            $("#err-" + key).find("small").html("");
+
+        });
+
     }
 </script>
 

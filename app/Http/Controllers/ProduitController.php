@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Http\Request;
 use App\Produit;
 use App\Equipement;
@@ -38,19 +40,44 @@ class ProduitController extends Controller
 
     public function store_produit(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+
+            'nom_p' => 'required|unique:produits,nom',
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
 
         $produit = new Produit();
-        $produit->nom = $request->nom;
-        $produit->info = $request->info;
+
+
+        $produit->nom = $request->nom_p;
+
+        if ($request->filled('info_p')) {
+            $produit->info = $request->info_p;
+        }
+
+
         $produit->save();
-        $file = $request->file('produit');
-        $image = time() . '.' . $file->getClientOriginalExtension();
-        $path = $request->file('produit')->storeAs(
-            'produits',
-            $produit->id . "_" . $image
-        );
-        $produit->image = $path;
-        $produit->save();
+
+        if ($request->file('produit')) {
+            $file = $request->file('produit');
+            $image = time() . '.' . $file->getClientOriginalExtension();
+            $path = $request->file('produit')->storeAs(
+                'produits',
+                $produit->id . "_" . $image
+            );
+            $produit->image = $path;
+            $produit->save();
+        } else {
+            $produit->image = "produits/placeholder.jpg";
+            $produit->save();
+        }
+
+
         $equipements = array();
 
         $equipements[$produit->id] = $produit->equipements;
@@ -66,7 +93,8 @@ class ProduitController extends Controller
         $objet =  [
             'check' => $check,
             'count' => $count - 1,
-            'produit' => $produit
+            'produit' => $produit,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
@@ -75,20 +103,47 @@ class ProduitController extends Controller
     {
         $done = false;
 
+        $validator;
         $produit = Produit::withTrashed()
             ->where('id', $id)
             ->first();
-        $produit->nom = $request->nom;
-        $produit->info = $request->info;
 
-        $file = $request->file('produit');
-        $image = time() . '.' . $file->getClientOriginalExtension();
-        $path = $request->file('produit')->storeAs(
-            'produits',
-            $produit->id . "_" . $image
-        );
-        $produit->image = $path;
+        if ($request->filled('nom_p') && $request->nom_p == $produit->nom) {
+            $validator = Validator::make($request->all(), [
+
+                'nom_p' => 'required',
+            ]);
+        } else {
+            $validator = Validator::make($request->all(), [
+
+                'nom_p' => 'required|unique:produits,nom',
+
+            ]);
+        }
+
+
+        $produit->nom = $request->nom_p;
+        if ($request->filled('info_p')) {
+            $produit->info = $request->info_p;
+        }
+
+
         $produit->save();
+
+        if ($request->file('produit')) {
+            $file = $request->file('produit');
+            $image = time() . '.' . $file->getClientOriginalExtension();
+            $path = $request->file('produit')->storeAs(
+                'produits',
+                $produit->id . "_" . $image
+            );
+            $produit->image = $path;
+            $produit->save();
+        } else {
+            $produit->image = "produits/placeholder.jpg";
+            $produit->save();
+        }
+
         $equipements = array();
 
         $equipements[$produit->id] = $produit->equipements;
@@ -103,14 +158,15 @@ class ProduitController extends Controller
 
         $objet =  [
             'check' => $check,
-            'produit' => $produit
+            'produit' => $produit,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
 
     public function delete_produit($id)
     {
-
+        
         $done = false;
 
         $temp = Produit::withTrashed()
@@ -237,21 +293,47 @@ class ProduitController extends Controller
     public function store_equipement(Request $request, $id)
     {
         $done = false;
+
+        $validator = Validator::make($request->all(), [
+
+            'nom_e' => 'required',
+            'modele_e' => 'required',
+            'marque_e' => 'required',
+
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
+
         $temp = new Equipement();
         $temp->produit_id = $id;
-        $temp->nom = $request->nom;
-        $temp->info = $request->info;
-        $temp->modele = $request->modele;
-        $temp->marque = $request->marque;
+        $temp->nom = $request->nom_e;
+        $temp->modele = $request->modele_e;
+        $temp->marque = $request->marque_e;
+
+        if ($request->filled('info_p')) {
+            $temp->info = $request->info_p;
+        }
+
         $temp->save();
-        $file = $request->file('equip');
-        $image = time() . '.' . $file->getClientOriginalExtension();
-        $path = $request->file('equip')->storeAs(
-            'produits',
-            $temp->id . "_" . $image
-        );
-        $temp->image = $path;
-        $temp->save();
+
+
+        if ($request->file('equip')) {
+            $file = $request->file('equip');
+            $image = time() . '.' . $file->getClientOriginalExtension();
+            $path = $request->file('equip')->storeAs(
+                'produits',
+                $temp->id . "_" . $image
+            );
+            $temp->image = $path;
+            $temp->save();
+        } else {
+            $temp->image = "produits/placeholder.jpg";
+            $temp->save();
+        }
 
         $done = true;
 
@@ -271,7 +353,8 @@ class ProduitController extends Controller
 
         $objet =  [
             'check' => $check,
-            'produit' => $produit
+            'produit' => $produit,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
@@ -279,20 +362,45 @@ class ProduitController extends Controller
     public function edit_equipement(Request $request, $id, $e_id)
     {
         $done = false;
+
+        $validator = Validator::make($request->all(), [
+
+            'nom_e' => 'required',
+            'modele_e' => 'required',
+            'marque_e' => 'required',
+
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
         $temp = Equipement::find($e_id);
-        $temp->nom = $request->nom;
-        $temp->info = $request->info;
-        $temp->modele = $request->modele;
-        $temp->marque = $request->marque;
+        $temp->nom = $request->nom_e;
+
+        $temp->modele = $request->modele_e;
+        $temp->marque = $request->marque_e;
+
+        if ($request->filled('info_p')) {
+            $temp->info = $request->info_p;
+        }
+
         $temp->save();
-        $file = $request->file('equip');
-        $image = time() . '.' . $file->getClientOriginalExtension();
-        $path = $request->file('equip')->storeAs(
-            'produits',
-            $temp->id . "_" . $image
-        );
-        $temp->image = $path;
-        $temp->save();
+
+        if ($request->file('equip')) {
+            $file = $request->file('equip');
+            $image = time() . '.' . $file->getClientOriginalExtension();
+            $path = $request->file('equip')->storeAs(
+                'produits',
+                $temp->id . "_" . $image
+            );
+            $temp->image = $path;
+            $temp->save();
+        } else {
+            $temp->image = "produits/placeholder.jpg";
+            $temp->save();
+        }
 
         $done = true;
 
@@ -312,7 +420,8 @@ class ProduitController extends Controller
 
         $objet =  [
             'check' => $check,
-            'produit' => $produit
+            'produit' => $produit,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
@@ -349,9 +458,9 @@ class ProduitController extends Controller
     public function attach_prod(Request $request)
     {
         $done = false;
-       
+
         foreach ($request->data as $data) {
-           
+
             for ($i = 0; $i < (int) $data['number']; $i++) {
                 $scr = new Souscription();
                 $scr->agence_id =  $request->agence;
@@ -400,8 +509,8 @@ class ProduitController extends Controller
     public function detach_prod(Request $request)
     {
         $done = false;
-       
-    //    $scrs =
+
+        //    $scrs =
         Souscription::where([
             ['agence_id', '=', $request->agence],
             ['produit_id', "=", $request->produit],
@@ -448,7 +557,7 @@ class ProduitController extends Controller
 
     public function save_ref(Request $request)
     {
-       $scr = Souscription::find($request->id);
+        $scr = Souscription::find($request->id);
         $scr->equip_ref = $request->value;
         $scr->save();
 

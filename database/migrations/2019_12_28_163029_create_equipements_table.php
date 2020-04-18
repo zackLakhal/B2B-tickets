@@ -19,8 +19,8 @@ class CreateEquipementsTable extends Migration
             $table->string('nom');
             $table->string('modele');
             $table->string('marque');
-            $table->text('info');
-            $table->string('image')->nullable();
+            $table->text('info')->default("");
+            $table->string('image')->default("");
             $table->boolean('active')->default(true);
             $table->timestamps();
 });

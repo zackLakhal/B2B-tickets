@@ -22,12 +22,12 @@ class CreateClientusersTable extends Migration
             $table->bigInteger('role_id')->nullable();
             $table->bigInteger('clientable_id')->nullable();
             $table->string('clientable_type')->nullable();
-            $table->string('nom')->nullable();
-            $table->string('prénom')->nullable();
+            $table->string('nom')->default("");
+            $table->string('prénom')->default("");
          
-            $table->string('tel')->nullable();
-            $table->string('adress')->nullable();
-            $table->string('photo')->nullable();
+            $table->string('tel')->default("");
+            $table->string('adress')->default("");
+            $table->string('photo')->default("");
             $table->integer('created_by');
             $table->boolean('is_affected')->default(false);
             $table->rememberToken();

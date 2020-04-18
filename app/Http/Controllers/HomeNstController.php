@@ -23,6 +23,6 @@ class HomeNstController extends Controller
      */
     public function index()
     {
-        return view('nst');
+        return view('statistique.index');
     }
 }
