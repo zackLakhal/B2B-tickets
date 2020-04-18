@@ -13,7 +13,7 @@ class RqstsTableSeeder extends Seeder
     {
         for ($i=5; $i <10 ; $i++) { 
             DB::table('newrqsts')->insert([
-                'id' => $i,
+            'id' => $i,
             'ref' => "".date('Y')."-D".time()."-".$i ,
             'nom' => "nom".$i,
             'email' => "email".$i."@gmail.com",

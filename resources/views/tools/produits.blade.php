@@ -106,7 +106,7 @@
                     <input type="text" class="form-control" id="modele_e" name="modele_e">
                     <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-info_e">
                     <label for="info_e" class="control-label"><b>informations :</b></label>
                     <input type="text" class="form-control" id="info_e" name="info_e">
                 </div>
@@ -285,7 +285,7 @@
             jsonData = JSON.parse(StringData);
             console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
-
+                
                 clearInputs(jsonData.inputs);
 
                 $('#exampleModal').modal('hide');

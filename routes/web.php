@@ -131,7 +131,8 @@ Route::prefix('/utilisateur')->group(function () {
     Route::prefix('/staff-client')->group(function () {
 
         Route::get('/index', 'UserController@client_index')->middleware('auth:nst');
-        Route::get('/{id_c}/my_users', 'UserController@my_users')->middleware('auth:nst');
+        Route::get('/{id_c}/my_users_departement', 'UserController@my_users_departement')->middleware('auth:nst');
+        Route::get('/{id_c}/my_users_agence', 'UserController@my_users_agence')->middleware('auth:nst');
         Route::post('/{edit}/{id}', 'UserController@client_edit')->middleware('auth:nst');
         Route::post('/create', 'UserController@client_store')->middleware('auth:nst');
         Route::get('/', function () {
@@ -168,10 +169,10 @@ Route::prefix('/outils')->group(function () {
 
             Route::get('/index', 'ClientController@all_departements')->middleware('auth:nst');
             Route::get('/affecter', 'ClientController@affecter')->middleware('auth:nst');
-            Route::get('/edit/{id_d}', 'ClientController@edit_departement')->middleware('auth:nst');
-            Route::get('/delete/{id_d}', 'ClientController@delete_departement')->middleware('auth:nst');
-            Route::get('/restore/{id_d}', 'ClientController@restore_departement')->middleware('auth:nst');
-            Route::get('/create', 'ClientController@store_departement')->middleware('auth:nst');
+            Route::post('/edit/{id_d}', 'ClientController@edit_departement')->middleware('auth:nst');
+            Route::post('/delete/{id_d}', 'ClientController@delete_departement')->middleware('auth:nst');
+            Route::post('/restore/{id_d}', 'ClientController@restore_departement')->middleware('auth:nst');
+            Route::post('/create', 'ClientController@store_departement')->middleware('auth:nst');
             Route::get('/', function ($id_c) {
 
                 return view('tools.departements', ['client' => Client::find($id_c)]);
@@ -180,10 +181,10 @@ Route::prefix('/outils')->group(function () {
             Route::prefix('{id_d}/agences')->group(function () {
 
                 Route::get('/index', 'ClientController@all_agences')->middleware('auth:nst');
-                Route::get('/edit/{id_a}', 'ClientController@edit_agence')->middleware('auth:nst');
-                Route::get('/delete/{id_a}', 'ClientController@delete_agence')->middleware('auth:nst');
-                Route::get('/restore/{id_a}', 'ClientController@restore_agence')->middleware('auth:nst');
-                Route::get('/create', 'ClientController@store_agence')->middleware('auth:nst');
+                Route::post('/edit/{id_a}', 'ClientController@edit_agence')->middleware('auth:nst');
+                Route::post('/delete/{id_a}', 'ClientController@delete_agence')->middleware('auth:nst');
+                Route::post('/restore/{id_a}', 'ClientController@restore_agence')->middleware('auth:nst');
+                Route::post('/create', 'ClientController@store_agence')->middleware('auth:nst');
                 Route::get('/affecter', 'ClientController@affecter_agence')->middleware('auth:nst');
                 Route::get('/', function ($id_d) {
                     return view('tools.agences', ['departement' => Departement::find($id_d)]);
@@ -197,7 +198,7 @@ Route::prefix('/outils')->group(function () {
 
         Route::get('/index', 'ProduitController@index')->middleware('auth:nst');
         Route::get('/equip_prod', 'ProduitController@equip_prod')->middleware('auth:nst');
-        Route::get('/attach_prod', 'ProduitController@attach_prod')->middleware('auth:nst');
+        Route::post('/attach_prod', 'ProduitController@attach_prod')->middleware('auth:nst');
         Route::get('/detach_prod', 'ProduitController@detach_prod')->middleware('auth:nst');
         Route::get('/active_index', 'ProduitController@active_produits')->middleware('auth:nst');
         Route::get('/save_ref', 'ProduitController@save_ref')->middleware('auth:nst');

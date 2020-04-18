@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Http\Request;
 use App\Client;
 use App\Departement;
@@ -90,18 +92,52 @@ class ClientController extends Controller
         $client = Client::withTrashed()
             ->where('id', $id)
             ->first();
+
+
+        $validator = null;
+
+        if ($request->filled('nom') && $request->nom == $client->nom) {
+            $validator = Validator::make($request->all(), [
+
+                'nom' => 'required',
+                'adress' => 'required',
+                'email' => 'required',
+                'tel' => 'required',
+            ]);
+        } else {
+            $validator = Validator::make($request->all(), [
+
+                'nom' => 'required|unique:clients',
+                'adress' => 'required',
+                'email' => 'required',
+                'tel' => 'required',
+            ]);
+        }
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
+
         $client->nom = $request->nom;
         $client->email = $request->email;
         $client->tel = $request->tel;
         $client->adress = $request->adress;
-        $file = $request->file('avatar');
-        $image = time() . '.' . $file->getClientOriginalExtension();
-        $path = $request->file('avatar')->storeAs(
-            'clients',
-            $client->id . "_" . $image
-        );
-        $client->photo = $path;
-        $client->save();
+
+        if ($request->file('avatar')) {
+            $file = $request->file('avatar');
+            $image = time() . '.' . $file->getClientOriginalExtension();
+            $path = $request->file('avatar')->storeAs(
+                'clients',
+                $client->id . "_" . $image
+            );
+            $client->photo = $path;
+            $client->save();
+        } else {
+            $client->photo = "clients/placeholder.jpg";
+            $client->save();
+        }
+
         $done = true;
 
         $client = Client::withTrashed()
@@ -117,27 +153,51 @@ class ClientController extends Controller
 
         $objet =  [
             'check' => $check,
-            'client' => $client
+            'client' => $client,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
 
     public function store_client(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+
+            'nom' => 'required|unique:clients',
+            'adress' => 'required',
+            'email' => 'required',
+            'tel' => 'required',
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
+
+
         $client = new Client();
         $client->nom = $request->nom;
         $client->email = $request->email;
         $client->tel = $request->tel;
         $client->adress = $request->adress;
         $client->save();
-        $file = $request->file('avatar');
-        $image = time() . '.' . $file->getClientOriginalExtension();
-        $path = $request->file('avatar')->storeAs(
-            'clients',
-            $client->id . "_" . $image
-        );
-        $client->photo = $path;
-        $client->save();
+
+        if ($request->file('avatar')) {
+            $file = $request->file('avatar');
+            $image = time() . '.' . $file->getClientOriginalExtension();
+            $path = $request->file('avatar')->storeAs(
+                'clients',
+                $client->id . "_" . $image
+            );
+            $client->photo = $path;
+            $client->save();
+        } else {
+            $client->photo = "clients/placeholder.jpg";
+            $client->save();
+        }
+
         $check;
         $count = client::all()->count();
         if (is_null($client)) {
@@ -149,7 +209,8 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'count' => $count - 1,
-            'client' => $client
+            'client' => $client,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
@@ -286,9 +347,28 @@ class ClientController extends Controller
     {
         $done = false;
 
+
+
         $departement = Departement::withTrashed()
             ->where('id', $id)
             ->first();
+
+
+        $validator = Validator::make($request->all(), [
+
+            'nom' => 'required',
+            'email' => 'required',
+            'tel' => 'required',
+
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
+
+
         $departement->nom = $request->nom;
         $departement->email = $request->email;
         $departement->tel = $request->tel;
@@ -312,12 +392,27 @@ class ClientController extends Controller
             'check' => $check,
             'departement' => $departement,
             'chef' => $chef,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
 
     public function store_departement(Request $request, $id_c)
     {
+
+
+        $validator = Validator::make($request->all(), [
+
+            'nom' => 'required',
+            'email' => 'required',
+            'tel' => 'required',
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
         $departement = new Departement();
         $departement->client_id = $id_c;
         $departement->nom = $request->nom;
@@ -335,7 +430,8 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'count' => $count - 1,
-            'departement' => $departement
+            'departement' => $departement,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
@@ -481,6 +577,22 @@ class ClientController extends Controller
         $agence = Agence::withTrashed()
             ->where('id', $id)
             ->first();
+
+        $validator = Validator::make($request->all(), [
+
+            'nom' => 'required',
+            'email' => 'required',
+            'tel' => 'required',
+            'adress' => 'required',
+            'ville' => 'required|gt:0',
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
+
         $agence->nom = $request->nom;
         $agence->email = $request->email;
         $agence->tel = $request->tel;
@@ -517,13 +629,30 @@ class ClientController extends Controller
             'agence' => $agence,
             'chef' => $chef,
             'souscription' => $souscription,
-            'ville' => $agence->ville
+            'ville' => $agence->ville,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
 
     public function store_agence(Request $request, $id_c, $id_d)
     {
+
+        $validator = Validator::make($request->all(), [
+
+            'nom' => 'required',
+            'email' => 'required',
+            'tel' => 'required',
+            'adress' => 'required',
+            'ville' => 'required|gt:0',
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
+
         $agence = new Agence();
         $agence->departement_id = $id_d;
         $agence->nom = $request->nom;
@@ -544,7 +673,8 @@ class ClientController extends Controller
             'check' => $check,
             'count' => $count - 1,
             'agence' => $agence,
-            'ville' => $agence->ville
+            'ville' => $agence->ville,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }

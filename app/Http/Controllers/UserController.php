@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
@@ -47,63 +48,63 @@ class UserController extends Controller
                 ->where('id', $id)
                 ->first();
 
-            $validator = null ;
-            
+            $validator = null;
+
             if ($request->filled('email') && $request->email == $user->email) {
                 $validator = Validator::make($request->all(), [
 
                     'email' => 'required',
                     'role' => 'required|gt:0',
+                    'nom' => 'required',
+                    'prenom' => 'required',
+                    'tel' => 'required',
                 ]);
-            }else{
+            } else {
                 $validator = Validator::make($request->all(), [
 
                     'email' => 'required|unique:nstusers',
                     'role' => 'required|gt:0',
+                    'nom' => 'required',
+                    'prenom' => 'required',
+                    'tel' => 'required',
                 ]);
-
             }
-    
+
             if ($validator->fails()) {
-    
+
                 return response()->json(['error' => $validator->errors()]);
             }
 
-            
+
             $temp = explode("@", $request->email);
             $user->name = $temp[0];
             $user->email = $request->email;
             $user->role_id = $request->role;
+            $user->nom = $request->nom;
+            $user->prénom = $request->prenom;
+            $user->tel = $request->tel;
             $user->save();
 
-            if ($request->filled('nom')) {
-                $user->nom = $request->nom;
-            }
-            if ($request->filled('prenom')) {
-                $user->prénom = $request->prenom;
-            }
-            if ($request->filled('tel')) {
-                $user->tel = $request->tel;
-            }
+
             if ($request->filled('adress')) {
                 $user->adress = $request->adress;
             }
-            
-            
+
+
             if ($request->file('avatar')) {
                 $file = $request->file('avatar');
-            $image = time() . '.' . $file->getClientOriginalExtension();
-            $path = $request->file('avatar')->storeAs(
-                'avatars',
-                $user->id."_" . $image
-            );
-            $user->photo = $path;
-            $user->save();
-            }else{
+                $image = time() . '.' . $file->getClientOriginalExtension();
+                $path = $request->file('avatar')->storeAs(
+                    'avatars',
+                    $user->id . "_" . $image
+                );
+                $user->photo = $path;
+                $user->save();
+            } else {
                 $user->photo = "avatars/placeholder.jpg";
-            $user->save();
+                $user->save();
             }
-            
+
             $done = true;
         }
 
@@ -135,6 +136,9 @@ class UserController extends Controller
             'email' => 'required|unique:nstusers',
             'password' => 'required|min:8',
             'role' => 'required|gt:0',
+            'nom' => 'required',
+            'prenom' => 'required',
+            'tel' => 'required',
         ]);
 
 
@@ -142,41 +146,35 @@ class UserController extends Controller
 
             return response()->json(['error' => $validator->errors()]);
         }
-      
+
         $user = new Nstuser();
         $temp = explode("@", $request->email);
-            $user->name = $temp[0];
-            $user->email = $request->email;
-            $user->role_id = $request->role;
-            $user->save();
+        $user->name = $temp[0];
+        $user->email = $request->email;
+        $user->role_id = $request->role;
+        $user->nom = $request->nom;
+        $user->prénom = $request->prenom;
+        $user->tel = $request->tel;
+        $user->save();
 
-            if ($request->filled('nom')) {
-                $user->nom = $request->nom;
-            }
-            if ($request->filled('prenom')) {
-                $user->prénom = $request->prenom;
-            }
-            if ($request->filled('tel')) {
-                $user->tel = $request->tel;
-            }
-            if ($request->filled('adress')) {
-                $user->adress = $request->adress;
-            }
-            
-            
-            if ($request->file('avatar')) {
-                $file = $request->file('avatar');
+        if ($request->filled('adress')) {
+            $user->adress = $request->adress;
+        }
+
+
+        if ($request->file('avatar')) {
+            $file = $request->file('avatar');
             $image = time() . '.' . $file->getClientOriginalExtension();
             $path = $request->file('avatar')->storeAs(
                 'avatars',
-                $user->id."_" . $image
+                $user->id . "_" . $image
             );
             $user->photo = $path;
             $user->save();
-            }else{
-                $user->photo = "avatars/placeholder.jpg";
+        } else {
+            $user->photo = "avatars/placeholder.jpg";
             $user->save();
-            }
+        }
 
         $check;
         $count = Nstuser::all()->count();
@@ -219,11 +217,33 @@ class UserController extends Controller
         return response()->json($objet);
     }
 
-    public function my_users($id_c)
+    public function my_users_departement($id_c)
     {
         $users = Clientuser::where([
             ['created_by', '=', $id_c],
             ['is_affected', "=", false],
+            ['role_id', '=', 5],
+        ])
+            ->get();
+        $roles = array();
+
+        foreach ($users as $user) {
+            $roles[] = $user->role;
+        }
+
+        $objet =  [
+            'users' => $users,
+            'roles' => $roles
+        ];
+        return response()->json($objet);
+    }
+
+    public function my_users_agence($id_c)
+    {
+        $users = Clientuser::where([
+            ['created_by', '=', $id_c],
+            ['is_affected', "=", false],
+            ['role_id', '=', 6],
         ])
             ->get();
         $roles = array();
@@ -259,65 +279,65 @@ class UserController extends Controller
             $user = Clientuser::withTrashed()
                 ->where('id', $id)
                 ->first();
-                $validator = null ;
-            
-                if ($request->filled('email') && $request->email == $user->email) {
-                    $validator = Validator::make($request->all(), [
-    
-                        'email' => 'required',
-                        'role' => 'required|gt:0',
-                        'created_by' => 'required|gt:0',
-                    ]);
-                }else{
-                    $validator = Validator::make($request->all(), [
-    
-                        'email' => 'required|unique:clientusers',
-                        'role' => 'required|gt:0',
-                        'created_by' => 'required|gt:0',
-                    ]);
-    
-                }
-        
-                if ($validator->fails()) {
-        
-                    return response()->json(['error' => $validator->errors()]);
-                }
-    
-                
-                $temp = explode("@", $request->email);
-                $user->name = $temp[0];
-                $user->email = $request->email;
-                $user->role_id = $request->role;
-                $user->created_by = $request->created_by;
-                $user->save();
-    
-                if ($request->filled('nom')) {
-                    $user->nom = $request->nom;
-                }
-                if ($request->filled('prenom')) {
-                    $user->prénom = $request->prenom;
-                }
-                if ($request->filled('tel')) {
-                    $user->tel = $request->tel;
-                }
-                if ($request->filled('adress')) {
-                    $user->adress = $request->adress;
-                }
-                
-                
-                if ($request->file('avatar')) {
-                    $file = $request->file('avatar');
+            $validator = null;
+
+            if ($request->filled('email') && $request->email == $user->email) {
+                $validator = Validator::make($request->all(), [
+
+                    'email' => 'required',
+                    'role' => 'required|gt:0',
+                    'created_by' => 'required|gt:0',
+                    'nom' => 'required',
+                    'prenom' => 'required',
+                    'tel' => 'required',
+                ]);
+            } else {
+                $validator = Validator::make($request->all(), [
+
+                    'email' => 'required|unique:clientusers',
+                    'role' => 'required|gt:0',
+                    'created_by' => 'required|gt:0',
+                    'nom' => 'required',
+                    'prenom' => 'required',
+                    'tel' => 'required',
+                ]);
+            }
+
+            if ($validator->fails()) {
+
+                return response()->json(['error' => $validator->errors()]);
+            }
+
+
+            $temp = explode("@", $request->email);
+            $user->name = $temp[0];
+            $user->email = $request->email;
+            $user->role_id = $request->role;
+            $user->created_by = $request->created_by;
+            $user->tel = $request->tel;
+            $user->prénom = $request->prenom;
+            $user->nom = $request->nom;
+
+            $user->save();
+
+            if ($request->filled('adress')) {
+                $user->adress = $request->adress;
+            }
+
+
+            if ($request->file('avatar')) {
+                $file = $request->file('avatar');
                 $image = time() . '.' . $file->getClientOriginalExtension();
                 $path = $request->file('avatar')->storeAs(
                     'avatars',
-                    $user->id."_" . $image
+                    $user->id . "_" . $image
                 );
                 $user->photo = $path;
                 $user->save();
-                }else{
-                    $user->photo = "avatars/placeholder.jpg";
+            } else {
+                $user->photo = "avatars/placeholder.jpg";
                 $user->save();
-                }
+            }
             $done = true;
         }
 
@@ -346,13 +366,16 @@ class UserController extends Controller
     }
 
     public function client_store(Request $request)
-    {   
+    {
         $validator = Validator::make($request->all(), [
 
             'email' => 'required|unique:clientusers',
             'password' => 'required|min:8',
             'role' => 'required|gt:0',
             'created_by' => 'required|gt:0',
+            'nom' => 'required',
+            'prenom' => 'required',
+            'tel' => 'required',
         ]);
 
 
@@ -360,42 +383,37 @@ class UserController extends Controller
 
             return response()->json(['error' => $validator->errors()]);
         }
-      
+
         $user = new Clientuser();
         $temp = explode("@", $request->email);
-            $user->name = $temp[0];
-            $user->email = $request->email;
-            $user->role_id = $request->role;
-            $user->created_by = $request->created_by;
-            $user->save();
+        $user->name = $temp[0];
+        $user->email = $request->email;
+        $user->role_id = $request->role;
+        $user->created_by = $request->created_by;
+        $user->tel = $request->tel;
+        $user->prénom = $request->prenom;
+        $user->nom = $request->nom;
+        $user->save();
 
-            if ($request->filled('nom')) {
-                $user->nom = $request->nom;
-            }
-            if ($request->filled('prenom')) {
-                $user->prénom = $request->prenom;
-            }
-            if ($request->filled('tel')) {
-                $user->tel = $request->tel;
-            }
-            if ($request->filled('adress')) {
-                $user->adress = $request->adress;
-            }
-            
-            
-            if ($request->file('avatar')) {
-                $file = $request->file('avatar');
+
+        if ($request->filled('adress')) {
+            $user->adress = $request->adress;
+        }
+
+
+        if ($request->file('avatar')) {
+            $file = $request->file('avatar');
             $image = time() . '.' . $file->getClientOriginalExtension();
             $path = $request->file('avatar')->storeAs(
                 'avatars',
-                $user->id."_" . $image
+                $user->id . "_" . $image
             );
             $user->photo = $path;
             $user->save();
-            }else{
-                $user->photo = "avatars/placeholder.jpg";
+        } else {
+            $user->photo = "avatars/placeholder.jpg";
             $user->save();
-            }
+        }
 
 
         $check;

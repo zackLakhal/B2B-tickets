@@ -103,11 +103,11 @@ class ProduitController extends Controller
     {
         $done = false;
 
-        $validator;
+      
         $produit = Produit::withTrashed()
             ->where('id', $id)
             ->first();
-
+            $validator;
         if ($request->filled('nom_p') && $request->nom_p == $produit->nom) {
             $validator = Validator::make($request->all(), [
 
@@ -314,8 +314,8 @@ class ProduitController extends Controller
         $temp->modele = $request->modele_e;
         $temp->marque = $request->marque_e;
 
-        if ($request->filled('info_p')) {
-            $temp->info = $request->info_p;
+        if ($request->filled('info_e')) {
+            $temp->info = $request->info_e;
         }
 
         $temp->save();
@@ -382,8 +382,8 @@ class ProduitController extends Controller
         $temp->modele = $request->modele_e;
         $temp->marque = $request->marque_e;
 
-        if ($request->filled('info_p')) {
-            $temp->info = $request->info_p;
+        if ($request->filled('info_e')) {
+            $temp->info = $request->info_e;
         }
 
         $temp->save();
@@ -458,6 +458,19 @@ class ProduitController extends Controller
     public function attach_prod(Request $request)
     {
         $done = false;
+       
+        $validator = Validator::make($request->all(), [
+
+            'data' => 'required',
+    
+
+        ]);
+
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
 
         foreach ($request->data as $data) {
 
@@ -501,7 +514,8 @@ class ProduitController extends Controller
             'agence' => $agence,
             'chef' => $chef,
             'souscription' => $souscription,
-            'ville' => $agence->ville
+            'ville' => $agence->ville,
+            'inputs' => $request->all()
         ];
         return response()->json($objet);
     }
@@ -557,10 +571,38 @@ class ProduitController extends Controller
 
     public function save_ref(Request $request)
     {
+        
         $scr = Souscription::find($request->id);
+
+        $validator;
+        if ($request->filled('value') && $request->value == $scr->equip_ref) {
+            $validator = Validator::make($request->all(), [
+
+                'value' => 'required',
+            ]);
+        } else {
+            $validator = Validator::make($request->all(), [
+
+                'value' => 'required|unique:souscriptions,equip_ref',
+
+            ]);
+        }
+
+        if ($validator->fails()) {
+
+            return response()->json(['error' => $validator->errors()]);
+        }
+
         $scr->equip_ref = $request->value;
         $scr->save();
 
-        return response()->json($scr);
+        $objet =  [
+            'check' => "done",
+            'souscription' => $scr,
+            'inputs' => $request->all()
+         
+        ];
+
+        return response()->json($objet);
     }
 }

@@ -57,27 +57,32 @@
             </div>
             <div class="modal-body" id="modalbody">
 
-                <div class="form-group">
+                <div class="form-group" id="err-nom">
                     <label for="nom" class="control-label"><b>nom:</b></label>
                     <input type="text" class="form-control" id="nom" name="nom">
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-email">
                     <label for="email" class="control-label"><b>email:</b></label>
                     <input type="text" class="form-control" id="email" name="email">
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+
+                <div class="form-group" id="err-tel">
                     <label for="tel" class="control-label"><b>tel:</b></label>
                     <input type="text" class="form-control" id="tel" name="tel">
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-adress">
                     <label for="adress" class="control-label"><b>adress:</b></label>
                     <input type="text" class="form-control" id="adress" name="adress">
+                    <small class="form-control-feedback"> </small>
                 </div>
 
                 <div class="form-group" id="pic_id">
 
                     <label for="avatar">avatar</label>
-                    <input type="file" id="avatar" name="avatar" class="dropify" data-default-file="{{ asset('storage/avatars/placeholder.jpg') }}" />
+                    <input type="file" id="avatar" name="avatar" class="dropify" data-default-file="{{ asset('storage/clients/placeholder.jpg') }}" />
                 </div>
 
 
@@ -89,12 +94,45 @@
     </div>
 </div>
 
+<!-- /.modal 2-->
+<div class="modal fade bs-example-modal-sm" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Message</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body" id="content"> content will be here </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal 2 -->
+
+
+
+
+
+
 @endsection
 @section('script')
 <script>
     $(document).ready(function() {
         init()
     });
+
+    function message(objet, action, statut) {
+        var message;
+        if (statut == "done") {
+            message = "votre " + objet + " est " + action + " avec succès";
+        } else {
+            message = "votre " + objet + " n'est pas " + action;
+        }
+        $('#content').html(message);
+        $('#messagebox').modal('show');
+
+    }
 
     function init() {
 
@@ -142,16 +180,20 @@
             "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
         $('#modalfooter').html("<button type=\"button\" class=\"btn btn-info\" id=\"save\">Enregistrer</button>");
 
+        $('#pic_id').html("<label for=\"avatar\">avatar</label>" +
+            "<input type=\"file\" id=\"avatar\" name=\"avatar\" class=\"dropify\" data-default-file=\"{{ asset('storage/clients/placeholder.jpg') }}\"  />");
+        $('.dropify').dropify();
+
         $('#nom').val("");
         $('#email').val("");
         $('#tel').val("");
         $('#adress').val("");
+
         $('#exampleModal').modal('show');
 
         $('#save').click(function() {
 
             form_data = new FormData();
-
             form_data.append("avatar", $('#avatar')[0].files[0]);
             form_data.append("nom", $('#nom').val());
             form_data.append("email", $('#email').val());
@@ -171,32 +213,43 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
+            console.log(jsonData)
+            if ($.isEmptyObject(jsonData.error)) {
 
-            $('#exampleModal').modal('hide');
-            if (jsonData.client.deleted_at == null) {
-                butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
-                buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + jsonData.count + ")\">supprimer</button>"
+                clearInputs(jsonData.inputs);
+
+                $('#exampleModal').modal('hide');
+
+                message("client", "ajouté", jsonData.check);
+
+                if (jsonData.client.deleted_at == null) {
+                    butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+                    buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + jsonData.count + ")\">supprimer</button>"
+
+                } else {
+                    buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.client.id + "," + jsonData.count + ")\">restorer</button>"
+                    butttondetail = "";
+                }
+                $('#bodytab').append("<div class=\"col-md-4 m-t-30\" id=\"card" + jsonData.count + "\">" +
+                    "<div class=\"card \">" +
+                    "<img class=\"card-img-top img-responsive\" id=\"avatar" + jsonData.count + "\" src=\"{{ asset('storage') }}/" + jsonData.client.photo + "\" alt=\"Card image cap\">" +
+                    "<div class=\"card-body\">" +
+                    "<h2 id=\"nom" + jsonData.count + "\" class=\"card-title text-center\">" + jsonData.client.nom + "</h2>" +
+                    "<h4 id=\"email" + jsonData.count + "\" class=\"card-title\">" + jsonData.client.email + "</h4>" +
+                    "<h4 id=\"tel" + jsonData.count + "\" class=\"card-title\">" + jsonData.client.tel + "</h4>" +
+                    "<p id=\"adress" + jsonData.count + "\" class=\"card-text\">" + jsonData.client.adress + "</p>" +
+                    "<div class=\"button-group text-center\">" +
+                    butttondetail +
+                    "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.client.id + "," + jsonData.count + ")\">modifier</button>" +
+                    buttonacive +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>");
 
             } else {
-                buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.client.id + "," + jsonData.count + ")\">restorer</button>"
-                butttondetail = "";
+                printErrorMsg(jsonData.error);
             }
-            $('#bodytab').append("<div class=\"col-md-4 m-t-30\" id=\"card" + jsonData.count + "\">" +
-                "<div class=\"card \">" +
-                "<img class=\"card-img-top img-responsive\" id=\"avatar" + jsonData.count + "\" src=\"{{ asset('storage') }}/" + jsonData.client.photo + "\" alt=\"Card image cap\">" +
-                "<div class=\"card-body\">" +
-                "<h2 id=\"nom" + jsonData.count + "\" class=\"card-title text-center\">" + jsonData.client.nom + "</h2>" +
-                "<h4 id=\"email" + jsonData.count + "\" class=\"card-title\">" + jsonData.client.email + "</h4>" +
-                "<h4 id=\"tel" + jsonData.count + "\" class=\"card-title\">" + jsonData.client.tel + "</h4>" +
-                "<p id=\"adress" + jsonData.count + "\" class=\"card-text\">" + jsonData.client.adress + "</p>" +
-                "<div class=\"button-group text-center\">" +
-                butttondetail +
-                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.client.id + "," + jsonData.count + ")\">modifier</button>" +
-                buttonacive +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>");
         });
     });
 
@@ -214,6 +267,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
+        message("client", "supprimé", jsonData.check);
 
         if (jsonData.client.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
@@ -253,6 +307,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
+        message("client", "restoré", jsonData.check);
 
         if (jsonData.client.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
@@ -317,31 +372,67 @@
             }).responseText;
             jsonData = JSON.parse(StringData);
 
-            $('#exampleModal').modal('hide');
-            if (jsonData.client.deleted_at == null) {
-                buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
-                butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+            if ($.isEmptyObject(jsonData.error)) {
+
+                clearInputs(jsonData.inputs);
+
+
+                $('#exampleModal').modal('hide');
+
+                message("client", "modifié", jsonData.check);
+
+                if (jsonData.client.deleted_at == null) {
+                    buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
+                    butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+
+                } else {
+                    buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.client.id + "," + ind + ")\">restorer</button>"
+                    butttondetail = ""
+                }
+                $('#card' + ind).html("<div class=\"card \">" +
+                    "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.client.photo + "\" alt=\"Card image cap\">" +
+                    "<div class=\"card-body\">" +
+                    "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData.client.nom + "</h2>" +
+                    "<h4 id=\"email" + ind + "\" class=\"card-title\">" + jsonData.client.email + "</h4>" +
+                    "<h4 id=\"tel" + ind + "\" class=\"card-title\">" + jsonData.client.tel + "</h4>" +
+                    "<p id=\"adress" + ind + "\" class=\"card-text\">" + jsonData.client.adress + "</p>" +
+                    "<div class=\"button-group text-center\">" +
+                    butttondetail +
+                    "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.client.id + "," + ind + ")\">modifier</button>" +
+                    buttonacive +
+                    "</div>" +
+                    "</div>" +
+                    "</div>");
 
             } else {
-                buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.client.id + "," + ind + ")\">restorer</button>"
-                butttondetail = ""
+                printErrorMsg(jsonData.error);
             }
-            $('#card' + ind).html("<div class=\"card \">" +
-                "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.client.photo + "\" alt=\"Card image cap\">" +
-                "<div class=\"card-body\">" +
-                "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData.client.nom + "</h2>" +
-                "<h4 id=\"email" + ind + "\" class=\"card-title\">" + jsonData.client.email + "</h4>" +
-                "<h4 id=\"tel" + ind + "\" class=\"card-title\">" + jsonData.client.tel + "</h4>" +
-                "<p id=\"adress" + ind + "\" class=\"card-text\">" + jsonData.client.adress + "</p>" +
-                "<div class=\"button-group text-center\">" +
-                butttondetail +
-                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.client.id + "," + ind + ")\">modifier</button>" +
-                buttonacive +
-                "</div>" +
-                "</div>" +
-                "</div>");
 
         });
+    }
+
+    function printErrorMsg(msg) {
+
+
+        $.each(msg, function(key, value) {
+
+            $("#err-" + key).addClass('has-danger');
+            $("#err-" + key).find("small").html(value);
+
+        });
+
+    }
+
+    function clearInputs(msg) {
+
+
+        $.each(msg, function(key, value) {
+
+            $("#err-" + key).removeClass('has-danger');
+            $("#err-" + key).find("small").html("");
+
+        });
+
     }
 </script>
 @endsection

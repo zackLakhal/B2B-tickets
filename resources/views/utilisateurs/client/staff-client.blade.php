@@ -82,18 +82,21 @@
                     </select>
                     <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-nom">
                     <label for="nom" class="control-label"><b>nom:</b></label>
                     <input type="text" class="form-control" id="nom" name="nom">
+                    <small class="form-control-feedback"> </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="err-prenom">
                     <label for="prenom" class="control-label"><b>prénom:</b></label>
                     <input type="text" class="form-control" id="prenom" name="prenom">
+                    <small class="form-control-feedback"> </small>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="err-tel">
                     <label for="tel" class="control-label"><b>tel:</b></label>
                     <input type="text" class="form-control" id="tel" name="tel">
+                    <small class="form-control-feedback"> </small>
                 </div>
                 <div class="form-group">
                     <label for="adress" class="control-label"><b>adress:</b></label>
@@ -259,6 +262,7 @@
         $('#created_by').val("");
         $('#created_by').selectpicker('refresh');
         $('#nom').val("");
+        $('#prenom').val("");
         $('#email').val("");
         $('#tel').val("");
         $('#adress').val("");
