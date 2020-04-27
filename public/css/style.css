@@ -4541,7 +4541,6 @@ Stylish tooltip
   cursor: default;
   pointer-events: none; }
   .tooltip-content img {
-    margin-top: 2em;
     position: relative;
     height: 140px;
     display: block;

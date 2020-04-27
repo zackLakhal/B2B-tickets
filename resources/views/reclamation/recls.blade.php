@@ -141,7 +141,7 @@
             } else {
                 tech = "<span class=\"mytooltip tooltip-effect-5\" id=\"tech" + ind + "\" >" +
                     "<span class=\"tooltip-item\">" + jsonData[ind].tech_nom + " " + jsonData[ind].tech_prenom + "</span> <span class=\"tooltip-content clearfix\">" +
-                    "<img src=\"{{ asset('storage') }}/" + jsonData[ind].tech_photo + "\" width=\"180\" /><br />" +
+                    "<img src=\"{{ asset('storage') }}/" + jsonData[ind].tech_photo + "\" width=\"220\" /><br />" +
                     "<span class=\"tooltip-text p-t-10\">" +
                     "<p class=\"card-text text-center\">" + jsonData[ind].tech_nom + " " + jsonData[ind].tech_prenom + "</p>" +
                     "<p class=\"card-text text-center\">" + jsonData[ind].tech_email + "</p>" +
@@ -157,6 +157,7 @@
             var acceptation;
             var traitement;
             var download_pdf;
+            var with_pv;
 
 
 
@@ -207,10 +208,10 @@
                 affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>affecté</a>"
             }
 
-            if (jsonData[ind].accepted == null) {
-                affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter('" + jsonData[ind].reclamation_ref + "'," + ind + ")\">affecter</button>"
+            if (jsonData[ind].with_pv) {
+                with_pv = "<h4 id=\"pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData[ind].pv_image + "\" target=\"_blank\"> " + jsonData[ind].pv_image + "</a></h4>";
             } else {
-                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>affecté</a>"
+                with_pv = "";
             }
 
             $('#bodytab').append("<div class=\"col-12 \" >" +
@@ -245,7 +246,7 @@
                 "<h4 id=\"acceptation" + ind + "\" class=\"card-title\"> <strong>prise en charge </strong>: " + affect + "</h4>" +
                 "<h4 id=\"checked_at" + ind + "\" class=\"card-title\"> <strong> accepté le  </strong>: " + (jsonData[ind].checked_at == null ? "N/A" : jsonData[ind].checked_at) + "</h4>" +
                 "<h4 id=\"finished_at" + ind + "\" class=\"card-title\"> <strong> terminé le </strong>: " + (jsonData[ind].finished_at == null ? "N/A" : jsonData[ind].finished_at) + "</h4>" +
-                // "<h4 id=\"pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>: " + jsonData[ind].pv_image + "</h4>" +
+                with_pv +
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -299,7 +300,7 @@
         for (let ind = 0; ind < jsonData.length; ind++) {
             $('#created_by').append("<a  class=\"list-group-item value=\"" + jsonData[ind].user.id + "\" onclick=\"select('" + id + "'," + jsonData[ind].user.id + "," + place + ")\"> <span class=\"mytooltip tooltip-effect-5\">" +
                 "<span class=\"tooltip-item\"> <b>" + jsonData[ind].user.nom + " " + jsonData[ind].user.prénom + "    -    " + jsonData[ind].nb_affect + "</b> affectations en cours</span> <span class=\"tooltip-content clearfix\">" +
-                "<img src=\"{{ asset('storage') }}/" + jsonData[ind].user.photo + "\" width=\"180\" /><br />" +
+                "<img src=\"{{ asset('storage') }}/" + jsonData[ind].user.photo + "\" width=\"220\" /><br />" +
                 "<span class=\"tooltip-text p-t-10\">" +
                 "<p class=\"card-text text-center\">" + jsonData[ind].user.nom + " " + jsonData[ind].user.prénom + "</p>" +
                 "<p  class=\"card-text text-center\">" + jsonData[ind].user.email + "</p>" +
@@ -344,7 +345,7 @@
         } else {
             tech = "<span class=\"mytooltip tooltip-effect-5\" id=\"tech" + ind + "\" >" +
                 "<span class=\"tooltip-item\">" + jsonData.tech_nom + " " + jsonData.tech_prenom + "</span> <span class=\"tooltip-content clearfix\">" +
-                "<img src=\"{{ asset('storage') }}/" + jsonData.tech_photo + "\" width=\"180\" /><br />" +
+                "<img src=\"{{ asset('storage') }}/" + jsonData.tech_photo + "\" width=\"220\" /><br />" +
                 "<span class=\"tooltip-text p-t-10\">" +
                 "<p class=\"card-text text-center\">" + jsonData.tech_nom + " " + jsonData.tech_prenom + "</p>" +
                 "<p class=\"card-text text-center\">" + jsonData.tech_email + "</p>" +
@@ -361,6 +362,8 @@
         var acceptation;
         var traitement;
         var download_pdf;
+        var with_pv;
+
 
 
 
@@ -405,16 +408,17 @@
         }
 
 
-        if (jsonData.affectation_id == null) {
-            affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter('" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
-        } else {
-            affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>affecté</a>"
-        }
+
 
         if (jsonData.accepted == null) {
             affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter('" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
         } else {
             affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>affecté</a>"
+        }
+        if (jsonData.with_pv) {
+            with_pv = "<h4 id=\"pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.pv_image + "\" target=\"_blank\"> " + jsonData.pv_image + "</a></h4>";
+        } else {
+            with_pv = "";
         }
 
 
@@ -452,7 +456,7 @@
             "<h4 id=\"acceptation" + ind + "\" class=\"card-title\"> <strong>prise en charge </strong>: " + affect + "</h4>" +
             "<h4 id=\"checked_at" + ind + "\" class=\"card-title\"> <strong> accepté le  </strong>: " + (jsonData.checked_at == null ? "N/A" : jsonData.checked_at) + "</h4>" +
             "<h4 id=\"finished_at" + ind + "\" class=\"card-title\"> <strong> terminé le </strong>: " + (jsonData.finished_at == null ? "N/A" : jsonData.finished_at) + "</h4>" +
-            // "<h4 id=\"pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>: " + jsonData.pv_image + "</h4>" +
+            with_pv+
             "</div>" +
             "</div>" +
             "</div>" +
@@ -513,7 +517,7 @@
         } else {
             tech = "<span class=\"mytooltip tooltip-effect-5\" id=\"tech" + ind + "\" >" +
                 "<span class=\"tooltip-item\">" + jsonData.tech_nom + " " + jsonData.tech_prenom + "</span> <span class=\"tooltip-content clearfix\">" +
-                "<img src=\"{{ asset('storage') }}/" + jsonData.tech_photo + "\" width=\"180\" /><br />" +
+                "<img src=\"{{ asset('storage') }}/" + jsonData.tech_photo + "\" width=\"220\" /><br />" +
                 "<span class=\"tooltip-text p-t-10\">" +
                 "<p class=\"card-text text-center\">" + jsonData.tech_nom + " " + jsonData.tech_prenom + "</p>" +
                 "<p class=\"card-text text-center\">" + jsonData.tech_email + "</p>" +
@@ -530,6 +534,7 @@
         var acceptation;
         var traitement;
         var download_pdf;
+        var with_pv;
 
 
 
@@ -574,16 +579,19 @@
         }
 
 
-        if (jsonData.affectation_id == null) {
-            affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter('" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
+
+
+
+        if (jsonData[ind].with_pv) {
+            with_pv = "<h4 id=\"pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData[ind].pv_image + "\" target=\"_blank\"> " + jsonData[ind].pv_image + "</a></h4>";
         } else {
-            affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>affecté</a>"
+            with_pv = "";
         }
 
-        if (jsonData.accepted == null) {
-            affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter('" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
+        if (jsonData.with_pv) {
+            with_pv = "<h4 id=\"pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.pv_image + "\" target=\"_blank\"> " + jsonData.pv_image + "</a></h4>";
         } else {
-            affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>affecté</a>"
+            with_pv = "";
         }
 
 
@@ -621,7 +629,7 @@
             "<h4 id=\"acceptation" + ind + "\" class=\"card-title\"> <strong>prise en charge </strong>: " + affect + "</h4>" +
             "<h4 id=\"checked_at" + ind + "\" class=\"card-title\"> <strong> accepté le  </strong>: " + (jsonData.checked_at == null ? "N/A" : jsonData.checked_at) + "</h4>" +
             "<h4 id=\"finished_at" + ind + "\" class=\"card-title\"> <strong> terminé le </strong>: " + (jsonData.finished_at == null ? "N/A" : jsonData.finished_at) + "</h4>" +
-            // "<h4 id=\"pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>: " + jsonData.pv_image + "</h4>" +
+            with_pv+
             "</div>" +
             "</div>" +
             "</div>" +
@@ -761,13 +769,14 @@
             var acceptation;
             var traitement;
             var download_pdf;
+            var with_pv;
 
             if (jsonData.tech_nom == null) {
                 tech = " <span id=\"tech" + ind + "\" value=\"0\"> pas de technicien affecté</span>"
             } else {
                 tech = "<span class=\"mytooltip tooltip-effect-5\" id=\"tech" + ind + "\" >" +
                     "<span class=\"tooltip-item\">" + jsonData.tech_nom + " " + jsonData.tech_prenom + "</span> <span class=\"tooltip-content clearfix\">" +
-                    "<img src=\"{{ asset('storage') }}/" + jsonData.tech_photo + "\" width=\"180\" /><br />" +
+                    "<img src=\"{{ asset('storage') }}/" + jsonData.tech_photo + "\" width=\"220\" /><br />" +
                     "<span class=\"tooltip-text p-t-10\">" +
                     "<p class=\"card-text text-center\">" + jsonData.tech_nom + " " + jsonData.tech_prenom + "</p>" +
                     "<p class=\"card-text text-center\">" + jsonData.tech_email + "</p>" +
@@ -828,11 +837,13 @@
                 affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>affecté</a>"
             }
 
-            if (jsonData.accepted == null) {
-                affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter('" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
+            if (jsonData.with_pv) {
+                with_pv = "<h4 id=\"pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.pv_image + "\" target=\"_blank\"> " + jsonData.pv_image + "</a></h4>";
             } else {
-                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>affecté</a>"
+                with_pv = "";
             }
+
+
 
 
 
@@ -869,7 +880,7 @@
                 "<h4 id=\"acceptation" + ind + "\" class=\"card-title\"> <strong>prise en charge </strong>: " + affect + "</h4>" +
                 "<h4 id=\"checked_at" + ind + "\" class=\"card-title\"> <strong> accepté le  </strong>: " + (jsonData.checked_at == null ? "N/A" : jsonData.checked_at) + "</h4>" +
                 "<h4 id=\"finished_at" + ind + "\" class=\"card-title\"> <strong> terminé le </strong>: " + (jsonData.finished_at == null ? "N/A" : jsonData.finished_at) + "</h4>" +
-                // "<h4 id=\"pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>: " + jsonData.pv_image + "</h4>" +
+                with_pv+
                 "</div>" +
                 "</div>" +
                 "</div>" +
