@@ -40,10 +40,10 @@ class EspaceController extends Controller
         $departement = $agence->departement;
         $client = $departement->client;
 
-        $chef = Clientuser::where([
-            ['clientable_id', '=', $agence->id],
-            ['clientable_type', "=", "agence"],
-        ])->first();
+        // $chef = Clientuser::where([
+        //     ['clientable_id', '=', $agence->id],
+        //     ['clientable_type', "=", "agence"],
+        // ])->first();
 
         $souscription = [
             'id' => $agence->id,
@@ -59,7 +59,7 @@ class EspaceController extends Controller
 
         $objet =  [
             'agence' => $agence,
-            'chef' => $chef,
+            //'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville,
             'departement' => $departement,
@@ -90,13 +90,14 @@ class EspaceController extends Controller
 
         $objet = [
             'refs' =>  DB::table('views_detail_souscription')
-                ->select('ref_id', 'equip_id', 'ref')
+                ->select('views_detail_souscription.ref_id', 'views_detail_souscription.equip_id', 'views_detail_souscription.ref','reclamations.etat_id')
+                ->leftJoin('reclamations', 'views_detail_souscription.ref_id', '=', 'reclamations.souscription_id')
                 ->where([
-                    ['agence_id', $id_a],
-                    ['prod_id',   $request->id_p],
-                    ['equip_id',   $request->id_e],
-                    ['ref', '<>',  NULL]
-                ])->groupBy('equip_id', 'ref', 'ref_id')
+                    ['views_detail_souscription.agence_id', $id_a],
+                    ['views_detail_souscription.prod_id',   $request->id_p],
+                    ['views_detail_souscription.equip_id',   $request->id_e],
+                    ['views_detail_souscription.ref', '<>',  NULL]
+                ])->groupBy('views_detail_souscription.equip_id', 'views_detail_souscription.ref', 'views_detail_souscription.ref_id')
                 ->get(),
             'anomalies' => Anomalie::all(),
             'equipement' => Equipement::find($request->id_e)
@@ -118,7 +119,7 @@ class EspaceController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         $reclamation = new Reclamation();

@@ -66,6 +66,10 @@
                 <div class="form-group text-center">
                     <h3 class="control-label" id="equip_nom"></h3>
                 </div>
+                <div id="pending_refs">
+
+                </div>
+                <br>
                 <div class="form-group" id="err-ref">
                     <label class="control-label">Référence</label>
                     <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="ref" id="ref">
@@ -84,6 +88,8 @@
                     <label for="commentaire" class="control-label"><b>commentaire</b></label>
                     <textarea class="form-control" id="commentaire" name="commentaire" rows="5"></textarea>
                 </div>
+
+                
             </div>
             <div class="modal-footer" id="modalfooter">
                 <button type="button" class="btn btn-info" id="save">Enregistrer</button>
@@ -173,10 +179,10 @@
                 "<div id=\"collapseex" + jsonData.souscription.produits[j].prod_id + "_" + jsonData.souscription.id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.souscription.produits[j].prod_id + "_" + jsonData.souscription.id + "\">" +
                 "<div class=\"card-body\">" +
                 "<img id=\"produit" + $('#id_a').val() + "\" src=\"{{ asset('storage') }}/" + jsonData.souscription.produits[j].image + "\" class=\"img-responsive img-thumbnail\" />" +
-                "<div>" +
+                "<div class=\"text-center\">" +
                 "<div style=\"margin: 10px 0px\" class=\"col-lg-12 col-md-6 col-xlg-2 col-xs-12\">" +
-                "<h2 >" + jsonData.souscription.produits[j].prod_nom + "</h2>" +
-                "<p id=\"info_p" + $('#id_a').val() + "\">" +
+                "<h2 ><b> Nom : </b>" + jsonData.souscription.produits[j].prod_nom + "</h2>" +
+                "<p id=\"info_p" + $('#id_a').val() + "\"> <spane style=\" font-weight: bold\"> Détails : </spane> " +
                 jsonData.souscription.produits[j].info +
                 "</p>" +
                 "</div>" +
@@ -191,28 +197,29 @@
         $('#bodytab').append("<div class=\"col-12 \" id=\"card" + $('#id_a').val() + "\">" +
             "<div class=\"card\">" +
             "<div class=\"card-body\">" +
-            "<h2 id=\"nom" + $('#id_a').val() + "\" class=\"card-title \">" + jsonData.agence.nom + "</h2>" +
+            "<h2 id=\"nom" + $('#id_a').val() + "\" class=\"card-title text-center\" style=\" font-weight: bold\">" + jsonData.agence.nom + "</h2>" +
             "<div id=\"slimtest2\">" +
             "<div class=\"row\">" +
             "<div class=\"col-md-6 \" id=\"card" + $('#id_a').val() + "\">" +
             "<div class=\"card \">" +
             "<h2  class=\"card-title text-center\" > informations</h2>" +
-            "<div class=\"card-body\">" +
-            "<h4 id=\"departement" + $('#id_a').val() + "\" class=\"card-title\"> departement : " + jsonData.departement.nom + "</h4>" +
-            "<h4 id=\"client" + $('#id_a').val() + "\" class=\"card-title\"> client : " + jsonData.client.nom + "</h4>" +
             "<hr>" +
-            "<h4 id=\"email" + $('#id_a').val() + "\" class=\"card-title\"> email : " + jsonData.agence.email + "</h4>" +
-            "<h4 id=\"tel" + $('#id_a').val() + "\" class=\"card-title\"> tel : " + jsonData.agence.tel + "</h4>" +
-            "<h4 id=\"adress" + $('#id_a').val() + "\" class=\"card-title\"> adresse : " + jsonData.agence.adress + "</h4>" +
-            "<h4 value=\"" + jsonData.ville.id + "\" id=\"ville" + $('#id_a').val() + "\" class=\"card-title\"> ville : " + jsonData.ville.nom + "</h4>" +
-            "<h4> Chef d'agence : " + chef + " </h4>" +
+            "<div class=\"card-body\">" +
+            "<h4 id=\"departement" + $('#id_a').val() + "\" class=\"card-title\"><b> Departement : </b>" + jsonData.departement.nom + "</h4>" +
+            "<h4 id=\"client" + $('#id_a').val() + "\" class=\"card-title\"><b> Client : </b>" + jsonData.client.nom + "</h4>" +
+            "<h4 id=\"email" + $('#id_a').val() + "\" class=\"card-title\"><b> Email : </b>" + jsonData.agence.email + "</h4>" +
+            "<h4 id=\"tel" + $('#id_a').val() + "\" class=\"card-title\"><b> Tel : </b>" + jsonData.agence.tel + "</h4>" +
+            "<h4 id=\"adress" + $('#id_a').val() + "\" class=\"card-title\"><b> Adresse : </b>" + jsonData.agence.adress + "</h4>" +
+            "<h4 value=\"" + jsonData.ville.id + "\" id=\"ville" + $('#id_a').val() + "\" class=\"card-title\"><b> ville : </b>" + jsonData.ville.nom + "</h4>" +
+            "<h4> <b>Chef d'agence : </b>" + chef + " </h4>" +
             "</div>" +
             "</div>" +
             "</div>" +
             "<div class=\"col-lg-6 \">" +
             "<div class=\"card\" id=\"product\">" +
-            "<div class=\"card-body\">" +
             "<h3 class=\"card-title text-center\">produits</h3>" +
+            "<hr>" +
+            "<div class=\"card-body\">" +
             "<div id=\"accordionexample\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
             produit +
             "</div>" +
@@ -252,14 +259,15 @@
 
                 "<img class=\"card-img-top\" id=\"equip" + jsonData.equipements[j].equip_id + "\" src=\"{{ asset('storage') }}/" + jsonData.equipements[j].image + "\" alt=\"Card image cap\">" +
                 "<div class=\"card-body\">" +
-                "<h4 id=\"marque_e" + jsonData.equipements[j].equip_id + "\" class=\"card-title\">" + jsonData.equipements[j].marque + "</h4>" +
-                "<h4 id=\"modele_e" + jsonData.equipements[j].equip_id + "\" class=\"card-title\">" + jsonData.equipements[j].modele + "</h4>" +
-                "<p class=\"card-text\" id=\"info_e" + jsonData.equipements[j].equip_id + "\">" +
+                "<h4 id=\"marque_e" + jsonData.equipements[j].equip_id + "\" class=\"card-title\"><b>Marque :  </b> " + jsonData.equipements[j].marque + "</h4>" +
+                "<h4 id=\"modele_e" + jsonData.equipements[j].equip_id + "\" class=\"card-title\"><b>Modèle :  </b> " + jsonData.equipements[j].modele + "</h4>" +
+                "<p class=\"card-text\" id=\"info_e" + jsonData.equipements[j].equip_id + "\"><spane style=\" font-weight: bold\"> Détails : </spane> " +
                 jsonData.equipements[j].info +
                 "</p>" +
                 "<div class=\"button-group text-center\">" +
                 "<button  class=\"btn btn-warning\" \" onclick=\"reclamer(" + produit + "," + jsonData.equipements[j].equip_id + ")\">réclamer sur l'équipement</button>" +
                 "</div>" +
+                
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -269,7 +277,7 @@
     }
 
     function reclamer(produit, equip) {
-
+        
         $('#ref').html("<option value=\"0\"selected disabled >selectioner une référance </option>")
         $('#anomalie').html(" <option  value=\"0\"selected disabled >selectioner une anomalie </option>")
         var inputs = {
@@ -284,9 +292,16 @@
             async: false
         }).responseText;
         jsonData = JSON.parse(StringData);
+       
+        $('#pending_refs').html("");
+
         $('#equip_nom').html(jsonData.equipement.nom);
         for (let ind = 0; ind < jsonData.refs.length; ind++) {
-            $('#ref').append("<option value=\"" + jsonData.refs[ind].ref_id + "\">" + jsonData.refs[ind].ref + "</option>");
+            if(jsonData.refs[ind].etat_id != 1 && jsonData.refs[ind].etat_id != 2){
+                $('#ref').append("<option value=\"" + jsonData.refs[ind].ref_id + "\">" + jsonData.refs[ind].ref + "</option>");
+            }else{
+                $('#pending_refs').append("<small style=\"color : #fb052c\"><b>"+jsonData.refs[ind].ref+" :</b> sous réclamation </small> <br>")
+            }
         }
         $('#ref').selectpicker('refresh');
         for (let ind = 0; ind < jsonData.anomalies.length; ind++) {
@@ -294,6 +309,7 @@
         }
         $('#anomalie').selectpicker('refresh');
         $('#commentaire').val("");
+
         $('#exampleModal').modal('show');
 
         $('#save').click(function() {
@@ -322,6 +338,7 @@
                 $('#exampleModal').modal('hide');
                 message("réclamation", "ajouté", jsonData.check);
             } else {
+                clearInputs(jsonData.inputs);
                 printErrorMsg(jsonData.error);
             }
         });

@@ -46,7 +46,7 @@
             </div>
             <div class="modal-body text-center" id="modalbody">
 
-                
+
 
 
             </div>
@@ -81,13 +81,14 @@
                 buttonacive = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>traité</a>"
             }
             $('#bodytab').append("<div class=\"col-md-4\" id=\"card" + ind + "\">" +
-               
+
                 "<div class=\"card text-center\">" +
                 "<div class=\"card-body\">" +
                 "<h3 class=\"card-title\"> Ref : <b> " + jsonData[ind].ref + "</b></h3> <hr>" +
                 "<h4 class=\"card-title\">" + jsonData[ind].nom + "</h4>" +
                 "<h4 class=\"card-title\">" + jsonData[ind].email + "</h4>" +
                 "<h4 class=\"card-title\">" + jsonData[ind].tel + "</h4>" +
+                "<h4 class=\"card-title\"> faite le : " + jsonData[ind].created_at + "</h4>" +
                 "<p class=\"card-text\">" + jsonData[ind].message + "</p>" +
                 "<button  class=\"btn btn-warning\" style=\"margin-right: 10px\" onclick=\"detail(" + jsonData[ind].id + "," + ind + ")\">détail</button>" +
                 buttonacive +
@@ -106,7 +107,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-         
+
         $('#exampleModal').modal('hide');
         if (jsonData.rqt.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-inverse\"  onclick=\"traiter(" + jsonData.rqt.id + "," + ind + ")\">traiter</button>"
@@ -119,6 +120,7 @@
             "<h2 class=\"card-title\">" + jsonData.rqt.nom + "</h2>" +
             "<h4 class=\"card-title\">" + jsonData.rqt.email + "</h4>" +
             "<h4 class=\"card-title\">" + jsonData.rqt.tel + "</h4>" +
+            "<h4 class=\"card-title\"> faite le : " + jsonData.rqt.created_at + "</h4>" +
             "<p class=\"card-text\">" + jsonData.rqt.message + "</p>" +
             "<button  class=\"btn btn-warning\" style=\"margin-right: 10px\" onclick=\"detail(" + jsonData.rqt.id + "," + ind + ")\">détail</button>" +
             buttonacive +
@@ -128,9 +130,9 @@
 
     function detail(id, ind) {
 
-        var buttonacive; 
-       
-        
+        var buttonacive;
+
+
 
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/system/request/detail/" + id,
@@ -139,7 +141,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-         
+
         $('#modalhead').html("<h3 class=\"modal-title\"> Ref : <b> " + jsonData.ref + "</b></h3> <hr>" +
             "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
 
@@ -147,10 +149,11 @@
             "<h2 class=\"card-title\">" + jsonData.nom + "</h2>" +
             "<h4 class=\"card-title\">" + jsonData.email + "</h4>" +
             "<h4 class=\"card-title\">" + jsonData.tel + "</h4>" +
-            "<p class=\"card-text\">" + jsonData.message + "</p>" 
-           );
+            "<h4 class=\"card-title\">faite le : " + jsonData.created_at + "</h4>" +
+            "<p class=\"card-text\">" + jsonData.message + "</p>"
+        );
 
-           if (jsonData.deleted_at == null) {
+        if (jsonData.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-inverse\"  onclick=\"traiter(" + jsonData.id + "," + ind + ")\">traiter</button>"
         } else {
             buttonacive = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>traité</a>"

@@ -200,7 +200,8 @@
                     "</td>" +
                     "</tr>");
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
 
 
@@ -308,7 +309,8 @@
                     buttonacive +
                     "</td>");
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
 
 

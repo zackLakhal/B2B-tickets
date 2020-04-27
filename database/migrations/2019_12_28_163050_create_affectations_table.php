@@ -15,8 +15,8 @@ class CreateAffectationsTable extends Migration
     {
         Schema::create('affectations', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('reclamation_id');
-            $table->string('nstuser_id');
+            $table->bigInteger('reclamation_id');
+            $table->bigInteger('nstuser_id');
             $table->boolean('accepted')->default(false);
             $table->timestamps();
             $table->softDeletes();

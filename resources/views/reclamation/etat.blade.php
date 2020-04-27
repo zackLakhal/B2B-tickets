@@ -198,6 +198,7 @@
                     "</tr>");
             } else {
                 printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
             }
         });
     });
@@ -299,6 +300,7 @@
                     "</td>");
             } else {
                 printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
             }
         });
     }

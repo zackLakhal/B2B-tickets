@@ -7,10 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Departement extends Model
 {
     use SoftDeletes;
-    public function clientuser()
-    {
-        return $this->morphOne('App\Clientuser', 'clientable');
-    }
+    
     public function agences()
     {
         return $this->hasMany('App\Agence');

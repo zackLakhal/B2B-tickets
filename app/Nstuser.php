@@ -21,12 +21,11 @@ class Nstuser extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','clientable_id',
-        'clientable_type',
+        'name',
+        'email', 
+        'role_id',
         'nom',
         'prénom',
-        'age',
-        'sex',
         'tel',
         'adress',
         'photo'

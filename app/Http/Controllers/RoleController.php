@@ -57,7 +57,7 @@ class RoleController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         $role = new Role();
@@ -126,7 +126,7 @@ class RoleController extends Controller
 
             if ($validator->fails()) {
 
-                return response()->json(['error' => $validator->errors()]);
+                return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
             }
 
             $role = Role::withTrashed()

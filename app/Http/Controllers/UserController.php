@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Clientuser;
 use App\Nstuser;
@@ -72,7 +72,7 @@ class UserController extends Controller
 
             if ($validator->fails()) {
 
-                return response()->json(['error' => $validator->errors()]);
+                return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
             }
 
 
@@ -144,13 +144,14 @@ class UserController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         $user = new Nstuser();
         $temp = explode("@", $request->email);
         $user->name = $temp[0];
         $user->email = $request->email;
+        $user->password = Hash::make($request->password);
         $user->role_id = $request->role;
         $user->nom = $request->nom;
         $user->prénom = $request->prenom;
@@ -305,7 +306,7 @@ class UserController extends Controller
 
             if ($validator->fails()) {
 
-                return response()->json(['error' => $validator->errors()]);
+                return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
             }
 
 
@@ -381,13 +382,14 @@ class UserController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         $user = new Clientuser();
         $temp = explode("@", $request->email);
         $user->name = $temp[0];
         $user->email = $request->email;
+        $user->password = Hash::make($request->password);
         $user->role_id = $request->role;
         $user->created_by = $request->created_by;
         $user->tel = $request->tel;
@@ -430,6 +432,43 @@ class UserController extends Controller
         $objet =  [
             'check' => $check,
             'count' => $count - 1,
+            'user' => $user,
+            'role' => $user->role,
+            'client' => $client,
+            'inputs' => $request->all()
+        ];
+        return response()->json($objet);
+    }
+
+    public function save_pass(Request $request)
+    {
+       
+            $done = false;
+            $user;
+            if($request->type == "client"){
+                $user = Clientuser::find($request->id);
+            }else{
+                $user = Nstuser::find($request->id);
+            }
+           
+            $user->password = Hash::make($request->password);
+            $user->save();
+            $done = true;
+        
+        
+        $client =  Client::withTrashed()
+            ->where('id', $user->created_by)
+            ->first();
+
+        $check;
+        if (!$done) {
+            $check = "faile";
+        } else {
+            $check = "done";
+        }
+
+        $objet =  [
+            'check' => $check,
             'user' => $user,
             'role' => $user->role,
             'client' => $client,

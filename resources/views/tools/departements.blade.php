@@ -84,7 +84,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="affectation" tabindex="-1" rqt="dialog" aria-labelledby="affectationlabel">
+<!-- <div class="modal fade" id="affectation" tabindex="-1" rqt="dialog" aria-labelledby="affectationlabel">
     <div class="modal-dialog" rqt="document">
         <div class="modal-content">
             <div class="modal-header" id="affectationhead">
@@ -103,7 +103,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- /.modal 2-->
 <div class="modal fade bs-example-modal-sm" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
@@ -145,7 +145,7 @@
 
         var buttonacive;
         var butttondetail;
-        var buttonaffect;
+        //var buttonaffect;
         var chef;
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/outils/clients/" + $('#id_c').val() + "/departements/index",
@@ -158,37 +158,38 @@
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.departements.length; ind++) {
 
-            if (jsonData.chefs[ind] == null) {
-                chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef de département</span>"
-                buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departements[ind].id + "," + ind + ")\">affecter un chef</button>"
-            } else {
-                chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chefs[ind].id + "\">" +
-                    "<span class=\"tooltip-item\">" + jsonData.chefs[ind].nom + " " + jsonData.chefs[ind].prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                    "<img src=\"{{ asset('storage') }}/" + jsonData.chefs[ind].photo + "\" width=\"180\" /><br />" +
-                    "<span class=\"tooltip-text p-t-10\">" +
-                    "<p class=\"card-text text-center\">" + jsonData.chefs[ind].nom + " " + jsonData.chefs[ind].prénom + "</p>" +
-                    "<p class=\"card-text text-center\">" + jsonData.chefs[ind].email + "</p>" +
-                    "<p class=\"card-text text-center\">" + jsonData.chefs[ind].tel + "</p>" +
-                    "<p class=\"card-text text-center\">" + jsonData.chefs[ind].adress + "</p>" +
-                    "</span> </span>" +
-                    "</span>";
-                buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departements[ind].id + "," + ind + ")\">changer chef</button>"
+            // if (jsonData.chefs[ind] == null) {
+            //   //  chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef de département</span>"
+            //     //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departements[ind].id + "," + ind + ")\">affecter un chef</button>"
+            // } else {
+            //     // chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chefs[ind].id + "\">" +
+            //     //     "<span class=\"tooltip-item\">" + jsonData.chefs[ind].nom + " " + jsonData.chefs[ind].prénom + "</span> <span class=\"tooltip-content clearfix\">" +
+            //     //     "<img src=\"{{ asset('storage') }}/" + jsonData.chefs[ind].photo + "\" width=\"180\" /><br />" +
+            //     //     "<span class=\"tooltip-text p-t-10\">" +
+            //     //     "<p class=\"card-text text-center\">" + jsonData.chefs[ind].nom + " " + jsonData.chefs[ind].prénom + "</p>" +
+            //     //     "<p class=\"card-text text-center\">" + jsonData.chefs[ind].email + "</p>" +
+            //     //     "<p class=\"card-text text-center\">" + jsonData.chefs[ind].tel + "</p>" +
+            //     //     "<p class=\"card-text text-center\">" + jsonData.chefs[ind].adress + "</p>" +
+            //     //     "</span> </span>" +
+            //     //     "</span>";
+            //     //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departements[ind].id + "," + ind + ")\">changer chef</button>"
 
-            }
+            // }
             if (jsonData.departements[ind].deleted_at == null) {
                 butttondetail = "<a href=\"/outils/clients/" + $('#id_c').val() + "/departements/" + jsonData.departements[ind].id + "/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
-                buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departements[ind].id + "," + ind + ")\">supprimer</button>" + buttonaffect;
+                buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departements[ind].id + "," + ind + ")\">supprimer</button>" //+ buttonaffect;
             } else {
                 buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.departements[ind].id + "," + ind + ")\">restorer</button>"
                 butttondetail = ""
             }
             $('#bodytab').append("<div class=\"col-md-6\" id=\"card" + ind + "\" >" +
                 "<div class=\"card \">" +
-                "<h2  id=\"nom" + ind + "\"class=\"card-title text-center\" style=\"color: blue;\">" + jsonData.departements[ind].nom + "</h2>" +
+                "<h2  id=\"nom" + ind + "\"class=\"card-title text-center\" style=\"font-weight: bold;\">" + jsonData.departements[ind].nom + "</h2>" +
+                "<hr>"+
                 "<div class=\"card-body\">" +
-                "<h4 id=\"email" + ind + "\" class=\"card-title\"> email : " + jsonData.departements[ind].email + "</h4>" +
-                "<h4 id=\"tel" + ind + "\" class=\"card-title\"> tel : " + jsonData.departements[ind].tel + "</h4>" +
-                "<h4 > Chef de departement : " + chef + " </h4>" +
+                "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.departements[ind].email + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.departements[ind].tel + "</spane></h4>" +
+                ////"<h4 ><b> Chef de departement : </b>" + chef + " </h4>" +
                 "<br>" +
                 "<div class=\"button-group text-center\">" +
                 butttondetail +
@@ -238,37 +239,38 @@
                 message("département", "ajouté", jsonData.check);
 
 
-                if (jsonData.chef == null) {
-                    chef = " <span id=\"chef" + jsonData.count + "\" value=\"0\"> pas de chef de département</span>"
-                    buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + jsonData.count + ")\">affecter un chef</button>"
-                } else {
-                    chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + jsonData.count + "\" value=\"" + jsonData.chef.id + "\">" +
-                        "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                        "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
-                        "<span class=\"tooltip-text p-t-10\">" +
-                        "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
-                        "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
-                        "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
-                        "<p class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
-                        "</span> </span>" +
-                        "</span>";
-                    buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + jsonData.count + ")\">changer chef</button>"
+                // if (jsonData.chef == null) {
+                //   //  chef = " <span id=\"chef" + jsonData.count + "\" value=\"0\"> pas de chef de département</span>"
+                //     //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + jsonData.count + ")\">affecter un chef</button>"
+                // } else {
+                //     // chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + jsonData.count + "\" value=\"" + jsonData.chef.id + "\">" +
+                //     //     "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
+                //     //     "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+                //     //     "<span class=\"tooltip-text p-t-10\">" +
+                //     //     "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
+                //     //     "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
+                //     //     "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
+                //     //     "<p class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
+                //     //     "</span> </span>" +
+                //     //     "</span>";
+                //     //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + jsonData.count + ")\">changer chef</button>"
 
-                }
+                // }
                 if (jsonData.departement.deleted_at == null) {
                     butttondetail = "<a href=\"/outils/clients/" + $('#id_c').val() + "/departements/" + jsonData.departement.id + "/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
-                    buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departement.id + "," + jsonData.count + ")\">supprimer</button>" + buttonaffect
+                    buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departement.id + "," + jsonData.count + ")\">supprimer</button>" //+ buttonaffect
                 } else {
                     buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.departement.id + "," + jsonData.count + ")\">restorer</button>"
                     butttondetail = ""
                 }
                 $('#bodytab').append("<div class=\"col-md-6\" id=\"card" + jsonData.count + "\" >" +
                     "<div class=\"card \">" +
-                    "<h2  id=\"nom" + jsonData.count + "\"class=\"card-title text-center\" style=\"color: blue;\">" + jsonData.departement.nom + "</h2>" +
+                    "<h2  id=\"nom" + jsonData.count + "\"class=\"card-title text-center\" style=\"font-weight: bold;\">" + jsonData.departement.nom + "</h2>" +
+                    "<hr>"+
                     "<div class=\"card-body\">" +
-                    "<h4 id=\"email" + jsonData.count + "\" class=\"card-title\"> email : " + jsonData.departement.email + "</h4>" +
-                    "<h4 id=\"tel" + jsonData.count + "\" class=\"card-title\"> tel : " + jsonData.departement.tel + "</h4>" +
-                    "<h4> Chef de departement : " + chef + " </h4>" +
+                    "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + jsonData.count + "\">" + jsonData.departement.email + "</spane></h4>" +
+                    "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + jsonData.count + "\">" + jsonData.departement.tel + "</spane></h4>" +
+                    //"<h4 ><b> Chef de departement : </b>" + chef + " </h4>" +
                     "<br>" +
                     "<div class=\"button-group text-center\">" +
                     butttondetail +
@@ -279,7 +281,8 @@
                     "</div>" +
                     "</div>");
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
         });
     });
@@ -289,7 +292,7 @@
     function supprimer(id, ind) {
         var buttonacive;
         var butttondetail;
-        var buttonaffect;
+        //var buttonaffect;
         var chef;
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/outils/clients/" + $('#id_c').val() + "/departements/delete/" + id,
@@ -305,37 +308,38 @@
         message("département", "supprimé", jsonData.check);
 
 
-        if (jsonData.chef == null) {
-            chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef de département</span>"
-            buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">affecter un chef</button>"
+        // if (jsonData.chef == null) {
+        //    // chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef de département</span>"
+        //     //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">affecter un chef</button>"
 
-        } else {
-            chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
-                "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
-                "<span class=\"tooltip-text p-t-10\">" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
-                "</span> </span>" +
-                "</span>";
-            buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">changer chef</button>"
+        // } else {
+        //     // chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
+        //     //     "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
+        //     //     "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+        //     //     "<span class=\"tooltip-text p-t-10\">" +
+        //     //     "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
+        //     //     "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
+        //     //     "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
+        //     //     "<p class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
+        //     //     "</span> </span>" +
+        //     //     "</span>";
+        //     //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">changer chef</button>"
 
-        }
+        // }
         if (jsonData.departement.deleted_at == null) {
             butttondetail = "<a href=\"/outils/clients/" + $('#id_c').val() + "/departements/" + jsonData.departement.id + "/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
-            buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departement.id + "," + ind + ")\">supprimer</button>" + buttonaffect
+            buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departement.id + "," + ind + ")\">supprimer</button>" //+ buttonaffect
         } else {
             buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.departement.id + "," + ind + ")\">restorer</button>"
             butttondetail = ""
         }
         $('#card' + ind).html("<div class=\"card \">" +
-            "<h2  id=\"nom" + ind + "\"class=\"card-title text-center\" style=\"color: blue;\">" + jsonData.departement.nom + "</h2>" +
+            "<h2  id=\"nom" + ind + "\"class=\"card-title text-center\" style=\"font-weight: bold;\">" + jsonData.departement.nom + "</h2>" +
+            "<hr>"+
             "<div class=\"card-body\">" +
-            "<h4 id=\"email" + ind + "\" class=\"card-title\"> email : " + jsonData.departement.email + "</h4>" +
-            "<h4 id=\"tel" + ind + "\" class=\"card-title\"> tel : " + jsonData.departement.tel + "</h4>" +
-            "<h4> Chef de departement : " + chef + " </h4>" +
+            "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.departement.email + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.departement.tel + "</spane></h4>" +
+            //"<h4 ><b> Chef de departement : </b>" + chef + " </h4>" +
             "<br>" +
             "<div class=\"button-group text-center\">" +
             butttondetail +
@@ -349,7 +353,7 @@
     function restorer(id, ind) {
         var buttonacive;
         var butttondetail;
-        var buttonaffect;
+        //var buttonaffect;
         var chef;
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/outils/clients/" + $('#id_c').val() + "/departements/restore/" + id,
@@ -363,37 +367,38 @@
         jsonData = JSON.parse(StringData);
         message("département", "restoré", jsonData.check);
 
-        if (jsonData.chef == null) {
-            chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef de département</span>"
-            buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">affecter un chef</button>"
+        // if (jsonData.chef == null) {
+        //    // chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef de département</span>"
+        //     //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">affecter un chef</button>"
 
-        } else {
-            chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
-                "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
-                "<span class=\"tooltip-text p-t-10\">" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
-                "</span> </span>" +
-                "</span>";
-            buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">changer chef</button>"
+        // } else {
+        //     // chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
+        //     //     "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
+        //     //     "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+        //     //     "<span class=\"tooltip-text p-t-10\">" +
+        //     //     "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
+        //     //     "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
+        //     //     "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
+        //     //     "<p class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
+        //     //     "</span> </span>" +
+        //     //     "</span>";
+        //     //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">changer chef</button>"
 
-        }
+        // }
         if (jsonData.departement.deleted_at == null) {
             butttondetail = "<a href=\"/outils/clients/" + $('#id_c').val() + "/departements/" + jsonData.departement.id + "/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
-            buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departement.id + "," + ind + ")\">supprimer</button>" + buttonaffect
+            buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departement.id + "," + ind + ")\">supprimer</button>" //+ buttonaffect
         } else {
             buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.departement.id + "," + ind + ")\">restorer</button>"
             butttondetail = ""
         }
         $('#card' + ind).html("<div class=\"card \">" +
-            "<h2  id=\"nom" + ind + "\"class=\"card-title text-center\" style=\"color: blue;\">" + jsonData.departement.nom + "</h2>" +
+            "<h2  id=\"nom" + ind + "\"class=\"card-title text-center\" style=\"font-weight: bold;\">" + jsonData.departement.nom + "</h2>" +
+            "<hr>"+
             "<div class=\"card-body\">" +
-            "<h4 id=\"email" + ind + "\" class=\"card-title\"> email : " + jsonData.departement.email + "</h4>" +
-            "<h4 id=\"tel" + ind + "\" class=\"card-title\"> tel : " + jsonData.departement.tel + "</h4>" +
-            "<h4> Chef de departement : " + chef + " </h4>" +
+            "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.departement.email + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.departement.tel + "</spane></h4>" +
+            //"<h4 ><b> Chef de departement : </b>" + chef + " </h4>" +
             "<br>" +
             "<div class=\"button-group text-center\">" +
             butttondetail +
@@ -407,7 +412,7 @@
     function modifier(id, ind) {
         var buttonacive;
         var butttondetail;
-        var buttonaffect;
+        //var buttonaffect;
         var chef;
         $('#modalhead').html("<h4 class=\"modal-title\" >Modifier département</h4>" +
             "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
@@ -441,37 +446,38 @@
 
                 message("département", "modifié", jsonData.check);
 
-                if (jsonData.chef == null) {
-                    chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef de département</span>"
-                    buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">affecter un chef</button>"
+                // if (jsonData.chef == null) {
+                //    // chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef de département</span>"
+                //     //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">affecter un chef</button>"
 
-                } else {
-                    chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
-                        "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                        "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
-                        "<span class=\"tooltip-text p-t-10\">" +
-                        "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
-                        "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
-                        "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
-                        "<p class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
-                        "</span> </span>" +
-                        "</span>";
-                    buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">changer chef</button>"
+                // } else {
+                //     // chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
+                //     //     "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
+                //     //     "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+                //     //     "<span class=\"tooltip-text p-t-10\">" +
+                //     //     "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
+                //     //     "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
+                //     //     "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
+                //     //     "<p class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
+                //     //     "</span> </span>" +
+                //     //     "</span>";
+                //     //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">changer chef</button>"
 
-                }
+                // }
                 if (jsonData.departement.deleted_at == null) {
                     butttondetail = "<a href=\"/outils/clients/" + $('#id_c').val() + "/departements/" + jsonData.departement.id + "/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
-                    buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departement.id + "," + ind + ")\">supprimer</button>" + buttonaffect
+                    buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departement.id + "," + ind + ")\">supprimer</button>" //+ buttonaffect
                 } else {
                     buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.departement.id + "," + ind + ")\">restorer</button>"
                     butttondetail = ""
                 }
                 $('#card' + ind).html("<div class=\"card \">" +
-                    "<h2  id=\"nom" + ind + "\"class=\"card-title text-center\" style=\"color: blue;\">" + jsonData.departement.nom + "</h2>" +
+                    "<h2  id=\"nom" + ind + "\"class=\"card-title text-center\" style=\"font-weight: bold;\">" + jsonData.departement.nom + "</h2>" +
+                    "<hr>"+
                     "<div class=\"card-body\">" +
-                    "<h4 id=\"email" + ind + "\" class=\"card-title\"> email : " + jsonData.departement.email + "</h4>" +
-                    "<h4 id=\"tel" + ind + "\" class=\"card-title\"> tel : " + jsonData.departement.tel + "</h4>" +
-                    "<h4> Chef de departement : " + chef + " </h4>" +
+                    "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.departement.email + "</spane></h4>" +
+                    "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.departement.tel + "</spane></h4>" +
+                    //"<h4 ><b> Chef de departement : </b>" + chef + " </h4>" +
                     "<br>" +
                     "<div class=\"button-group text-center\">" +
                     butttondetail +
@@ -482,107 +488,110 @@
                     "</div>");
 
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
         });
     }
 
-    function changer(id, place) {
+    // function changer(id, place) {
 
-        $('#affectationhead').html("<h4 class=\"modal-title\" >traitement chef</h4>" +
-            "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
-        // $('#affectationfooter').html("<button type=\"hidden\"  id=\"id_d\" value=\""+id+"\">");
-        var StringData1 = $.ajax({
-            url: "http://127.0.0.1:8000/utilisateur/staff-client/" + $('#id_c').val() + "/my_users_departement",
-            dataType: "json",
-            type: "GET",
-            async: false,
-        }).responseText;
-        jsonData1 = JSON.parse(StringData1);
+    //     $('#affectationhead').html("<h4 class=\"modal-title\" >traitement chef</h4>" +
+    //         "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+    //     // $('#affectationfooter').html("<button type=\"hidden\"  id=\"id_d\" value=\""+id+"\">");
+    //     var StringData1 = $.ajax({
+    //         url: "http://127.0.0.1:8000/utilisateur/staff-client/" + $('#id_c').val() + "/my_users_departement",
+    //         dataType: "json",
+    //         type: "GET",
+    //         async: false,
+    //     }).responseText;
+    //     jsonData1 = JSON.parse(StringData1);
 
-        $('#created_by').html("");
-        for (let ind = 0; ind < jsonData1.users.length; ind++) {
-            $('#created_by').append("<a  class=\"list-group-item value=\"" + jsonData1.users[ind].id + "\" onclick=\"select(" + id + "," + jsonData1.users[ind].id + "," + place + ")\"> <span class=\"mytooltip tooltip-effect-5\">" +
-                "<span class=\"tooltip-item\">" + jsonData1.users[ind].nom + " " + jsonData1.users[ind].prénom + " - " + jsonData1.roles[ind].value + "</span> <span class=\"tooltip-content clearfix\">" +
-                "<img src=\"{{ asset('storage') }}/" + jsonData1.users[ind].photo + "\" width=\"180\" /><br />" +
-                "<span class=\"tooltip-text p-t-10\">" +
-                "<p class=\"card-text text-center\">" + jsonData1.users[ind].nom + " " + jsonData1.users[ind].prénom + "</p>" +
-                "<p  class=\"card-text text-center\">" + jsonData1.users[ind].email + "</p>" +
-                "<p  class=\"card-text text-center\">" + jsonData1.users[ind].tel + "</p>" +
-                "<p  class=\"card-text text-center\">" + jsonData1.roles[ind].value + "</p>" +
-                "</span> </span>" +
-                "</span></a>");
+    //     $('#created_by').html("");
+    //     for (let ind = 0; ind < jsonData1.users.length; ind++) {
+    //         $('#created_by').append("<a  class=\"list-group-item value=\"" + jsonData1.users[ind].id + "\" onclick=\"select(" + id + "," + jsonData1.users[ind].id + "," + place + ")\"> <span class=\"mytooltip tooltip-effect-5\">" +
+    //             "<span class=\"tooltip-item\">" + jsonData1.users[ind].nom + " " + jsonData1.users[ind].prénom + " - " + jsonData1.roles[ind].value + "</span> <span class=\"tooltip-content clearfix\">" +
+    //             "<img src=\"{{ asset('storage') }}/" + jsonData1.users[ind].photo + "\" width=\"180\" /><br />" +
+    //             "<span class=\"tooltip-text p-t-10\">" +
+    //             "<p class=\"card-text text-center\">" + jsonData1.users[ind].nom + " " + jsonData1.users[ind].prénom + "</p>" +
+    //             "<p  class=\"card-text text-center\">" + jsonData1.users[ind].email + "</p>" +
+    //             "<p  class=\"card-text text-center\">" + jsonData1.users[ind].tel + "</p>" +
+    //             "<p  class=\"card-text text-center\">" + jsonData1.roles[ind].value + "</p>" +
+    //             "</span> </span>" +
+    //             "</span></a>");
 
-        }
-
-
-        $('#affectation').css('padding-top', '15%');
-        $('#affectation').modal('show');
+    //     }
 
 
-    }
+    //     $('#affectation').css('padding-top', '15%');
+    //     $('#affectation').modal('show');
 
-    function select(id_d, id_u, ind) {
-        var buttonacive;
-        var butttondetail;
-        var buttonaffect;
-        var chef;
-        var inputs = {
-            "id_d": id_d,
-            "id_u": id_u,
-            "current_u": $('#chef' + ind).attr('value')
-        };
-        var StringData = $.ajax({
-            url: "http://127.0.0.1:8000/outils/clients/" + $('#id_c').val() + "/departements/affecter",
-            dataType: "json",
-            type: "GET",
-            async: false,
-            data: inputs
-        }).responseText;
 
-        jsonData = JSON.parse(StringData);
+    // }
 
-        $('#affectation').modal('hide');
-        if (jsonData.chef == null) {
-            chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef de département</span>"
-            buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">affecter un chef</button>"
+    // function select(id_d, id_u, ind) {
+    //     var buttonacive;
+    //     var butttondetail;
+    //     //var buttonaffect;
+    //     var chef;
+    //     var inputs = {
+    //         "id_d": id_d,
+    //         "id_u": id_u,
+    //         "current_u": $('#chef' + ind).attr('value')
+    //     };
+    //     var StringData = $.ajax({
+    //         url: "http://127.0.0.1:8000/outils/clients/" + $('#id_c').val() + "/departements/affecter",
+    //         dataType: "json",
+    //         type: "GET",
+    //         async: false,
+    //         data: inputs
+    //     }).responseText;
 
-        } else {
-            chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
-                "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
-                "<span class=\"tooltip-text p-t-10\">" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
-                "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
-                "<p  class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
-                "</span> </span>" +
-                "</span>";
-            buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">changer chef</button>"
+    //     jsonData = JSON.parse(StringData);
 
-        }
-        if (jsonData.departement.deleted_at == null) {
-            butttondetail = "<a href=\"/outils/clients/" + $('#id_c').val() + "/departements/" + jsonData.departement.id + "/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
-            buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departement.id + "," + ind + ")\">supprimer</button>" + buttonaffect
-        } else {
-            buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.departement.id + "," + ind + ")\">restorer</button>"
-            butttondetail = ""
-        }
-        $('#card' + ind).html("<div class=\"card \">" +
-            "<h2  id=\"nom" + ind + "\"class=\"card-title text-center\" style=\"color: blue;\">" + jsonData.departement.nom + "</h2>" +
-            "<div class=\"card-body\">" +
-            "<h4 id=\"email" + ind + "\" class=\"card-title\"> email : " + jsonData.departement.email + "</h4>" +
-            "<h4 id=\"tel" + ind + "\" class=\"card-title\"> tel : " + jsonData.departement.tel + "</h4>" +
-            "<h4> Chef de departement : " + chef + " </h4>" +
-            "<br>" +
-            "<div class=\"button-group text-center\">" +
-            butttondetail +
-            "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.departement.id + "," + ind + ")\">modifier</button>" +
-            buttonacive +
-            "</div>" +
-            "</div>" +
-            "</div>");
-    }
+    //     $('#affectation').modal('hide');
+    //     if (jsonData.chef == null) {
+    //        // chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef de département</span>"
+    //         //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">affecter un chef</button>"
+
+    //     } else {
+    //         chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
+    //             "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
+    //             "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+    //             "<span class=\"tooltip-text p-t-10\">" +
+    //             "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
+    //             "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
+    //             "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
+    //             "<p  class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
+    //             "</span> </span>" +
+    //             "</span>";
+    //         //buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.departement.id + "," + ind + ")\">changer chef</button>"
+
+    //     }
+    //     if (jsonData.departement.deleted_at == null) {
+    //         butttondetail = "<a href=\"/outils/clients/" + $('#id_c').val() + "/departements/" + jsonData.departement.id + "/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+    //         buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.departement.id + "," + ind + ")\">supprimer</button>" //+ buttonaffect
+    //     } else {
+    //         buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.departement.id + "," + ind + ")\">restorer</button>"
+    //         butttondetail = ""
+    //     }
+    //     $('#card' + ind).html("<div class=\"card \">" +
+    //         "<h2  id=\"nom" + ind + "\"class=\"card-title text-center\" style=\"font-weight: bold;\">" + jsonData.departement.nom + "</h2>" +
+    //         "<hr>"+
+
+    //         "<div class=\"card-body\">" +
+    //         "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.departement.email + "</spane></h4>" +
+    //         "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.departement.tel + "</spane></h4>" +
+    //         //"<h4 ><b> Chef de departement : </b>" + chef + " </h4>" +
+    //         "<br>" +
+    //         "<div class=\"button-group text-center\">" +
+    //         butttondetail +
+    //         "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.departement.id + "," + ind + ")\">modifier</button>" +
+    //         buttonacive +
+    //         "</div>" +
+    //         "</div>" +
+    //         "</div>");
+    // }
 
     function printErrorMsg(msg) {
 

@@ -48,7 +48,7 @@ class ProduitController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         $produit = new Produit();
@@ -305,7 +305,7 @@ class ProduitController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         $temp = new Equipement();
@@ -374,7 +374,7 @@ class ProduitController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
         $temp = Equipement::find($e_id);
         $temp->nom = $request->nom_e;
@@ -469,7 +469,7 @@ class ProduitController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         foreach ($request->data as $data) {
@@ -487,10 +487,10 @@ class ProduitController extends Controller
             ->where('id', $request->agence)
             ->first();
 
-        $chef = Clientuser::where([
-            ['clientable_id', '=', $agence->id],
-            ['clientable_type', "=", "agence"],
-        ])->first();
+        // $chef = Clientuser::where([
+        //     ['clientable_id', '=', $agence->id],
+        //     ['clientable_type', "=", "agence"],
+        // ])->first();
 
         $souscription = [
             'id' => $agence->id,
@@ -512,7 +512,7 @@ class ProduitController extends Controller
         $objet =  [
             'check' => $check,
             'agence' => $agence,
-            'chef' => $chef,
+           // 'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville,
             'inputs' => $request->all()
@@ -537,10 +537,10 @@ class ProduitController extends Controller
             ->where('id', $request->agence)
             ->first();
 
-        $chef = Clientuser::where([
-            ['clientable_id', '=', $agence->id],
-            ['clientable_type', "=", "agence"],
-        ])->first();
+        // $chef = Clientuser::where([
+        //     ['clientable_id', '=', $agence->id],
+        //     ['clientable_type', "=", "agence"],
+        // ])->first();
 
         $souscription = [
             'id' => $agence->id,
@@ -562,7 +562,7 @@ class ProduitController extends Controller
         $objet =  [
             'check' => $check,
             'agence' => $agence,
-            'chef' => $chef,
+          //  'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville
         ];
@@ -590,7 +590,7 @@ class ProduitController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         $scr->equip_ref = $request->value;

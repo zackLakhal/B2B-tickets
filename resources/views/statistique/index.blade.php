@@ -146,3 +146,9 @@
 </div>
 <!-- /.modal 2 -->
 @endsection
+@section('script')
+
+<script src="{{ asset('plugins/Chart.js/chartjs.init.js') }}"></script>
+    <script src="{{ asset('plugins/Chart.js/Chart.min.js') }}"></script>
+
+@endsection

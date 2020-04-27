@@ -67,6 +67,11 @@
                     <input type="text" class="form-control" id="email" name="email">
                     <small class="form-control-feedback"> </small>
                 </div>
+                <div class="form-group" id="err-password">
+                    <label for="password" class="control-label"><b>mot de passe:</b></label>
+                    <input type="password" class="form-control" id="password" name="password">
+                    <small class="form-control-feedback"> </small>
+                </div>
 
                 <div class="form-group" id="err-tel">
                     <label for="tel" class="control-label"><b>tel:</b></label>
@@ -159,9 +164,9 @@
                 "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData[ind].photo + "\" alt=\"Card image cap\">" +
                 "<div class=\"card-body\">" +
                 "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData[ind].nom + "</h2>" +
-                "<h4 id=\"email" + ind + "\" class=\"card-title\">" + jsonData[ind].email + "</h4>" +
-                "<h4 id=\"tel" + ind + "\" class=\"card-title\">" + jsonData[ind].tel + "</h4>" +
-                "<p id=\"adress" + ind + "\" class=\"card-text\">" + jsonData[ind].adress + "</p>" +
+                "<h4  class=\"card-title\"><b>Email :</b><spane id=\"email" + ind + "\">" + jsonData[ind].email + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData[ind].tel + "</spane></h4>" +
+                "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData[ind].adress + "</spane></p>" +
                 "<div class=\"button-group text-center\">" +
                 butttondetail +
                 "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData[ind].id + "," + ind + ")\">modifier</button>" +
@@ -186,6 +191,8 @@
 
         $('#nom').val("");
         $('#email').val("");
+        $('#err-password').show();
+        $('#password').val("");
         $('#tel').val("");
         $('#adress').val("");
 
@@ -199,6 +206,7 @@
             form_data.append("email", $('#email').val());
             form_data.append("tel", $('#tel').val());
             form_data.append("adress", $('#adress').val());
+            form_data.append("password", $('#password').val());
 
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/clients/create",
@@ -235,9 +243,9 @@
                     "<img class=\"card-img-top img-responsive\" id=\"avatar" + jsonData.count + "\" src=\"{{ asset('storage') }}/" + jsonData.client.photo + "\" alt=\"Card image cap\">" +
                     "<div class=\"card-body\">" +
                     "<h2 id=\"nom" + jsonData.count + "\" class=\"card-title text-center\">" + jsonData.client.nom + "</h2>" +
-                    "<h4 id=\"email" + jsonData.count + "\" class=\"card-title\">" + jsonData.client.email + "</h4>" +
-                    "<h4 id=\"tel" + jsonData.count + "\" class=\"card-title\">" + jsonData.client.tel + "</h4>" +
-                    "<p id=\"adress" + jsonData.count + "\" class=\"card-text\">" + jsonData.client.adress + "</p>" +
+                    "<h4  class=\"card-title\"><b>Email :</b><spane id=\"email" + jsonData.count + "\">" + jsonData.client.email + "</spane></h4>" +
+                    "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + jsonData.count + "\">" + jsonData.client.tel + "</spane></h4>" +
+                    "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + jsonData.count + "\">" + jsonData.client.adress + "</spane></p>" +
                     "<div class=\"button-group text-center\">" +
                     butttondetail +
                     "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.client.id + "," + jsonData.count + ")\">modifier</button>" +
@@ -248,7 +256,8 @@
                     "</div>");
 
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
         });
     });
@@ -281,9 +290,9 @@
             "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.client.photo + "\" alt=\"Card image cap\">" +
             "<div class=\"card-body\">" +
             "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData.client.nom + "</h2>" +
-            "<h4 id=\"email" + ind + "\" class=\"card-title\">" + jsonData.client.email + "</h4>" +
-            "<h4 id=\"tel" + ind + "\" class=\"card-title\">" + jsonData.client.tel + "</h4>" +
-            "<p id=\"adress" + ind + "\" class=\"card-text\">" + jsonData.client.adress + "</p>" +
+            "<h4  class=\"card-title\"><b>Email :</b><spane id=\"email" + ind + "\">" + jsonData.client.email + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.client.tel + "</spane></h4>" +
+            "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData.client.adress + "</spane></p>" +
             "<div class=\"button-group text-center\">" +
             butttondetail +
             "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.client.id + "," + ind + ")\">modifier</button>" +
@@ -321,9 +330,9 @@
             "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.client.photo + "\" alt=\"Card image cap\">" +
             "<div class=\"card-body\">" +
             "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData.client.nom + "</h2>" +
-            "<h4 id=\"email" + ind + "\" class=\"card-title\">" + jsonData.client.email + "</h4>" +
-            "<h4 id=\"tel" + ind + "\" class=\"card-title\">" + jsonData.client.tel + "</h4>" +
-            "<p id=\"adress" + ind + "\" class=\"card-text\">" + jsonData.client.adress + "</p>" +
+            "<h4  class=\"card-title\"><b>Email :</b><spane id=\"email" + ind + "\">" + jsonData.client.email + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.client.tel + "</spane></h4>" +
+            "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData.client.adress + "</spane></p>" +
             "<div class=\"button-group text-center\">" +
             butttondetail +
             "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.client.id + "," + ind + ")\">modifier</button>" +
@@ -347,7 +356,10 @@
         $('#email').val($('#email' + ind).html());
         $('#tel').val($('#tel' + ind).html());
         $('#adress').val($('#adress' + ind).html());
+        $('#password').val("");
+        $('#err-password').hide();
         $('#exampleModal').modal('show');
+       
         $('#edit').click(function() {
             form_data = new FormData();
 
@@ -393,9 +405,9 @@
                     "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.client.photo + "\" alt=\"Card image cap\">" +
                     "<div class=\"card-body\">" +
                     "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData.client.nom + "</h2>" +
-                    "<h4 id=\"email" + ind + "\" class=\"card-title\">" + jsonData.client.email + "</h4>" +
-                    "<h4 id=\"tel" + ind + "\" class=\"card-title\">" + jsonData.client.tel + "</h4>" +
-                    "<p id=\"adress" + ind + "\" class=\"card-text\">" + jsonData.client.adress + "</p>" +
+                    "<h4  class=\"card-title\"><b>Email :</b><spane id=\"email" + ind + "\">" + jsonData.client.email + "</spane></h4>" +
+                    "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.client.tel + "</spane></h4>" +
+                    "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData.client.adress + "</spane></p>" +
                     "<div class=\"button-group text-center\">" +
                     butttondetail +
                     "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.client.id + "," + ind + ")\">modifier</button>" +
@@ -405,7 +417,8 @@
                     "</div>");
 
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
 
         });

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    @yield('refresh')
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -239,7 +239,8 @@
                         <li>
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="true"><i class="mdi mdi-file-chart"></i><span class="hide-menu">Statistiques </span></a>
                             <ul aria-expanded="true" class="collapse">
-                                <li class="active"><a class="active" href="/statistiques">Consulter les statistiques</a></li>
+                                <li ><a  href="/dashboard">Dashboard</a></li>
+                                <li ><a  href="/statistiques">Consulter les statistiques</a></li>
                             </ul>
                         </li>
                         <li>
@@ -361,8 +362,7 @@
     <!--stickey kit -->
 
     <!-- Chart JS -->
-    <script src="{{ asset('plugins/Chart.js/chartjs.init.js') }}"></script>
-    <script src="{{ asset('plugins/Chart.js/Chart.min.js') }}"></script>
+
 
 
 

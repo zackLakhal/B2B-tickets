@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePvsTable extends Migration
+class CreateRaportsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,17 @@ class CreatePvsTable extends Migration
      */
     public function up()
     {
-        Schema::create('pvs', function (Blueprint $table) {
+        Schema::create('raports', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('ref');
             $table->bigInteger('affectation_id');
+            $table->string('type')->default("");
+            $table->boolean('with_pv')->default(false);
             $table->text('commentaire')->default("");
-            $table->string('image')->default("");
+            $table->string('pv')->default("");
             $table->timestamps();
             $table->softDeletes();
-});
+        });
     }
 
     /**
@@ -31,6 +33,6 @@ class CreatePvsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pvs');
+        Schema::dropIfExists('raports');
     }
 }

@@ -40,7 +40,7 @@ class VilleController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
         $ville = new Ville();
         $ville->nom = $request->nom;
@@ -89,7 +89,7 @@ class VilleController extends Controller
 
             if ($validator->fails()) {
 
-                return response()->json(['error' => $validator->errors()]);
+                return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
             }
 
             $ville = Ville::withTrashed()

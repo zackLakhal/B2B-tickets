@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Http\Request;
 use App\Client;
@@ -34,13 +35,19 @@ class ClientController extends Controller
         $done = false;
 
         $temp = Client::find($id);
+        $userclient = Clientuser::where('email', '=', $temp->email)->first();
         $temp->delete();
+        $userclient->delete();
         $done = true;
+
+
 
 
         $client = Client::withTrashed()
             ->where('id', $id)
             ->first();
+
+
 
         $check;
         if (!$done) {
@@ -63,7 +70,11 @@ class ClientController extends Controller
         $temp = Client::withTrashed()
             ->where('id', $id)
             ->first();
+
+        $userclient = Clientuser::withTrashed()
+            ->where('email', '=', $temp->email)->first();
         $temp->restore();
+        $userclient->restore();
         $done = true;
 
 
@@ -96,7 +107,7 @@ class ClientController extends Controller
 
         $validator = null;
 
-        if ($request->filled('nom') && $request->nom == $client->nom) {
+        if ($request->filled('nom') && $request->filled('email') && $request->nom == $client->nom && $request->email == $client->email) {
             $validator = Validator::make($request->all(), [
 
                 'nom' => 'required',
@@ -105,22 +116,52 @@ class ClientController extends Controller
                 'tel' => 'required',
             ]);
         } else {
-            $validator = Validator::make($request->all(), [
+            if ($request->nom != $client->nom && $request->email != $client->email) {
+                $validator = Validator::make($request->all(), [
 
-                'nom' => 'required|unique:clients',
-                'adress' => 'required',
-                'email' => 'required',
-                'tel' => 'required',
-            ]);
+                    'nom' => 'required|unique:clients',
+                    'adress' => 'required',
+                    'email' => 'required|unique:clientusers',
+                    'tel' => 'required',
+                ]);
+            } else {
+                if ($request->nom != $client->nom && $request->email == $client->email) {
+
+                    $validator = Validator::make($request->all(), [
+
+                        'nom' => 'required|unique:clients',
+                        'adress' => 'required',
+                        'email' => 'required',
+                        'tel' => 'required',
+                    ]);
+                }
+                if ($request->nom == $client->nom && $request->email != $client->email) {
+                    $validator = Validator::make($request->all(), [
+
+                        'nom' => 'required',
+                        'adress' => 'required',
+                        'email' => 'required|unique:clientusers',
+                        'tel' => 'required',
+                    ]);
+                }
+            }
         }
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         $client->nom = $request->nom;
         $client->email = $request->email;
+
+        $userclient = Clientuser::withTrashed()
+            ->where('email', '=', $request->email)->first();
+        $temp = explode("@", $request->email);
+        $userclient->name = $temp[0];
+        $userclient->email = $request->email;
+        $userclient->save();
+
         $client->tel = $request->tel;
         $client->adress = $request->adress;
 
@@ -166,14 +207,15 @@ class ClientController extends Controller
 
             'nom' => 'required|unique:clients',
             'adress' => 'required',
-            'email' => 'required',
+            'email' => 'required|unique:clientusers',
             'tel' => 'required',
+            'password' => 'required|min:8',
         ]);
 
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
 
@@ -183,6 +225,20 @@ class ClientController extends Controller
         $client->tel = $request->tel;
         $client->adress = $request->adress;
         $client->save();
+
+        $user = new Clientuser();
+        $temp = explode("@", $request->email);
+        $user->name = $temp[0];
+        $user->prénom = $temp[0];
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->role_id = 4;
+        $user->created_by = $client->id;
+        $user->clientable_id = $client->id;
+        $user->clientable_type = "client";
+        $user->save();
+
+
 
         if ($request->file('avatar')) {
             $file = $request->file('avatar');
@@ -222,55 +278,55 @@ class ClientController extends Controller
         $departements = Departement::withTrashed()
             ->where('client_id', $id_c)
             ->get();
-        $chefs = array();
-        foreach ($departements as $departement) {
-            $chefs[] = Clientuser::where([
-                ['clientable_id', '=', $departement->id],
-                ['clientable_type', "=", "departement"],
-            ])
-                ->first();
-        }
+        // $chefs = array();
+        // foreach ($departements as $departement) {
+        //     $chefs[] = Clientuser::where([
+        //         ['clientable_id', '=', $departement->id],
+        //         ['clientable_type', "=", "departement"],
+        //     ])
+        //         ->first();
+        // }
         $objet =  [
             'departements' => $departements,
-            'chefs' => $chefs,
+            //'chefs' => $chefs,
 
         ];
         return response()->json($objet);
     }
 
-    public function affecter(Request $request, $id_c)
-    {
-        if ($request->current_u != 0) {
-            $current_user =  Clientuser::where('id', $request->current_u)
-                ->first();
+    // public function affecter(Request $request, $id_c)
+    // {
+    //     if ($request->current_u != 0) {
+    //         $current_user =  Clientuser::where('id', $request->current_u)
+    //             ->first();
 
-            $current_user->clientable_id = null;
-            $current_user->clientable_type = null;
-            $current_user->is_affected = false;
-            $current_user->save();
-        }
+    //         $current_user->clientable_id = null;
+    //         $current_user->clientable_type = null;
+    //         $current_user->is_affected = false;
+    //         $current_user->save();
+    //     }
 
 
 
-        $user = Clientuser::where('id', $request->id_u)
-            ->first();
+    //     $user = Clientuser::where('id', $request->id_u)
+    //         ->first();
 
-        $user->clientable_id = $request->id_d;
-        $user->clientable_type = "departement";
-        $user->is_affected = true;
-        $user->save();
+    //     $user->clientable_id = $request->id_d;
+    //     $user->clientable_type = "departement";
+    //     $user->is_affected = true;
+    //     $user->save();
 
-        $departement = Departement::withTrashed()
-            ->where('id', $request->id_d)
-            ->first();
+    //     $departement = Departement::withTrashed()
+    //         ->where('id', $request->id_d)
+    //         ->first();
 
-        $objet =  [
-            'departement' => $departement,
-            'chef' => $user,
+    //     $objet =  [
+    //         'departement' => $departement,
+    //         'chef' => $user,
 
-        ];
-        return response()->json($objet);
-    }
+    //     ];
+    //     return response()->json($objet);
+    // }
 
     public function delete_departement($id_c, $id)
     {
@@ -286,11 +342,11 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        $chef = Clientuser::where([
-            ['clientable_id', '=', $departement->id],
-            ['clientable_type', "=", "departement"],
-        ])
-            ->first();
+        // $chef = Clientuser::where([
+        //     ['clientable_id', '=', $departement->id],
+        //     ['clientable_type', "=", "departement"],
+        // ])
+        //     ->first();
 
         $check;
         if (!$done) {
@@ -302,7 +358,7 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'departement' => $departement,
-            'chef' => $chef,
+            // 'chef' => $chef,
         ];
         return response()->json($objet);
     }
@@ -322,11 +378,11 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        $chef = Clientuser::where([
-            ['clientable_id', '=', $departement->id],
-            ['clientable_type', "=", "departement"],
-        ])
-            ->first();
+        // $chef = Clientuser::where([
+        //     ['clientable_id', '=', $departement->id],
+        //     ['clientable_type', "=", "departement"],
+        // ])
+        //     ->first();
 
         $check;
         if (!$done) {
@@ -338,7 +394,7 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'departement' => $departement,
-            'chef' => $chef,
+            // 'chef' => $chef,
         ];
         return response()->json($objet);
     }
@@ -365,7 +421,7 @@ class ClientController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
 
@@ -375,11 +431,11 @@ class ClientController extends Controller
         $departement->save();
         $done = true;
 
-        $chef = Clientuser::where([
-            ['clientable_id', '=', $departement->id],
-            ['clientable_type', "=", "departement"],
-        ])
-            ->first();
+        // $chef = Clientuser::where([
+        //     ['clientable_id', '=', $departement->id],
+        //     ['clientable_type', "=", "departement"],
+        // ])
+        //     ->first();
 
         $check;
         if (!$done) {
@@ -391,7 +447,7 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'departement' => $departement,
-            'chef' => $chef,
+            //'chef' => $chef,
             'inputs' => $request->all()
         ];
         return response()->json($objet);
@@ -411,7 +467,7 @@ class ClientController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
         $departement = new Departement();
         $departement->client_id = $id_c;
@@ -438,19 +494,20 @@ class ClientController extends Controller
 
     public function all_agences($id_c, $id_d)
     {
+        
         $agences = Agence::withTrashed()
-            ->where('departement_id', $id_d)
+            ->where('departement_id','=', $id_d)
             ->get();
 
-        $chefs = array();
+        //   $chefs = array();
         $villes = array();
         $souscriptions = array();
         foreach ($agences as $agence) {
-            $chefs[] = Clientuser::where([
-                ['clientable_id', '=', $agence->id],
-                ['clientable_type', "=", "agence"],
-            ])
-                ->first();
+            // $chefs[] = Clientuser::where([
+            //     ['clientable_id', '=', $agence->id],
+            //     ['clientable_type', "=", "agence"],
+            // ])
+            //     ->first();
             $villes[] = $agence->ville;
 
             $souscriptions[] = [
@@ -467,7 +524,7 @@ class ClientController extends Controller
 
         $objet =  [
             'agences' => $agences,
-            'chefs' => $chefs,
+            //'chefs' => $chefs,
             'villes' => $villes,
             'souscriptions' => $souscriptions
 
@@ -484,6 +541,9 @@ class ClientController extends Controller
         $done = false;
 
         $temp = Agence::find($id);
+        $userclient = Clientuser::where('email', '=', $temp->email)->first();
+        $temp->delete();
+        $userclient->delete();
         $temp->delete();
         $done = true;
 
@@ -492,10 +552,10 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        $chef = Clientuser::where([
-            ['clientable_id', '=', $agence->id],
-            ['clientable_type', "=", "agence"],
-        ])->first();
+        // $chef = Clientuser::where([
+        //     ['clientable_id', '=', $agence->id],
+        //     ['clientable_type', "=", "agence"],
+        // ])->first();
         $souscription = [
             'id' => $agence->id,
             'produits'  => DB::table('views_detail_souscription')
@@ -516,7 +576,7 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'agence' => $agence,
-            'chef' => $chef,
+            // 'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville
         ];
@@ -530,6 +590,10 @@ class ClientController extends Controller
         $temp =  Agence::withTrashed()
             ->where('id', $id)
             ->first();
+        $userclient = Clientuser::withTrashed()
+            ->where('email', '=', $temp->email)->first();
+        $temp->restore();
+        $userclient->restore();
         $temp->restore();
         $done = true;
 
@@ -538,10 +602,10 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        $chef = Clientuser::where([
-            ['clientable_id', '=', $agence->id],
-            ['clientable_type', "=", "agence"],
-        ])->first();
+        // $chef = Clientuser::where([
+        //     ['clientable_id', '=', $agence->id],
+        //     ['clientable_type', "=", "agence"],
+        // ])->first();
 
         $souscription = [
             'id' => $agence->id,
@@ -563,7 +627,7 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'agence' => $agence,
-            'chef' => $chef,
+            // 'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville
         ];
@@ -578,23 +642,46 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        $validator = Validator::make($request->all(), [
+        $validator;
 
-            'nom' => 'required',
-            'email' => 'required',
-            'tel' => 'required',
-            'adress' => 'required',
-            'ville' => 'required|gt:0',
-        ]);
+        if ($request->filled('email') &&  $request->email == $agence->email) {
+            $validator = Validator::make($request->all(), [
+
+                'nom' => 'required',
+                'adress' => 'required',
+                'email' => 'required',
+                'tel' => 'required',
+                'ville' => 'required|gt:0',
+            ]);
+        } else {
+
+            $validator = Validator::make($request->all(), [
+
+                'nom' => 'required',
+                'adress' => 'required',
+                'email' => 'required|unique:clientusers',
+                'tel' => 'required',
+                'ville' => 'required|gt:0',
+            ]);
+        }
+
 
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         $agence->nom = $request->nom;
         $agence->email = $request->email;
+
+        $userclient = Clientuser::withTrashed()
+            ->where('email', '=', $request->email)->first();
+        $temp = explode("@", $request->email);
+        $userclient->name = $temp[0];
+        $userclient->email = $request->email;
+        $userclient->save();
+
         $agence->tel = $request->tel;
         $agence->adress = $request->adress;
         $agence->ville_id = $request->ville;
@@ -602,10 +689,10 @@ class ClientController extends Controller
         $agence->save();
         $done = true;
 
-        $chef = Clientuser::where([
-            ['clientable_id', '=', $agence->id],
-            ['clientable_type', "=", "agence"],
-        ])->first();
+        // $chef = Clientuser::where([
+        //     ['clientable_id', '=', $agence->id],
+        //     ['clientable_type', "=", "agence"],
+        // ])->first();
 
         $souscription = [
             'id' => $agence->id,
@@ -627,7 +714,7 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'agence' => $agence,
-            'chef' => $chef,
+            // 'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville,
             'inputs' => $request->all()
@@ -641,16 +728,17 @@ class ClientController extends Controller
         $validator = Validator::make($request->all(), [
 
             'nom' => 'required',
-            'email' => 'required',
+            'email' => 'required|unique:clientusers',
             'tel' => 'required',
             'adress' => 'required',
             'ville' => 'required|gt:0',
+            'password' => 'required|min:8',
         ]);
 
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
 
         $agence = new Agence();
@@ -661,6 +749,20 @@ class ClientController extends Controller
         $agence->adress = $request->adress;
         $agence->ville_id = $request->ville;
         $agence->save();
+
+        $user = new Clientuser();
+        $temp = explode("@", $request->email);
+        $user->name = $temp[0];
+        $user->prénom = $temp[0];
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->role_id = 5;
+        $user->created_by = $id_c;
+        $user->clientable_id = $agence->id;
+        $user->clientable_type = "agence";
+        $user->save();
+
+
         $check;
         $count = Agence::all()->count();
         if (is_null($agence)) {
@@ -678,49 +780,49 @@ class ClientController extends Controller
         ];
         return response()->json($objet);
     }
-    public function affecter_agence(Request $request, $id_c, $id_d)
-    {
-        if ($request->current_u != 0) {
-            $current_user =  Clientuser::where('id', $request->current_u)
-                ->first();
+    // public function affecter_agence(Request $request, $id_c, $id_d)
+    // {
+    //     if ($request->current_u != 0) {
+    //         $current_user =  Clientuser::where('id', $request->current_u)
+    //             ->first();
 
-            $current_user->clientable_id = null;
-            $current_user->clientable_type = null;
-            $current_user->is_affected = false;
-            $current_user->save();
-        }
+    //         $current_user->clientable_id = null;
+    //         $current_user->clientable_type = null;
+    //         $current_user->is_affected = false;
+    //         $current_user->save();
+    //     }
 
 
 
-        $user = Clientuser::where('id', $request->id_u)
-            ->first();
+    //     $user = Clientuser::where('id', $request->id_u)
+    //         ->first();
 
-        $user->clientable_id = $request->id_a;
-        $user->clientable_type = "agence";
-        $user->is_affected = true;
-        $user->save();
+    //     $user->clientable_id = $request->id_a;
+    //     $user->clientable_type = "agence";
+    //     $user->is_affected = true;
+    //     $user->save();
 
-        $agence = Agence::withTrashed()
-            ->where('id', $request->id_a)
-            ->first();
+    //     $agence = Agence::withTrashed()
+    //         ->where('id', $request->id_a)
+    //         ->first();
 
-        $souscription = [
-            'id' => $agence->id,
-            'produits'  => DB::table('views_detail_souscription')
-                ->select('prod_id', 'prod_nom', 'prod_etat')
-                ->groupBy('prod_id', 'prod_etat')
-                ->where('agence_id', $agence->id)
-                ->get()
+    //     $souscription = [
+    //         'id' => $agence->id,
+    //         'produits'  => DB::table('views_detail_souscription')
+    //             ->select('prod_id', 'prod_nom', 'prod_etat')
+    //             ->groupBy('prod_id', 'prod_etat')
+    //             ->where('agence_id', $agence->id)
+    //             ->get()
 
-        ];
+    //     ];
 
-        $objet =  [
-            'agence' => $agence,
-            'chef' => $user,
-            'souscription' => $souscription,
-            'ville' => $agence->ville
+    //     $objet =  [
+    //         'agence' => $agence,
+    //         'chef' => $user,
+    //         'souscription' => $souscription,
+    //         'ville' => $agence->ville
 
-        ];
-        return response()->json($objet);
-    }
+    //     ];
+    //     return response()->json($objet);
+    // }
 }

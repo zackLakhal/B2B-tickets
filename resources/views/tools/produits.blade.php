@@ -146,6 +146,11 @@
 <script>
     $(document).ready(function() {
         init()
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
     });
 
     function message(objet, action, statut) {
@@ -204,11 +209,11 @@
 
                     "<img class=\"card-img-top\" id=\"equip" + jsonData[ind].equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData[ind].equipements[j].image + "\" alt=\"Card image cap\">" +
                     "<div class=\"card-body\">" +
-                    "<h4 id=\"marque_e" + jsonData[ind].equipements[j].id + "\" class=\"card-title\">" + jsonData[ind].equipements[j].marque + "</h4>" +
-                    "<h4 id=\"modele_e" + jsonData[ind].equipements[j].id + "\" class=\"card-title\">" + jsonData[ind].equipements[j].modele + "</h4>" +
-                    "<p class=\"card-text\" id=\"info_e" + jsonData[ind].equipements[j].id + "\">" +
+                    "<h4  class=\"card-title\"><b>Marque :</b> <spane id=\"marque_e" + jsonData[ind].equipements[j].id + "\">" + jsonData[ind].equipements[j].marque + "</spane></h4>" +
+                    "<h4  class=\"card-title\"><b>Modèle :</b> <spane id=\"modele_e" + jsonData[ind].equipements[j].id + "\">" + jsonData[ind].equipements[j].modele + "</spane></h4>" +
+                    "<p class=\"card-text\" ><spane style=\"font-weight: bold; color : #455a64;\"> Détails :  </spane><br><spane id=\"info_e" + jsonData[ind].equipements[j].id + "\">" +
                     jsonData[ind].equipements[j].info +
-                    "</p>" +
+                    "</spane></p>" +
                     "<div class=\"button-group text-center\">" +
                     "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData[ind].id + "," + ind + "," + jsonData[ind].equipements[j].id + ")\">modifier</button>" +
                     buttonaciveequipement +
@@ -275,9 +280,7 @@
                 dataType: "json",
                 type: "POST",
                 async: false,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
+                
                 data: form_data,
                 processData: false,
                 contentType: false,
@@ -285,7 +288,7 @@
             jsonData = JSON.parse(StringData);
             console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
-                
+
                 clearInputs(jsonData.inputs);
 
                 $('#exampleModal').modal('hide');
@@ -319,11 +322,11 @@
 
                         "<img class=\"card-img-top\" id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
                         "<div class=\"card-body\">" +
-                        "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
-                        "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
-                        "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
+                        "<h4  class=\"card-title\"><b>Marque :</b> <spane id=\"marque_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].marque + "</spane></h4>" +
+                        "<h4  class=\"card-title\"><b>Modèle :</b> <spane id=\"modele_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].modele + "</spane></h4>" +
+                        "<p class=\"card-text\" ><spane style=\"font-weight: bold; color : #455a64;\"> Détails :  </spane><br><spane id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
                         jsonData.produit.equipements[j].info +
-                        "</p>" +
+                        "</spane></p>" +
                         "<div class=\"button-group text-center\">" +
                         "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + jsonData.count + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
                         buttonaciveequipement +
@@ -364,7 +367,8 @@
                     "</div>" +
                     "</div>");
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
         });
     });
@@ -386,9 +390,6 @@
             dataType: "json",
             type: "POST",
             async: false,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
             processData: false,
             contentType: false,
         }).responseText;
@@ -423,11 +424,11 @@
 
                 "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
                 "<div class=\"card-body\">" +
-                "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
-                "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
-                "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
+                "<h4  class=\"card-title\"><b>Marque :</b> <spane id=\"marque_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].marque + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b>Modèle :</b> <spane id=\"modele_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].modele + "</spane></h4>" +
+                "<p class=\"card-text\" ><spane style=\"font-weight: bold; color : #455a64;\"> Détails :  </spane><br><spane id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
                 jsonData.produit.equipements[j].info +
-                "</p>" +
+                "</spane></p>" +
                 "<div class=\"button-group text-center\">" +
                 "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
                 buttonaciveequipement +
@@ -485,9 +486,6 @@
             dataType: "json",
             type: "POST",
             async: false,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
             processData: false,
             contentType: false,
         }).responseText;
@@ -521,11 +519,11 @@
 
                 "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
                 "<div class=\"card-body\">" +
-                "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
-                "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
-                "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
+                "<h4  class=\"card-title\"><b>Marque :</b> <spane id=\"marque_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].marque + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b>Modèle :</b> <spane id=\"modele_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].modele + "</spane></h4>" +
+                "<p class=\"card-text\" ><spane style=\"font-weight: bold; color : #455a64;\"> Détails :  </spane><br><spane id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
                 jsonData.produit.equipements[j].info +
-                "</p>" +
+                "</spane></p>" +
                 "<div class=\"button-group text-center\">" +
                 "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
                 buttonaciveequipement +
@@ -592,9 +590,7 @@
                 dataType: "json",
                 type: "POST",
                 async: false,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
+                
                 data: form_data,
                 processData: false,
                 contentType: false,
@@ -632,11 +628,11 @@
 
                         "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
                         "<div class=\"card-body\">" +
-                        "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
-                        "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
-                        "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
+                        "<h4  class=\"card-title\"><b>Marque :</b> <spane id=\"marque_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].marque + "</spane></h4>" +
+                        "<h4  class=\"card-title\"><b>Modèle :</b> <spane id=\"modele_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].modele + "</spane></h4>" +
+                        "<p class=\"card-text\" ><spane style=\"font-weight: bold; color : #455a64;\"> Détails :  </spane><br><spane id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
                         jsonData.produit.equipements[j].info +
-                        "</p>" +
+                        "</spane></p>" +
                         "<div class=\"button-group text-center\">" +
                         "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
                         buttonaciveequipement +
@@ -677,7 +673,8 @@
                     "</div>" +
                     "</div>");
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
 
         });
@@ -712,9 +709,7 @@
                 dataType: "json",
                 type: "POST",
                 async: false,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
+                
                 data: form_data,
                 processData: false,
                 contentType: false,
@@ -752,11 +747,11 @@
 
                         "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
                         "<div class=\"card-body\">" +
-                        "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
-                        "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
-                        "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
+                        "<h4  class=\"card-title\"><b>Marque :</b> <spane id=\"marque_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].marque + "</spane></h4>" +
+                        "<h4  class=\"card-title\"><b>Modèle :</b> <spane id=\"modele_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].modele + "</spane></h4>" +
+                        "<p class=\"card-text\" ><spane style=\"font-weight: bold; color : #455a64;\"> Détails :  </spane><br><spane id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
                         jsonData.produit.equipements[j].info +
-                        "</p>" +
+                        "</spane></p>" +
                         "<div class=\"button-group text-center\">" +
                         "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
                         buttonaciveequipement +
@@ -798,7 +793,8 @@
                     "</div>");
 
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
 
         });
@@ -834,9 +830,7 @@
                 dataType: "json",
                 type: "POST",
                 async: false,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
+                
                 data: form_data,
                 processData: false,
                 contentType: false,
@@ -875,11 +869,11 @@
 
                         "<img class=\"card-img-top\"  id=\"equip" + jsonData.produit.equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData.produit.equipements[j].image + "\" alt=\"Card image cap\">" +
                         "<div class=\"card-body\">" +
-                        "<h4 id=\"marque_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].marque + "</h4>" +
-                        "<h4 id=\"modele_e" + jsonData.produit.equipements[j].id + "\" class=\"card-title\">" + jsonData.produit.equipements[j].modele + "</h4>" +
-                        "<p class=\"card-text\" id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
+                        "<h4  class=\"card-title\"><b>Marque :</b> <spane id=\"marque_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].marque + "</spane></h4>" +
+                        "<h4  class=\"card-title\"><b>Modèle :</b> <spane id=\"modele_e" + jsonData.produit.equipements[j].id + "\">" + jsonData.produit.equipements[j].modele + "</spane></h4>" +
+                        "<p class=\"card-text\" ><spane style=\"font-weight: bold; color : #455a64;\"> Détails :  </spane><br><spane id=\"info_e" + jsonData.produit.equipements[j].id + "\">" +
                         jsonData.produit.equipements[j].info +
-                        "</p>" +
+                        "</spane></p>" +
                         "<div class=\"button-group text-center\">" +
                         "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData.produit.id + "," + ind + "," + jsonData.produit.equipements[j].id + ")\">modifier</button>" +
                         buttonaciveequipement +
@@ -921,7 +915,8 @@
                     "</div>");
 
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
 
 

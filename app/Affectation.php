@@ -15,9 +15,9 @@ class Affectation extends Model
     {
         return $this->belongsTo('App\Nstuser');
     }
-    public function pv()
+    public function raport()
     {
-        return $this->hasOne('App\Pv');
+        return $this->hasOne('App\Raport');
     }
 }
 

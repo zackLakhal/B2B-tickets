@@ -11,4 +11,9 @@ class Client extends Model
     {
         return $this->hasMany('App\Departement');
     }
+
+    public function clientuser()
+    {
+        return $this->morphOne('App\Clientuser', 'clientable');
+    }
 }

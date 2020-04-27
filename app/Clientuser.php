@@ -15,12 +15,21 @@ class Clientuser extends Authenticatable
     protected $guard = 'client';
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'email', 
+        'clientable_id',
+        'clientable_type',
+        'role_id',
         'nom',
         'prénom',
         'tel',
         'adress',
-        'photo'
+        'photo',
+        'created_by'
+    ];
+
+    protected $hidden = [
+        'password', 'remember_token',
     ];
     
     public function clientable()

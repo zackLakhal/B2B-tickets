@@ -4527,7 +4527,7 @@ Stylish tooltip
 .tooltip-content {
   position: absolute;
   z-index: 9999;
-  width: 360px;
+  width: 400px;
   left: 50%;
   margin: 0 0 20px -180px;
   bottom: 100%;
@@ -4541,14 +4541,18 @@ Stylish tooltip
   cursor: default;
   pointer-events: none; }
   .tooltip-content img {
+    margin-top: 2em;
     position: relative;
     height: 140px;
     display: block;
-    float: left;
-    margin-right: 1em; }
+    margin-left: auto;
+    margin-right: auto;
+}
+    /* float: left;
+    margin-right: 1em; } */
 
 .tooltip-effect-5 .tooltip-content {
-  width: 180px;
+  width: 220px;
   margin-left: -90px;
   -webkit-transform-origin: 50% calc(106%);
   -ms-transform-origin: 50% calc(106%);

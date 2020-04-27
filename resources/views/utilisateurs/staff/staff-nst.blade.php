@@ -97,7 +97,7 @@
                 </div>
                 <div class="form-group" id="pic_id">
                     <label for="avatar">avatar</label>
-                    <input type="file" id="avatar" name="avatar" class="dropify" data-default-file="{{ asset('storage/avatars/placeholder.jpg') }}" />
+                    <input type="file" id="avatar" name="avatar" class="dropify" data-default-file="{{ asset('storage/clients/placeholder.jpg') }}" />
                 </div>
             </div>
             <div class="modal-footer" id="modalfooter">
@@ -114,7 +114,9 @@
                 <h4 class="modal-title" id="mySmallModalLabel">Message</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
-            <div class="modal-body" id="content"> content will be here </div>
+            <div class="modal-body text-center" id="content"> content will be here </div>
+            <div class="modal-footer" id="messagefooter">
+            </div>
         </div>
         <!-- /.modal-content -->
     </div>
@@ -152,6 +154,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
+        console.log(jsonData)
 
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.users.length; ind++) {
@@ -159,6 +162,16 @@
                 buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
             } else {
                 buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-reload\"></i></a></li>"
+            }
+            var type = "";
+            if (jsonData.roles[ind].id == 1) {
+                type = "AD-";
+            }
+            if (jsonData.roles[ind].id == 2) {
+                type = "CT-";
+            }
+            if (jsonData.roles[ind].id == 3) {
+                type = "TE-";
             }
             $('#bodytab').append("<div class=\"col-lg-4 col-md-6\" id=\"card" + ind + "\">" +
                 "<div class=\"card\" >" +
@@ -191,6 +204,7 @@
                 "</div>" +
                 "<div class=\"button-group text-center\">" +
                 "<br>" +
+                "<button class=\"btn waves-effect waves-light btn-inverse\" onclick=\"pass_change(" + jsonData.users[ind].id + "," + ind + ",'" + type + "')\"> générer mot de passe</button>" +
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -222,7 +236,9 @@
         $('#modalhead').html("<h4 class=\"modal-title\" >Nouveau staff-nst</h4>" +
             "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
         $('#modalfooter').html("<button type=\"button\" class=\"btn btn-info\" id=\"save\">Enregistrer</button>");
+        $('.dropify').dropify();
 
+        
         $('#role').val("");
         $('#role').selectpicker('refresh');
         $('#nom').val("");
@@ -264,6 +280,7 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
+            console.log(jsonData);
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -273,6 +290,16 @@
                     buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-trash\"></i></a></li>";
                 } else {
                     buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + jsonData.count + ")\"><i class=\"icon-reload\"></i></a></li>"
+                }
+                var type = "";
+                if (jsonData.role.id == 1) {
+                    type = "AD-";
+                }
+                if (jsonData.role.id == 2) {
+                    type = "CT-";
+                }
+                if (jsonData.role.id == 3) {
+                    type = "TE-";
                 }
                 $('#bodytab').append("<div class=\"col-lg-4 col-md-6\" id=\"card" + jsonData.count + "\">" +
                     "<div class=\"card\" >" +
@@ -305,6 +332,7 @@
                     "</div>" +
                     "<div class=\"button-group text-center\">" +
                     "<br>" +
+                    "<button class=\"btn waves-effect waves-light btn-inverse\" onclick=\"pass_change(" + jsonData.user.id + "," + jsonData.count + ",'" + type + "')\"> générer mot de passe</button>" +
                     "</div>" +
                     "</div>" +
                     "</div>" +
@@ -314,7 +342,8 @@
                     "</div>" +
                     "</div>");
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
         });
     });
@@ -338,6 +367,16 @@
             buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
         } else {
             buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-reload\"></i></a></li>"
+        }
+        var type = "";
+        if (jsonData.role.id == 1) {
+            type = "AD-";
+        }
+        if (jsonData.role.id == 2) {
+            type = "CT-";
+        }
+        if (jsonData.role.id == 3) {
+            type = "TE-";
         }
         $('#card' + ind).html("<div class=\"card\" >" +
             "<div class=\"el-card-item\">" +
@@ -369,6 +408,7 @@
             "</div>" +
             "<div class=\"button-group text-center\">" +
             "<br>" +
+            "<button class=\"btn waves-effect waves-light btn-inverse\" onclick=\"pass_change(" + jsonData.user.id + "," + ind + ",'" + type + "')\"> générer mot de passe</button>" +
             "</div>" +
             "</div>" +
             "</div>" +
@@ -398,6 +438,16 @@
         } else {
             buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-reload\"></i></a></li>"
         }
+        var type = "";
+        if (jsonData.role.id == 1) {
+            type = "AD-";
+        }
+        if (jsonData.role.id == 2) {
+            type = "CT-";
+        }
+        if (jsonData.role.id == 3) {
+            type = "TE-";
+        }
         $('#card' + ind).html("<div class=\"card\" >" +
             "<div class=\"el-card-item\">" +
             "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
@@ -428,6 +478,7 @@
             "</div>" +
             "<div class=\"button-group text-center\">" +
             "<br>" +
+            "<button class=\"btn waves-effect waves-light btn-inverse\" onclick=\"pass_change(" + jsonData.user.id + "," + ind + ",'" + type + "')\"> générer mot de passe</button>" +
             "</div>" +
             "</div>" +
             "</div>" +
@@ -456,6 +507,7 @@
         $('#email').val($('#email' + ind).html());
         $('#tel').val($('#tel' + ind).html());
         $('#adress').val($('#adress' + ind).html());
+        $('#password').val("");
         $('#err-password').hide();
         $('#role').val($('#role' + ind).attr('value'));
         $('#role').selectpicker('refresh');
@@ -497,6 +549,16 @@
                 } else {
                     buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-reload\"></i></a></li>"
                 }
+                var type = "";
+                if (jsonData.role.id == 1) {
+                    type = "AD-";
+                }
+                if (jsonData.role.id == 2) {
+                    type = "CT-";
+                }
+                if (jsonData.role.id == 3) {
+                    type = "TE-";
+                }
                 $('#card' + ind).html("<div class=\"card\" >" +
                     "<div class=\"el-card-item\">" +
                     "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
@@ -527,6 +589,7 @@
                     "</div>" +
                     "<div class=\"button-group text-center\">" +
                     "<br>" +
+                    "<button class=\"btn waves-effect waves-light btn-inverse\" onclick=\"pass_change(" + jsonData.user.id + "," + ind + ",'" + type + "')\"> générer mot de passe</button>" +
                     "</div>" +
                     "</div>" +
                     "</div>" +
@@ -535,11 +598,66 @@
                     "</div>" +
                     "</div>");
             } else {
-                printErrorMsg(jsonData.error);
+                clearInputs(jsonData.inputs);
+printErrorMsg(jsonData.error);
             }
 
         });
     }
+
+    function pass_change(id, ind, type) {
+        var pass = generatePassword(type)
+        $('#messagefooter').html("<button type=\"button\" class=\"btn btn-inverse\" id=\"pass_edit\">Enregistrer</button>");
+        $('#content').html("mot de pass généré est : <br><br><h2> " + pass + "</h2>");
+        $('#messagebox').modal('show');
+
+        $('#pass_edit').click(function() {
+
+            var inputs = {
+                "type": "staff",
+                "id": id,
+                "password": pass
+            };
+
+
+            var StringData = $.ajax({
+                url: "http://127.0.0.1:8000/utilisateur/staff-client/save_pass",
+                dataType: "json",
+                type: "POST",
+                async: false,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: inputs,
+            }).responseText;
+            jsonData = JSON.parse(StringData);
+
+            $('#messagefooter').html("")
+            console.log(jsonData)
+            var message = "";
+            if (jsonData.check == "done") {
+                message = "votre mot de passe est changé avec succès";
+            } else {
+                message = "votre mot de passe n'est pas changé";
+            }
+            $('#content').html(message);
+
+
+        });
+
+
+    }
+
+    function generatePassword(type) {
+        var length = 5,
+            charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+            retVal = type + "";
+        for (var i = 0, n = charset.length; i < length; ++i) {
+            retVal += charset.charAt(Math.floor(Math.random() * n));
+        }
+        return retVal;
+    }
+
 
     function printErrorMsg(msg) {
 

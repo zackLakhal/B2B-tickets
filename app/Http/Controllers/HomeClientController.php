@@ -23,6 +23,6 @@ class HomeClientController extends Controller
      */
     public function index()
     {
-        return view('statistique.index');
+        return view('statistique.dashboard');
     }
 }

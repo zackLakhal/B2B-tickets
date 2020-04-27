@@ -36,7 +36,7 @@ class EtatController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
         }
         $etat = new Etat();
         $etat->value = $request->value;
@@ -85,7 +85,7 @@ class EtatController extends Controller
     
             if ($validator->fails()) {
     
-                return response()->json(['error' => $validator->errors()]);
+                return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
             }
 
             $etat = Etat::withTrashed()
