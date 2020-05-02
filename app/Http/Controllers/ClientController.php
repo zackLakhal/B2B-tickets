@@ -22,6 +22,24 @@ class ClientController extends Controller
         return response()->json($clients);
     }
 
+    public function filter_all_clients(Request $request)
+    {
+        $filters = array();
+        $clients = null;
+        $request->client_id == "0" ? $filters[] = ['id', '<>', 0] :  $filters[] = ['id', '=', $request->client_id];
+
+
+        if ($request->is_all == "true") {
+            $clients = Client::where($filters)->withTrashed()->get();
+        } else {
+
+            $request->is_deleted == 'true' ?  $clients = Client::onlyTrashed()->where($filters)->get() : $clients = Client::where($filters)->get();
+        }
+        //return response()->json($request->all());
+        //return response()->json($filters);
+        return response()->json($clients);
+    }
+
     public function active_clients()
     {
         $clients = Client::all();
@@ -149,7 +167,7 @@ class ClientController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
         $client->nom = $request->nom;
@@ -215,7 +233,7 @@ class ClientController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
 
@@ -278,6 +296,41 @@ class ClientController extends Controller
         $departements = Departement::withTrashed()
             ->where('client_id', $id_c)
             ->get();
+        // $chefs = array();
+        // foreach ($departements as $departement) {
+        //     $chefs[] = Clientuser::where([
+        //         ['clientable_id', '=', $departement->id],
+        //         ['clientable_type', "=", "departement"],
+        //     ])
+        //         ->first();
+        // }
+        $objet =  [
+            'departements' => $departements,
+            //'chefs' => $chefs,
+
+        ];
+        return response()->json($objet);
+    }
+
+    public function filter_all_departements($id_c, Request $request)
+    {
+        
+
+        $filters = array();
+        $filters[] = ['client_id', $id_c];
+        $departements = null;
+        $request->departement_id == "0" ? $filters[] = ['id', '<>', 0] :  $filters[] = ['id', '=', $request->departement_id];
+
+
+        if ($request->is_all == "true") {
+            $departements = Departement::where($filters)->withTrashed()->get();
+        } else {
+
+            $request->is_deleted == 'true' ?  $departements = Departement::onlyTrashed()->where($filters)->get() : $departements = Departement::where($filters)->get();
+        }
+
+
+
         // $chefs = array();
         // foreach ($departements as $departement) {
         //     $chefs[] = Clientuser::where([
@@ -421,7 +474,7 @@ class ClientController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
 
@@ -467,7 +520,7 @@ class ClientController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
         $departement = new Departement();
         $departement->client_id = $id_c;
@@ -494,10 +547,62 @@ class ClientController extends Controller
 
     public function all_agences($id_c, $id_d)
     {
-        
+
         $agences = Agence::withTrashed()
-            ->where('departement_id','=', $id_d)
+            ->where('departement_id', '=', $id_d)
             ->get();
+
+        //   $chefs = array();
+        $villes = array();
+        $souscriptions = array();
+        foreach ($agences as $agence) {
+            // $chefs[] = Clientuser::where([
+            //     ['clientable_id', '=', $agence->id],
+            //     ['clientable_type', "=", "agence"],
+            // ])
+            //     ->first();
+            $villes[] = $agence->ville;
+
+            $souscriptions[] = [
+                'id' => $agence->id,
+                'produits'  => DB::table('views_detail_souscription')
+                    ->select('prod_id', 'prod_nom', 'prod_etat')
+                    ->groupBy('prod_id', 'prod_etat')
+                    ->where('agence_id', $agence->id)
+                    ->get()
+
+            ];
+        }
+
+
+        $objet =  [
+            'agences' => $agences,
+            //'chefs' => $chefs,
+            'villes' => $villes,
+            'souscriptions' => $souscriptions
+
+        ];
+        return response()->json($objet);
+    }
+
+    public function filter_all_agences($id_c, $id_d, Request $request)
+    {
+
+        
+        $filters = array();
+        $filters[] = ['departement_id', '=', $id_d];
+        $agences = null;
+        $request->agence_id == "0" ? $filters[] = ['id','<>',0] :  $filters[] = ['id','=',$request->agence_id];
+        
+        if($request->ville_id != "0"){
+            $filters[] = ['ville_id','=',$request->ville_id];
+        }
+        if($request->is_all == "true"){
+            $agences = Agence::where($filters)->withTrashed()->get();
+        }else{
+
+            $request->is_deleted == 'true' ?  $agences = Agence::onlyTrashed()->where($filters)->get() : $agences = Agence::where($filters)->get();
+        }
 
         //   $chefs = array();
         $villes = array();
@@ -669,7 +774,7 @@ class ClientController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
         $agence->nom = $request->nom;
@@ -738,7 +843,7 @@ class ClientController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
         $agence = new Agence();

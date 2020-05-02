@@ -3805,7 +3805,8 @@ Notification page Jquery toaster
 list and media
 ******************/
 .list-group a.list-group-item:hover {
-  background: #f2f4f8; }
+  /* background: #f2f4f8; */
+ }
 
 .list-group-item.active, .list-group .list-group-item.active:hover {
   background: #009efb;
@@ -3836,7 +3837,8 @@ User card page
     .el-element-overlay .el-card-item .el-card-content h3 {
       margin: 0px; }
     .el-element-overlay .el-card-item .el-card-content a {
-      color: #67757c; }
+      /* color: #67757c;  */
+    }
       .el-element-overlay .el-card-item .el-card-content a:hover {
         color: #009efb; }
   .el-element-overlay .el-card-item .el-overlay-1 {

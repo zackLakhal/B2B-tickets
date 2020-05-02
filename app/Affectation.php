@@ -15,9 +15,13 @@ class Affectation extends Model
     {
         return $this->belongsTo('App\Nstuser');
     }
-    public function raport()
+    public function pending()
     {
-        return $this->hasOne('App\Raport');
+        return $this->hasOne('App\Pending');
+    }
+    public function closed()
+    {
+        return $this->hasOne('App\Closed');
     }
 }
 

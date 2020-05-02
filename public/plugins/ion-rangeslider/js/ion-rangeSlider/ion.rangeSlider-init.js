@@ -51,3 +51,20 @@ $("#range_22").ionRangeSlider({
     grid: true
 });
 
+$("#mois").ionRangeSlider({
+    type: "double",
+    min: 1,
+    max: 12
+});
+
+$("#year").ionRangeSlider({
+    type: "double",
+    min: 2018,
+    max: new Date().getFullYear()
+});
+
+
+
+
+
+

@@ -48,8 +48,64 @@
         </div>
     </div>
 </div>
+<div class="">
+    <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
+</div>
 <div class="row" id="bodytab">
 
+</div>
+<div class="right-sidebar">
+    <div class="slimscrollright">
+        <div class="rpanel-title text-center" style="font-weight : bold; font-size: 25px"> Filtrer <span><i class="ti-close right-side-toggle"></i></span> </div>
+        <div class="r-panel-body">
+
+            <div class="demo-radio-button">
+                <input name="group1" type="radio" id="rd_nom" onclick="check(this)" checked />
+                <label for="rd_nom">Par nom</label>
+                <input name="group1" type="radio" id="rd_email" onclick="check(this)" />
+                <label for="rd_email">Par email</label>
+
+            </div>
+            <div class="form-group" id="fl_nom">
+                <label class="control-label ">Nom agence</label>
+                <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="fv_nom" id="fv_nom">
+
+                </select>
+            </div>
+            <div class="form-group" id="fl_email">
+                <label class="control-label ">Email agence</label>
+                <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="fv_email" id="fv_email">
+
+                </select>
+            </div>
+            <div class="form-group" id="fl_ville">
+                <label class="control-label ">ville</label>
+                <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="fv_ville" id="fv_ville">
+
+                </select>
+            </div>
+            <h4 class="card-title">actif et supprimé ?</h4>
+            <div class="col-md-12">
+                <div class="switch">
+                    <label>Non
+                        <input id="fv_dr" type="checkbox"><span class="lever switch-col-light-green"></span>Oui</label>
+                </div>
+            </div>
+            <br>
+            <div class="demo-radio-button" id="dr_group">
+                <input name="deleted" type="radio" id="active" value="false" checked />
+                <label for="active">actif</label>
+                <input name="deleted" type="radio" id="deleted" value="true" />
+                <label for="deleted">supprimé</label>
+
+            </div>
+            <br>
+            <div class="button-group text-center">
+                <button class="btn waves-effect waves-light btn-inverse" id="filter"> Chercher </button>
+
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" rqt="dialog" aria-labelledby="exampleModalLabel1">
@@ -175,7 +231,7 @@
 <script>
     $(document).ready(function() {
         init()
-        
+
     });
 
     function message(objet, action, statut) {
@@ -202,9 +258,16 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
         $('#bodytab').html("");
+
+
+        $('#fv_nom').html(" <option  value=\"0\"selected  >tout les agences </option>")
+        $('#fv_email').html(" <option  value=\"0\"selected  >tout les agences </option>")
         for (let ind = 0; ind < jsonData.agences.length; ind++) {
+            $('#fv_nom').append("<option value=\"" + jsonData.agences[ind].id + "\">" + jsonData.agences[ind].nom + "</option>");
+            $('#fv_email').append("<option value=\"" + jsonData.agences[ind].id + "\">" + jsonData.agences[ind].email + "</option>");
+
             produit = "";
             // if (jsonData.chefs[ind] == null) {
             //     chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef d'agence</span>"
@@ -364,7 +427,10 @@
                 "</div>" +
                 "</div>");
         }
+
         $('#ville').html(" <option  value=\"0\"selected disabled >selectioner une ville </option>")
+        $('#fv_ville').html(" <option  value=\"0\"selected >tout les villes </option>")
+
         var StringData1 = $.ajax({
             url: "http://127.0.0.1:8000/system/ville/active_index",
             dataType: "json",
@@ -375,8 +441,20 @@
 
         for (let ind = 0; ind < jsonData1.length; ind++) {
             $('#ville').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].nom + "</option>");
+            $('#fv_ville').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].nom + "</option>");
+
         }
         $('#ville').selectpicker('refresh');
+        $('#fv_ville').selectpicker('refresh');
+
+        $('#fv_nom').selectpicker('refresh');
+        $('#fv_email').selectpicker('refresh');
+        // $('#fv_dr').attr("checked", "");
+        $('#fl_email').hide()
+        document.getElementsByTagName('fv_dr').checked = false;
+
+
+        document.getElementsByTagName('rd_nom').checked = true;
 
 
 
@@ -415,12 +493,13 @@
                 data: inputs
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+            // console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
 
                 $('#exampleModal').modal('hide');
+                message("agence", "ajouté", jsonData.check);
 
                 // if (jsonData.chef == null) {
                 //     chef = " <span id=\"chef" + jsonData.count + "\" value=\"0\"> pas de chef d'agence</span>"
@@ -491,9 +570,206 @@
 
             } else {
                 clearInputs(jsonData.inputs);
-printErrorMsg(jsonData.error);
+                printErrorMsg(jsonData.error);
             }
         });
+    });
+
+    $('#filter').click(function() {
+
+        form_data = new FormData();
+        var agence_id;
+        var is_deleted;
+
+        $('#rd_nom').is(':checked') ? agence_id = $('#fv_nom').val() : agence_id = $('#fv_email').val()
+        $('#active').is(':checked') ? is_deleted = $('#active').val() : is_deleted = $('#deleted').val()
+
+        form_data.append("agence_id", agence_id);
+        form_data.append("ville_id", $('#fv_ville').val());
+        form_data.append("is_all", $('#fv_dr').is(':checked'));
+        form_data.append("is_deleted", is_deleted);
+
+        var buttonacive;
+        //var buttonaffect;
+        var chef;
+        var StringData = $.ajax({
+            url: "http://127.0.0.1:8000/outils/clients/" + $('#id_c').val() + "/departements/" + $('#id_d').val() + "/agences/filter_index",
+            dataType: "json",
+            type: "POST",
+            async: false,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            data: form_data,
+            processData: false,
+            contentType: false,
+        }).responseText;
+        jsonData = JSON.parse(StringData);
+        // console.log(jsonData)
+
+        $('#bodytab').html("");
+
+        for (let ind = 0; ind < jsonData.agences.length; ind++) {
+
+            produit = "";
+            // if (jsonData.chefs[ind] == null) {
+            //     chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef d'agence</span>"
+            //     buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.agences[ind].id + "," + ind + ")\">affecter un chef</button>"
+            // } else {
+            //     chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chefs[ind].id + "\">" +
+            //         "<span class=\"tooltip-item\">" + jsonData.chefs[ind].nom + " " + jsonData.chefs[ind].prénom + "</span> <span class=\"tooltip-content clearfix\">" +
+            //         "<img src=\"{{ asset('storage') }}/" + jsonData.chefs[ind].photo + "\" width=\"180\" /><br />" +
+            //         "<span class=\"tooltip-text p-t-10\">" +
+            //         "<p class=\"card-text text-center\">" + jsonData.chefs[ind].nom + " " + jsonData.chefs[ind].prénom + "</p>" +
+            //         "<p class=\"card-text text-center\">" + jsonData.chefs[ind].email + "</p>" +
+            //         "<p class=\"card-text text-center\">" + jsonData.chefs[ind].tel + "</p>" +
+            //         "<p class=\"card-text text-center\">" + jsonData.chefs[ind].adress + "</p>" +
+            //         "</span> </span>" +
+            //         "</span>";
+            //     buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.agences[ind].id + "," + ind + ")\">changer chef</button>"
+
+            // }
+            if (jsonData.agences[ind].deleted_at == null) {
+                buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.agences[ind].id + "," + ind + ")\">supprimer</button>" //+ buttonaffect;
+            } else {
+                buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.agences[ind].id + "," + ind + ")\">restorer</button>"
+            }
+
+            for (let j = 0; j < jsonData.souscriptions[ind].produits.length; j++) {
+                var qt_ne = 0.00;
+                equipements = "";
+                var inputs = {
+                    "id_a": jsonData.souscriptions[ind].id,
+                    "id_p": jsonData.souscriptions[ind].produits[j].prod_id
+                };
+                var StringData1 = $.ajax({
+                    url: "http://127.0.0.1:8000/outils/produits/equip_prod",
+                    dataType: "json",
+                    type: "GET",
+                    async: false,
+                    data: inputs
+                }).responseText;
+                jsonData1 = JSON.parse(StringData1);
+                //console.log(jsonData1)
+                for (let k = 0; k < jsonData1.equipements.length; k++) {
+                    refs = "";
+
+                    for (let f = 0; f < jsonData1.refs.length; f++) {
+                        if (jsonData1.refs[f].equip_id == jsonData1.equipements[k].equip_id) {
+                            var val = "";
+                            if (jsonData1.refs[f].ref != null) {
+                                val = jsonData1.refs[f].ref
+                            }
+                            refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
+                                "<input type=\"text\" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                "<span class=\"input-group-btn\">" +
+                                "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
+                                "</span>" +
+                                "<br>" +
+                                "</div>" +
+                                "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" > </small>";
+                            if (jsonData1.refs[f].ref_ne != 0) {
+                                qt_ne++;
+                            }
+                        }
+
+
+                    }
+
+                    equipements = equipements +
+                        "<div class=\"ribbon-wrapper card\">" +
+                        "<div class=\"ribbon ribbon-default\"> " + jsonData1.equipements[k].equip_nom + "</div>" +
+                        "<div class=\"ribbon-content\" >" +
+                        refs +
+                        "</div>" +
+                        "</div>";
+
+
+                }
+                var color = "";
+                switch (qt_ne) {
+                    case 0:
+                        color = "red";
+                        break;
+
+                    case jsonData1.refs.length:
+                        color = "green";
+                        break;
+
+                    default:
+                        color = "yellow";
+                        break;
+                }
+
+                produit = produit +
+                    "<div class=\"card\">" +
+                    "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData.souscriptions[ind].produits[j].prod_id + "_" + jsonData.souscriptions[ind].id + "\">" +
+                    "<h5 class=\"mb-0 text-center\">" +
+                    "<a style=\"color : " + color + "\" id=\"nom_p" + jsonData.souscriptions[ind].produits[j].prod_id + "_" + jsonData.souscriptions[ind].id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + ind + "\" href=\"#collapseex" + jsonData.souscriptions[ind].produits[j].prod_id + "_" + jsonData.souscriptions[ind].id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData.souscriptions[ind].produits[j].prod_id + "_" + jsonData.souscriptions[ind].id + "\">" +
+                    "<span style=\"float:left\">" + jsonData.souscriptions[ind].produits[j].prod_nom + "</span> <span style=\"float:right\">valide à " + (((qt_ne).toFixed(2) / jsonData1.refs.length) * 100).toFixed(0) + "%</span>" +
+                    "</a>" +
+                    "</h5>" +
+                    "</div>" +
+
+                    "<div id=\"collapseex" + jsonData.souscriptions[ind].produits[j].prod_id + "_" + jsonData.souscriptions[ind].id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.souscriptions[ind].produits[j].prod_id + "_" + jsonData.souscriptions[ind].id + "\">" +
+                    "<div class=\"card-body\">" +
+                    "<div>" +
+                    "<div style=\"margin: 10px 0px\" class=\"col-lg-12 col-md-6 col-xlg-2 col-xs-12\">" +
+                    equipements +
+                    "</div>" +
+                    "</div>" +
+                    "<div class=\"button-group text-center\">" +
+                    "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + jsonData.agences[ind].id + "," + jsonData.souscriptions[ind].produits[j].prod_id + "," + ind + ")\">supprimer</button>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>";
+
+            }
+            $('#bodytab').append("<div class=\"col-12 \" id=\"card" + ind + "\">" +
+                "<div class=\"card\">" +
+                "<div class=\"card-body\">" +
+                "<h2 id=\"nom" + ind + "\" class=\"card-title text-center \" style=\" font-weight: bold\">" + jsonData.agences[ind].nom + "</h2>" +
+                "<div id=\"slimtest2\">" +
+                "<div class=\"row\">" +
+                "<div class=\"col-md-6 \" id=\"card" + ind + "\">" +
+                "<div class=\"card \">" +
+                "<h2  class=\"card-title text-center\" > informations</h2>" +
+                "<hr>" +
+                "<div class=\"card-body\">" +
+                "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.agences[ind].email + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.agences[ind].tel + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.villes[ind].id + "\" id=\"ville" + ind + "\">" + jsonData.villes[ind].nom + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + ind + "\">" + jsonData.agences[ind].adress + "</spane></h4>" +
+                //"<h4><b> Chef d'agence : </b>" + chef + " </h4>" +
+                "<br>" +
+                "<div class=\"button-group text-center\">" +
+                "<button class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.agences[ind].id + "," + ind + ")\">modifier</button>" +
+                buttonacive +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "<div class=\"col-lg-6 \">" +
+                "<div class=\"card\" id=\"product\">" +
+                "<h3 class=\"card-title text-center\">produits</h3>" +
+                "<hr>" +
+                "<div class=\"card-body\">" +
+
+                "<div class=\"button-group text-center\">" +
+                "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agences[ind].id + "," + ind + ")\"> attacher produit</button>" +
+                "</div>" +
+                "<div id=\"accordionexample\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
+                produit +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>");
+        }
     });
 
 
@@ -513,7 +789,8 @@ printErrorMsg(jsonData.error);
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        //console.log(jsonData)
+        console.log(jsonData)
+        message("agence", "supprimé", jsonData.check);
 
         produit = "";
         // if (jsonData.chef == null) {
@@ -687,6 +964,7 @@ printErrorMsg(jsonData.error);
         }).responseText;
 
         jsonData = JSON.parse(StringData);
+        message("agence", "restauré", jsonData.check);
 
         produit = "";
         // if (jsonData.chef == null) {
@@ -886,6 +1164,8 @@ printErrorMsg(jsonData.error);
 
                 clearInputs(jsonData.inputs);
                 $('#exampleModal').modal('hide');
+                message("agence", "modifié", jsonData.check);
+
                 produit = "";
                 // if (jsonData.chef == null) {
                 //     chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef d'agence</span>"
@@ -1044,7 +1324,7 @@ printErrorMsg(jsonData.error);
 
             } else {
                 clearInputs(jsonData.inputs);
-printErrorMsg(jsonData.error);
+                printErrorMsg(jsonData.error);
             }
         });
     }
@@ -1349,10 +1629,11 @@ printErrorMsg(jsonData.error);
                 data: inputs
             }).responseText;
             jsonData = JSON.parse(StringData);
-            //console.log(jsonData)
+            console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
+                message("produit", "ajouté", jsonData.check);
 
 
                 produit = "";
@@ -1513,7 +1794,7 @@ printErrorMsg(jsonData.error);
                     "</div>");
             } else {
                 clearInputs(jsonData.inputs);
-printErrorMsg(jsonData.error);
+                printErrorMsg(jsonData.error);
             }
         });
     }
@@ -1534,12 +1815,13 @@ printErrorMsg(jsonData.error);
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        //console.log(jsonData)
+        console.log(jsonData)
         if ($.isEmptyObject(jsonData.error)) {
 
             clearInputsRef(jsonData.inputs, id.split("f")[1]);
 
             message("référance", "ajouté", jsonData.check);
+            location.reload(); 
         } else {
             printErrorMsgRef(jsonData.error, id.split("f")[1]);
         }
@@ -1560,6 +1842,7 @@ printErrorMsg(jsonData.error);
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
+        message("produit", "détaché", jsonData.check);
         produit = "";
         // if (jsonData.chef == null) {
         //     chef = " <span id=\"chef" + place + "\" value=\"0\"> pas de chef d'agence</span>"
@@ -1765,5 +2048,25 @@ printErrorMsg(jsonData.error);
         });
 
     }
+
+
+    function check(input) {
+
+        if (input.id == 'rd_email') {
+            $('#fl_nom').hide()
+            $('#fl_email').show()
+        } else {
+            $('#fl_nom').show()
+            $('#fl_email').hide()
+        }
+    }
+
+
+    $('#fv_dr').on('change', function() {
+
+
+        $(this).is(':checked') ? $('#dr_group').hide() : $('#dr_group').show()
+
+    })
 </script>
 @endsection

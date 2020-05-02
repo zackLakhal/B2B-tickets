@@ -45,9 +45,60 @@
         </div>
     </div>
 </div>
+<div class="">
+    <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
+</div>
 <div class="row" id="bodytab">
 
 </div>
+<div class="right-sidebar">
+    <div class="slimscrollright">
+        <div class="rpanel-title text-center" style="font-weight : bold; font-size: 25px"> Filtrer <span><i class="ti-close right-side-toggle"></i></span> </div>
+        <div class="r-panel-body">
+
+            <div class="demo-radio-button">
+                <input name="group1" type="radio" id="rd_nom" onclick="check(this)" checked />
+                <label for="rd_nom">Par nom</label>
+                <input name="group1" type="radio" id="rd_email" onclick="check(this)" />
+                <label for="rd_email">Par email</label>
+
+            </div>
+            <div class="form-group" id="fl_nom">
+                <label class="control-label ">Nom client</label>
+                <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="fv_nom" id="fv_nom">
+
+                </select>
+            </div>
+            <div class="form-group" id="fl_email">
+                <label class="control-label ">Email client</label>
+                <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="fv_email" id="fv_email">
+
+                </select>
+            </div>
+            <h4 class="card-title">actif et supprimé ?</h4>
+            <div class="col-md-12">
+                <div class="switch">
+                    <label>Non
+                        <input id="fv_dr" type="checkbox"><span class="lever switch-col-light-green"></span>Oui</label>
+                </div>
+            </div>
+            <br>
+            <div class="demo-radio-button" id="dr_group">
+                <input name="deleted" type="radio" id="active" value="false" checked />
+                <label for="active">actif</label>
+                <input name="deleted" type="radio" id="deleted" value="true" />
+                <label for="deleted">supprimé</label>
+
+            </div>
+            <br>
+            <div class="button-group text-center">
+                <button class="btn waves-effect waves-light btn-inverse" id="filter"> Chercher </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" id="exampleModal" tabindex="-1" rqt="dialog" aria-labelledby="exampleModalLabel1">
     <div class="modal-dialog" rqt="document">
@@ -151,7 +202,16 @@
         }).responseText;
         jsonData = JSON.parse(StringData);
         $('#bodytab').html("");
+
+        $('#fv_nom').html(" <option  value=\"0\"selected  >tout les clients </option>")
+        $('#fv_email').html(" <option  value=\"0\"selected  >tout les clients </option>")
+
         for (let ind = 0; ind < jsonData.length; ind++) {
+
+            $('#fv_nom').append("<option value=\"" + jsonData[ind].id + "\">" + jsonData[ind].nom + "</option>");
+            $('#fv_email').append("<option value=\"" + jsonData[ind].id + "\">" + jsonData[ind].email + "</option>");
+
+
             if (jsonData[ind].deleted_at == null) {
                 butttondetail = "<a href=\"/outils/clients/" + jsonData[ind].id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
                 buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData[ind].id + "," + ind + ")\">supprimer</button>"
@@ -176,6 +236,15 @@
                 "</div>" +
                 "</div>");
         }
+
+        $('#fv_nom').selectpicker('refresh');
+        $('#fv_email').selectpicker('refresh');
+        // $('#fv_dr').attr("checked", "");
+        $('#fl_email').hide()
+        document.getElementsByTagName('fv_dr').checked = false;
+
+
+        document.getElementsByTagName('rd_nom').checked = true;
 
 
     }
@@ -257,9 +326,74 @@
 
             } else {
                 clearInputs(jsonData.inputs);
-printErrorMsg(jsonData.error);
+                printErrorMsg(jsonData.error);
             }
         });
+    });
+
+    $('#filter').click(function() {
+
+
+
+        form_data = new FormData();
+        var client_id;
+        var is_deleted;
+
+        $('#rd_nom').is(':checked') ? client_id = $('#fv_nom').val() : client_id = $('#fv_email').val()
+        $('#active').is(':checked') ? is_deleted = $('#active').val() : is_deleted = $('#deleted').val()
+
+        form_data.append("client_id", client_id);
+        form_data.append("is_all", $('#fv_dr').is(':checked'));
+        form_data.append("is_deleted", is_deleted);
+
+        // console.log(jsonData)
+        var StringData = $.ajax({
+            url: "http://127.0.0.1:8000/outils/clients/filter_index",
+            dataType: "json",
+            type: "POST",
+            async: false,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            data: form_data,
+            processData: false,
+            contentType: false,
+        }).responseText;
+        jsonData = JSON.parse(StringData);
+        console.log(jsonData)
+
+        $('#bodytab').html("");
+
+        for (let ind = 0; ind < jsonData.length; ind++) {
+
+            $('#fv_nom').append("<option value=\"" + jsonData[ind].id + "\">" + jsonData[ind].nom + "</option>");
+            $('#fv_email').append("<option value=\"" + jsonData[ind].id + "\">" + jsonData[ind].email + "</option>");
+
+
+            if (jsonData[ind].deleted_at == null) {
+                butttondetail = "<a href=\"/outils/clients/" + jsonData[ind].id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+                buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData[ind].id + "," + ind + ")\">supprimer</button>"
+            } else {
+                buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData[ind].id + "," + ind + ")\">restorer</button>"
+                butttondetail = ""
+            }
+            $('#bodytab').append("<div class=\"col-md-4 m-t-30\" id=\"card" + ind + "\">" +
+                "<div class=\"card \">" +
+                "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData[ind].photo + "\" alt=\"Card image cap\">" +
+                "<div class=\"card-body\">" +
+                "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData[ind].nom + "</h2>" +
+                "<h4  class=\"card-title\"><b>Email :</b><spane id=\"email" + ind + "\">" + jsonData[ind].email + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData[ind].tel + "</spane></h4>" +
+                "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData[ind].adress + "</spane></p>" +
+                "<div class=\"button-group text-center\">" +
+                butttondetail +
+                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData[ind].id + "," + ind + ")\">modifier</button>" +
+                buttonacive +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>");
+        }
     });
 
     function supprimer(id, ind) {
@@ -359,7 +493,7 @@ printErrorMsg(jsonData.error);
         $('#password').val("");
         $('#err-password').hide();
         $('#exampleModal').modal('show');
-       
+
         $('#edit').click(function() {
             form_data = new FormData();
 
@@ -418,7 +552,7 @@ printErrorMsg(jsonData.error);
 
             } else {
                 clearInputs(jsonData.inputs);
-printErrorMsg(jsonData.error);
+                printErrorMsg(jsonData.error);
             }
 
         });
@@ -447,5 +581,24 @@ printErrorMsg(jsonData.error);
         });
 
     }
+
+    function check(input) {
+
+        if (input.id == 'rd_email') {
+            $('#fl_nom').hide()
+            $('#fl_email').show()
+        } else {
+            $('#fl_nom').show()
+            $('#fl_email').hide()
+        }
+    }
+
+
+    $('#fv_dr').on('change', function() {
+
+
+        $(this).is(':checked') ? $('#dr_group').hide() : $('#dr_group').show()
+
+    })
 </script>
 @endsection

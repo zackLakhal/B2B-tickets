@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Clientuser;
 use App\Nstuser;
 use App\Client;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -15,12 +16,57 @@ class UserController extends Controller
     {
         $users = Nstuser::withTrashed()->get();
         $roles = array();
+        $affectations = array();
         foreach ($users as $user) {
             $roles[] = $user->role;
+            $affectations[] = DB::table('affectations')
+                ->leftJoin('reclamations', 'reclamations.id', '=', 'affectations.reclamation_id')
+                ->leftJoin('etats', 'etats.id', '=', 'reclamations.etat_id')
+                ->select('reclamations.etat_id', DB::raw('count(reclamations.id) as nb'))->where([
+                    ['affectations.nstuser_id', '=', $user->id]
+                ])->groupBy('reclamations.etat_id')->get();
         }
         $objet =  [
             'users' => $users,
             'roles' => $roles,
+            'affectations' => $affectations
+
+        ];
+        return response()->json($objet);
+    }
+
+    public function filter_nst_index(Request $request)
+    {
+        $filters = array();
+        $users = null;
+        $request->role_id == "0" ? $filters[] = ['role_id','<>',0] :  $filters[] = ['role_id','=',$request->role_id];
+        
+        if($request->user_id != "0"){
+            $filters[] = ['id','=',$request->user_id];
+        }
+        if($request->is_all == "true"){
+            $users = Nstuser::where($filters)->withTrashed()->get();
+        }else{
+
+            $request->is_deleted == 'true' ?  $users = Nstuser::onlyTrashed()->where($filters)->get() : $users = Nstuser::where($filters)->get();
+        }
+       // return response()->json($filters);
+
+        $roles = array();
+        $affectations = array();
+        foreach ($users as $user) {
+            $roles[] = $user->role;
+            $affectations[] = DB::table('affectations')
+                ->leftJoin('reclamations', 'reclamations.id', '=', 'affectations.reclamation_id')
+                ->leftJoin('etats', 'etats.id', '=', 'reclamations.etat_id')
+                ->select('reclamations.etat_id', DB::raw('count(reclamations.id) as nb'))->where([
+                    ['affectations.nstuser_id', '=', $user->id]
+                ])->groupBy('reclamations.etat_id')->get();
+        }
+        $objet =  [
+            'users' => $users,
+            'roles' => $roles,
+            'affectations' => $affectations
 
         ];
         return response()->json($objet);
@@ -72,7 +118,7 @@ class UserController extends Controller
 
             if ($validator->fails()) {
 
-                return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+                return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
             }
 
 
@@ -123,6 +169,12 @@ class UserController extends Controller
             'check' => $check,
             'user' => $user,
             'role' => $user->role,
+            'affectation' =>  DB::table('affectations')
+                ->leftJoin('reclamations', 'reclamations.id', '=', 'affectations.reclamation_id')
+                ->leftJoin('etats', 'etats.id', '=', 'reclamations.etat_id')
+                ->select('reclamations.etat_id', DB::raw('count(reclamations.id) as nb'))->where([
+                    ['affectations.nstuser_id', '=', $user->id]
+                ])->groupBy('reclamations.etat_id')->get(),
             'inputs' => $request->all()
         ];
         return response()->json($objet);
@@ -144,7 +196,7 @@ class UserController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
         $user = new Nstuser();
@@ -190,6 +242,12 @@ class UserController extends Controller
             'count' => $count - 1,
             'user' => $user,
             'role' => $user->role,
+            'affectation' =>  DB::table('affectations')
+                ->leftJoin('reclamations', 'reclamations.id', '=', 'affectations.reclamation_id')
+                ->leftJoin('etats', 'etats.id', '=', 'reclamations.etat_id')
+                ->select('reclamations.etat_id', DB::raw('count(reclamations.id) as nb'))->where([
+                    ['affectations.nstuser_id', '=', $user->id]
+                ])->groupBy('reclamations.etat_id')->get(),
             'inputs' => $request->all()
         ];
         return response()->json($objet);
@@ -200,6 +258,46 @@ class UserController extends Controller
     public function client_index()
     {
         $users = Clientuser::withTrashed()->get();
+        $roles = array();
+        $clients = array();
+        foreach ($users as $user) {
+            $roles[] = $user->role;
+            $clients[] = Client::withTrashed()
+                ->where('id', $user->created_by)
+                ->first();
+        }
+
+        $objet =  [
+            'users' => $users,
+            'roles' => $roles,
+            'clients' => $clients
+
+        ];
+        return response()->json($objet);
+    }
+
+    public function filter_client_index(Request $request)
+    {
+        
+        $filters = array();
+        $users = null;
+        $request->role_id == "0" ? $filters[] = ['role_id','<>',0] :  $filters[] = ['role_id','=',$request->role_id];
+        
+        if($request->client_id != "0"){
+            $filters[] = ['created_by','=',$request->client_id];
+        }
+        if($request->user_id != "0"){
+            $filters[] = ['id','=',$request->user_id];
+        }
+        if($request->is_all == "true"){
+            $users = Clientuser::where($filters)->withTrashed()->get();
+        }else{
+
+            $request->is_deleted == 'true' ?  $users = Clientuser::onlyTrashed()->where($filters)->get() : $users = Clientuser::where($filters)->get();
+        }
+        //return response()->json($request->all());
+        //return response()->json($filters);
+
         $roles = array();
         $clients = array();
         foreach ($users as $user) {
@@ -306,7 +404,7 @@ class UserController extends Controller
 
             if ($validator->fails()) {
 
-                return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+                return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
             }
 
 
@@ -382,7 +480,7 @@ class UserController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
         $user = new Clientuser();
@@ -442,20 +540,20 @@ class UserController extends Controller
 
     public function save_pass(Request $request)
     {
-       
-            $done = false;
-            $user;
-            if($request->type == "client"){
-                $user = Clientuser::find($request->id);
-            }else{
-                $user = Nstuser::find($request->id);
-            }
-           
-            $user->password = Hash::make($request->password);
-            $user->save();
-            $done = true;
-        
-        
+
+        $done = false;
+        $user;
+        if ($request->type == "client") {
+            $user = Clientuser::find($request->id);
+        } else {
+            $user = Nstuser::find($request->id);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+        $done = true;
+
+
         $client =  Client::withTrashed()
             ->where('id', $user->created_by)
             ->first();

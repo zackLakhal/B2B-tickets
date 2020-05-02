@@ -24,6 +24,26 @@ class ProduitController extends Controller
         return response()->json($produits);
     }
 
+    public function filter_index(Request $request)
+    {
+        $filters = array();
+        $produits = null;
+        $request->produit_id == "0" ? $filters[] = ['id','<>',0] :  $filters[] = ['id','=',$request->produit_id];
+        
+        if($request->is_all == "true"){
+            $produits = Produit::where($filters)->withTrashed()->get();
+        }else{
+
+            $request->is_deleted == 'true' ?  $produits = Produit::onlyTrashed()->where($filters)->get() : $produits = Produit::where($filters)->get();
+        }
+        
+        $equipements = array();
+        foreach ($produits as $produit) {
+            $equipements[$produit->id] = $produit->equipements;
+        }
+        return response()->json($produits);
+    }
+
     public function active_produits(Request $request)
     {
         $temps = DB::table('souscriptions')

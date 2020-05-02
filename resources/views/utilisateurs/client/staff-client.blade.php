@@ -43,9 +43,70 @@
         </div>
     </div>
 </div> -->
+<div class="">
+    <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
+</div>
 <div id="bodytab" class="row el-element-overlay">
 
+</div>
+<div class="right-sidebar">
+    <div class="slimscrollright">
+        <div class="rpanel-title text-center" style="font-weight : bold; font-size: 25px"> Filtrer <span><i class="ti-close right-side-toggle"></i></span> </div>
+        <div class="r-panel-body">
 
+            <div class="demo-radio-button">
+                <input name="group1" type="radio" id="rd_nom" checked onclick="check(this)" />
+                <label for="rd_nom">Par nom</label>
+                <input name="group1" type="radio" id="rd_email" onclick="check(this)" />
+                <label for="rd_email">Par email</label>
+
+            </div>
+            <div class="form-group" id="fl_nom">
+                <label class="control-label ">Nom prénom</label>
+                <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="fv_nom" id="fv_nom">
+
+                </select>
+            </div>
+            <div class="form-group" id="fl_email">
+                <label class="control-label ">staff Email</label>
+                <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="fv_email" id="fv_email">
+
+                </select>
+            </div>
+            <div class="form-group" id="fl_role">
+                <label class="control-label ">role</label>
+                <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="fv_role" id="fv_role">
+
+                </select>
+            </div>
+            <div class="form-group" id="fl_client">
+                <label class="control-label ">client</label>
+                <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="fv_client" id="fv_client">
+                </select>
+            </div>
+
+            <h4 class="card-title">actif et supprimé ?</h4>
+            <div class="col-md-12">
+                <div class="switch">
+                    <label>Non
+                        <input id="fv_dr" type="checkbox"><span class="lever switch-col-light-green"></span>Oui</label>
+                </div>
+            </div>
+            <br>
+            <div class="demo-radio-button" id="dr_group">
+                <input name="deleted" type="radio" id="active" value="false" checked />
+                <label for="active">actif</label>
+                <input name="deleted" type="radio" id="deleted" value="true"/>
+                <label for="deleted">supprimé</label>
+
+            </div>
+            <br>
+            <div class="button-group text-center">
+                <button class="btn waves-effect waves-light btn-inverse" id="filter"> Chercher </button>
+
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" rqt="dialog" aria-labelledby="exampleModalLabel1">
@@ -169,7 +230,13 @@
         jsonData = JSON.parse(StringData);
 
         $('#bodytab').html("");
+
+        $('#fv_nom').html(" <option  value=\"0\"selected  >tout les staff </option>")
+        $('#fv_email').html(" <option  value=\"0\"selected  >tout les staff </option>")
         for (let ind = 0; ind < jsonData.users.length; ind++) {
+
+            $('#fv_nom').append("<option value=\"" + jsonData.users[ind].id + "\">" + jsonData.users[ind].nom + " " + jsonData.users[ind].prénom + "</option>");
+            $('#fv_email').append("<option value=\"" + jsonData.users[ind].id + "\">" + jsonData.users[ind].email + "</option>");
 
             if (jsonData.users[ind].deleted_at == null) {
                 buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
@@ -233,6 +300,7 @@
         }
 
         $('#role').html(" <option  value=\"0\"selected disabled >selectioner un role </option>")
+        $('#fv_role').html(" <option  value=\"0\"selected >tout les roles </option>")
         var StringData1 = $.ajax({
             url: "http://127.0.0.1:8000/system/role/active_index",
             dataType: "json",
@@ -243,10 +311,23 @@
 
         for (let ind = 0; ind < jsonData1.length; ind++) {
             $('#role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
+            $('#fv_role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
         }
         $('#role').selectpicker('refresh');
+        $('#fv_role').selectpicker('refresh');
+        $('#fv_nom').selectpicker('refresh');
+        $('#fv_email').selectpicker('refresh');
+        $('#fv_client').selectpicker('refresh');
+        // $('#fv_dr').attr("checked", "");
+        
+        document.getElementsByTagName('fv_dr').checked = false;
+        //document.getElementsByTagName('rd_email').checked = false;
+        document.getElementsByTagName('rd_nom').checked = true;
+        $('#fl_email').hide()
+
 
         $('#created_by').html(" <option  value=\"0\"selected disabled >selectioner un client </option>")
+        $('#fv_client').html(" <option  value=\"0\"selected >tout les clients </option>")
         var StringData1 = $.ajax({
             url: "http://127.0.0.1:8000/outils/clients/active_index",
             dataType: "json",
@@ -257,11 +338,113 @@
 
         for (let ind = 0; ind < jsonData1.length; ind++) {
             $('#created_by').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].nom + "</option>");
+            $('#fv_client').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].nom + "</option>");
         }
         $('#created_by').selectpicker('refresh');
+        $('#fv_client').selectpicker('refresh');
 
 
     }
+
+    $('#filter').click(function() {
+
+
+
+        form_data = new FormData();
+        var user_id;
+        var is_deleted;
+
+        $('#rd_nom').is(':checked') ? user_id = $('#fv_nom').val() : user_id = $('#fv_email').val()
+        $('#active').is(':checked') ? is_deleted = $('#active').val() : is_deleted = $('#deleted').val()
+
+        form_data.append("user_id", user_id);
+        form_data.append("role_id", $('#fv_role').val());
+        form_data.append("client_id", $('#fv_client').val());
+        form_data.append("is_all", $('#fv_dr').is(':checked'));
+        form_data.append("is_deleted", is_deleted);
+
+        // console.log(jsonData)
+        var StringData = $.ajax({
+            url: "http://127.0.0.1:8000/utilisateur/staff-client/filter_index",
+            dataType: "json",
+            type: "POST",
+            async: false,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            data: form_data,
+            processData: false,
+            contentType: false,
+        }).responseText;
+        jsonData = JSON.parse(StringData);
+        console.log(jsonData)
+
+        $('#bodytab').html("");
+
+        for (let ind = 0; ind < jsonData.users.length; ind++) {
+
+
+            if (jsonData.users[ind].deleted_at == null) {
+                buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
+            } else {
+                buttonacive = "<li><a class=\"btn default btn-success\"  onclick=\"restorer(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-reload\"></i></a></li>"
+            }
+            var type = "";
+            if (jsonData.roles[ind].id == 4) {
+                type = "CL-";
+            } else {
+                type = "AG-";
+            }
+            // if (jsonData.users[ind].is_affected) {
+            //     affectation = "<a class=\"list-group-item\" id=\"affected" + ind + "\" style=\"color:green;\" value=\"" + jsonData.users[ind].is_affected + "\">état : affecté</a>";
+            // } else {
+            //     affectation = "<a class=\"list-group-item\" id=\"affected" + ind + "\" style=\"color:red;\" value=\"" + jsonData.users[ind].is_affected + "\">état : non affecté</a>";
+            // }
+
+            $('#bodytab').append("<div class=\"col-lg-4 col-md-6\" id=\"card" + ind + "\">" +
+                "<div class=\"card\" >" +
+                "<div class=\"el-card-item\">" +
+                "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.users[ind].photo + "\" alt=\"user\" />" +
+                "<div class=\"el-overlay scrl-up\">" +
+                "<ul class=\"el-info\">" +
+                "<li><a class=\"btn default btn-warning\" onclick=\"modifier(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
+                buttonacive +
+                "</ul>" +
+                "</div>" +
+                "</div>" +
+                "<div class=\"el-card-content\">" +
+                "<h3 class=\"box-title\" id=\"full_name" + ind + "\">" + jsonData.users[ind].nom + " " + jsonData.users[ind].prénom + "</h3>" +
+                "<div id=\"accordion" + ind + "\" role=\"tablist\" class=\"minimal-faq\" aria-multiselectable=\"true\">" +
+                "<div class=\"card-header\" role=\"tab\" id=\"headingOne" + ind + "\">" +
+                "<h4 class=\"mb-0\">" +
+                "<a class=\"btn waves-effect waves-light btn-primary\" style=\"color:white\" data-toggle=\"collapse\" data-parent=\"#accordion" + ind + "\" href=\"#collapseOne" + ind + "\" aria-expanded=\"false\" aria-controls=\"collapseOne" + ind + "\">" +
+                "Informations" +
+                "</a>" +
+                "</h4>" +
+                "</div>" +
+                "<div id=\"collapseOne" + ind + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"headingOne" + ind + "\">" +
+                "<div class=\"card-body\">" +
+                "<div class=\"list-group\">" +
+                "<a class=\"list-group-item \"id=\"email" + ind + "\">" + jsonData.users[ind].email + "</a>" +
+                "<a class=\"list-group-item\" id=\"tel" + ind + "\">" + jsonData.users[ind].tel + "</a>" +
+                "<a class=\"list-group-item\" id=\"adress" + ind + "\">" + jsonData.users[ind].adress + "</a>" +
+                "<a class=\"list-group-item\" id=\"role" + ind + "\" value=\"" + jsonData.roles[ind].id + "\">" + jsonData.roles[ind].value + "</a>" +
+                "<a class=\"list-group-item\" id=\"created_by" + ind + "\" value=\"" + jsonData.clients[ind].id + "\"> travail chez : " + jsonData.clients[ind].nom + "</a>" +
+                // affectation +
+                "</div>" +
+                "<div class=\"button-group text-center\">" +
+                "<br>" +
+                "<button class=\"btn waves-effect waves-light btn-inverse\" onclick=\"pass_change(" + jsonData.users[ind].id + "," + ind + ",'" + type + "')\"> générer mot de passe</button>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>");
+        }
+    });
 
     // $('#newmodal').click(function() {
     //     $('#modalhead').html("<h4 class=\"modal-title\" >Nouveau staff-client</h4>" +
@@ -370,10 +553,12 @@
 
     //         } else {
     //             printErrorMsg(jsonData.error);
-//clearInputs(jsonData.inputs);
+    //clearInputs(jsonData.inputs);
     //         }
     //     });
     //});
+
+
 
     function supprimer(id, ind) {
         var StringData = $.ajax({
@@ -642,7 +827,7 @@
 
             } else {
                 clearInputs(jsonData.inputs);
-printErrorMsg(jsonData.error);
+                printErrorMsg(jsonData.error);
             }
 
         });
@@ -725,5 +910,24 @@ printErrorMsg(jsonData.error);
         });
 
     }
+
+    function check(input) {
+
+        if (input.id == 'rd_email') {
+            $('#fl_nom').hide()
+            $('#fl_email').show()
+        } else {
+            $('#fl_nom').show()
+            $('#fl_email').hide()
+        }
+    }
+
+
+    $('#fv_dr').on('change', function() {
+
+
+        $(this).is(':checked') ? $('#dr_group').hide() : $('#dr_group').show()
+
+    })
 </script>
 @endsection

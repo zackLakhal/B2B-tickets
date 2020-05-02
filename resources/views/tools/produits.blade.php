@@ -46,9 +46,46 @@
         </div>
     </div>
 </div>
+<div class="">
+    <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
+</div>
 <div class="row" id="bodytab">
 
+</div>
+<div class="right-sidebar">
+    <div class="slimscrollright">
+        <div class="rpanel-title text-center" style="font-weight : bold; font-size: 25px"> Filtrer <span><i class="ti-close right-side-toggle"></i></span> </div>
+        <div class="r-panel-body">
 
+
+            <div class="form-group" id="fl_nom">
+                <label class="control-label ">Nom produit</label>
+                <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="fv_nom" id="fv_nom">
+
+                </select>
+            </div>
+            <h4 class="card-title">actif et supprimé ?</h4>
+            <div class="col-md-12">
+                <div class="switch">
+                    <label>Non
+                        <input id="fv_dr" type="checkbox"><span class="lever switch-col-light-green"></span>Oui</label>
+                </div>
+            </div>
+            <br>
+            <div class="demo-radio-button" id="dr_group">
+                <input name="deleted" type="radio" id="active" value="false" checked />
+                <label for="active">actif</label>
+                <input name="deleted" type="radio" id="deleted" value="true" />
+                <label for="deleted">supprimé</label>
+
+            </div>
+            <br>
+            <div class="button-group text-center">
+                <button class="btn waves-effect waves-light btn-inverse" id="filter"> Chercher </button>
+
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" rqt="dialog" aria-labelledby="exampleModalLabel1">
@@ -179,7 +216,10 @@
         jsonData = JSON.parse(StringData);
 
         $('#bodytab').html("");
+        $('#fv_nom').html(" <option  value=\"0\"selected  >tout les produits </option>")
         for (let ind = 0; ind < jsonData.length; ind++) {
+            $('#fv_nom').append("<option value=\"" + jsonData[ind].id + "\">" + jsonData[ind].nom + "</option>");
+
             $('#accordionexample' + ind).html("");
             equips = "";
             if (jsonData[ind].deleted_at == null) {
@@ -255,6 +295,9 @@
                 "</div>");
         }
 
+        $('#fv_nom').selectpicker('refresh');
+        document.getElementsByTagName('fv_dr').checked = false;
+
 
     }
 
@@ -280,7 +323,7 @@
                 dataType: "json",
                 type: "POST",
                 async: false,
-                
+
                 data: form_data,
                 processData: false,
                 contentType: false,
@@ -368,9 +411,120 @@
                     "</div>");
             } else {
                 clearInputs(jsonData.inputs);
-printErrorMsg(jsonData.error);
+                printErrorMsg(jsonData.error);
             }
         });
+    });
+
+    $('#filter').click(function() {
+
+
+
+        form_data = new FormData();
+        var is_deleted;
+
+        $('#active').is(':checked') ? is_deleted = $('#active').val() : is_deleted = $('#deleted').val()
+
+        form_data.append("produit_id", $('#fv_nom').val());
+        form_data.append("is_all", $('#fv_dr').is(':checked'));
+        form_data.append("is_deleted", is_deleted);
+
+        // console.log(jsonData)
+        var buttonaciveproduit;
+        var buttonaciveequipement;
+
+        var StringData = $.ajax({
+            url: "http://127.0.0.1:8000/outils/produits/filter_index",
+            dataType: "json",
+            type: "POST",
+            async: false,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            data: form_data,
+            processData: false,
+            contentType: false,
+        }).responseText;
+        jsonData = JSON.parse(StringData);
+        console.log(jsonData)
+
+        $('#bodytab').html("");
+        for (let ind = 0; ind < jsonData.length; ind++) {
+
+            $('#accordionexample' + ind).html("");
+            equips = "";
+            if (jsonData[ind].deleted_at == null) {
+                buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData[ind].id + "," + ind + ", -1)\">supprimer</button>"
+            } else {
+                buttonaciveproduit = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('produit'," + jsonData[ind].id + "," + ind + ", -1)\">restorer</button>"
+            }
+
+            for (let j = 0; j < jsonData[ind].equipements.length; j++) {
+                if (jsonData[ind].equipements[j].active == 1) {
+                    buttonaciveequipement = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('equipement'," + jsonData[ind].id + "," + ind + "," + jsonData[ind].equipements[j].id + ")\">supprimer</button>"
+                } else {
+                    buttonaciveequipement = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer('equipement'," + jsonData[ind].id + "," + ind + "," + jsonData[ind].equipements[j].id + ")\">restorer</button>"
+                }
+                equips = equips +
+                    "<div class=\"card\">" +
+                    "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData[ind].equipements[j].id + "\">" +
+                    "<h5 class=\"mb-0 text-center\">" +
+                    "<a id=\"nom_e" + jsonData[ind].equipements[j].id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + ind + "\" href=\"#collapseex" + jsonData[ind].equipements[j].id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData[ind].equipements[j].id + "\">" +
+                    jsonData[ind].equipements[j].nom +
+                    "</a>" +
+                    "</h5>" +
+                    "</div>" +
+
+                    "<div id=\"collapseex" + jsonData[ind].equipements[j].id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData[ind].equipements[j].id + "\">" +
+                    "<div class=\"card-body\">" +
+
+                    "<img class=\"card-img-top\" id=\"equip" + jsonData[ind].equipements[j].id + "\" src=\"{{ asset('storage') }}/" + jsonData[ind].equipements[j].image + "\" alt=\"Card image cap\">" +
+                    "<div class=\"card-body\">" +
+                    "<h4  class=\"card-title\"><b>Marque :</b> <spane id=\"marque_e" + jsonData[ind].equipements[j].id + "\">" + jsonData[ind].equipements[j].marque + "</spane></h4>" +
+                    "<h4  class=\"card-title\"><b>Modèle :</b> <spane id=\"modele_e" + jsonData[ind].equipements[j].id + "\">" + jsonData[ind].equipements[j].modele + "</spane></h4>" +
+                    "<p class=\"card-text\" ><spane style=\"font-weight: bold; color : #455a64;\"> Détails :  </spane><br><spane id=\"info_e" + jsonData[ind].equipements[j].id + "\">" +
+                    jsonData[ind].equipements[j].info +
+                    "</spane></p>" +
+                    "<div class=\"button-group text-center\">" +
+                    "<button  class=\"btn btn-warning\" \" onclick=\"modifier_equipement(" + jsonData[ind].id + "," + ind + "," + jsonData[ind].equipements[j].id + ")\">modifier</button>" +
+                    buttonaciveequipement +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>"
+            }
+            $('#bodytab').append("<div class=\"col-12 \" id=\"pd_" + ind + "\">" +
+                "<div class=\"card\" >" +
+                "<div class=\"card-body\">" +
+
+
+                "<div class=\"row\">" +
+                "<div class=\"col-lg-4 col-md-4\"><img id=\"produit" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData[ind].image + "\" class=\"img-responsive img-thumbnail\" /></div>" +
+                "<div class=\"col-lg-4 col-md-4\">" +
+                "<div class=\"card-title text-center\">" +
+                "<h2 id=\"nom_p" + ind + "\">" + jsonData[ind].nom + "</h2>" +
+                "<p id=\"info_p" + ind + "\">" +
+                jsonData[ind].info +
+                "</p>" +
+                "<div class=\"button-group\" style=\"position: absolute; bottom: 0;  left: 0%;right: 0%; \">" +
+                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier_produit(" + jsonData[ind].id + "," + ind + ")\">modifier</button>" +
+                buttonaciveproduit +
+                "</div>" +
+
+                "</div>" +
+                "</div>" +
+                "<div class=\"col-lg-4 col-md-4 text-center\" >" +
+                "<button  class=\"btn  btn-success \" style=\"margin-bottom: 10px\" onclick=\"ajouter(" + jsonData[ind].id + "," + ind + ")\"> nouveau equipement</button>" +
+                "<div id=\"accordionexample" + ind + "\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
+                equips +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>");
+        }
     });
 
 
@@ -590,7 +744,7 @@ printErrorMsg(jsonData.error);
                 dataType: "json",
                 type: "POST",
                 async: false,
-                
+
                 data: form_data,
                 processData: false,
                 contentType: false,
@@ -674,7 +828,7 @@ printErrorMsg(jsonData.error);
                     "</div>");
             } else {
                 clearInputs(jsonData.inputs);
-printErrorMsg(jsonData.error);
+                printErrorMsg(jsonData.error);
             }
 
         });
@@ -709,7 +863,7 @@ printErrorMsg(jsonData.error);
                 dataType: "json",
                 type: "POST",
                 async: false,
-                
+
                 data: form_data,
                 processData: false,
                 contentType: false,
@@ -794,7 +948,7 @@ printErrorMsg(jsonData.error);
 
             } else {
                 clearInputs(jsonData.inputs);
-printErrorMsg(jsonData.error);
+                printErrorMsg(jsonData.error);
             }
 
         });
@@ -830,7 +984,7 @@ printErrorMsg(jsonData.error);
                 dataType: "json",
                 type: "POST",
                 async: false,
-                
+
                 data: form_data,
                 processData: false,
                 contentType: false,
@@ -916,7 +1070,7 @@ printErrorMsg(jsonData.error);
 
             } else {
                 clearInputs(jsonData.inputs);
-printErrorMsg(jsonData.error);
+                printErrorMsg(jsonData.error);
             }
 
 
@@ -946,6 +1100,13 @@ printErrorMsg(jsonData.error);
         });
 
     }
+
+    $('#fv_dr').on('change', function() {
+
+
+        $(this).is(':checked') ? $('#dr_group').hide() : $('#dr_group').show()
+
+    })
 </script>
 
 @endsection

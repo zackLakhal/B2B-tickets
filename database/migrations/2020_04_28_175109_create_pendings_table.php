@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAffectationsTable extends Migration
+class CreatePendingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,17 @@ class CreateAffectationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('affectations', function (Blueprint $table) {
+        Schema::create('pendings', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('reclamation_id');
-            $table->bigInteger('nstuser_id');
-            $table->boolean('accepted')->default(false);
-            $table->dateTime('accepted_at')->nullable();
+            $table->string('ref');
+            $table->bigInteger('affectation_id');
+            $table->string('type')->default("deplacement");
+            $table->boolean('with_pv')->default(false);
+            $table->text('commentaire')->default("");
+            $table->string('pv')->default("");
             $table->timestamps();
             $table->softDeletes();
-});
+        });
     }
 
     /**
@@ -31,6 +33,6 @@ class CreateAffectationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('affectations');
+        Schema::dropIfExists('pendings');
     }
 }

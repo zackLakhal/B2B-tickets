@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 use App\Newrqst;
+use Illuminate\Support\Facades\DB;
+
 class RequestController extends Controller
 {
     public function index()
@@ -13,6 +15,58 @@ class RequestController extends Controller
         return response()->json($rqts);
 
     }
+
+    public function filter_index(Request $request)
+    {
+        
+        $where = array();
+        $having = array();
+        $rqst = null;
+        $request->rqst_id == "0" ?  :  $where[] = ['id','=',$request->rqst_id];
+        
+        if($request->is_all != "true"){
+            $request->is_treated == 'true' ? $where[] = ['deleted_at','<>',null] : $where[] = ['deleted_at','=',null];
+
+        }
+
+        $mois_from = $request->input('mois_from');
+        $mois_to = $request->input('mois_to');
+
+        $year_from = $request->input('year_from');
+        $year_to = $request->input('year_to');
+
+        if($year_from != $year_to){
+            array_push($having, " (YEAR( newrqsts.created_at ) BETWEEN '".$year_from."' AND '".$year_to."')  " );
+        }else{
+            array_push($having, " (YEAR( newrqsts.created_at ) = '".$year_from."')  " );
+
+        }
+        if($mois_from != $mois_to){
+            array_push($having, " (MONTH( newrqsts.created_at ) BETWEEN '".$mois_from."' AND '".$mois_to."')  " );
+
+        }else{
+            array_push($having, " (MONTH( newrqsts.created_at ) = '".$mois_from."')  " );
+
+        }
+        $havingQuery = "";
+
+        if(count($having) != 0 ){
+            foreach ($having as $filter) {
+                $havingQuery = $havingQuery  . $filter . " And " ;
+            }
+            $havingQuery = substr( $havingQuery , 0, -4);
+        }
+
+
+        $rqst = DB::table('newrqsts')
+        ->select('newrqsts.*',DB::raw('YEAR( newrqsts.created_at) as rqst_year'),  DB::raw('MONTH( newrqsts.created_at ) as rqst_mois')
+        )->where($where)->havingRaw($havingQuery)
+        ->orderBy('newrqsts.created_at', 'desc')->get();
+
+        return response()->json($rqst);
+
+    }
+
 
     public function non_deleted(){
 
@@ -86,7 +140,7 @@ class RequestController extends Controller
         $rqst->tel = $request->gsm;
         $rqst->message = $request->message;
         $rqst->save();
-        $rqst->ref = "RQST-".date('Y')."-".time()."-".$rqst->id;
+        $rqst->ref = "D-".date('Y')."-".time()."-".$rqst->id;
         $rqst->save();
         $check;
         $check = "done";

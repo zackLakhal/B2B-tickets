@@ -25,6 +25,10 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 
+    <link href="{{ asset('plugins/ion-rangeslider/css/ion.rangeSlider.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/ion-rangeslider/css/ion.rangeSlider.skinModern.css') }}" rel="stylesheet">
+    <link href="{{ asset('/plugins/wizard/steps.css') }}" rel="stylesheet">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -371,8 +375,15 @@
     <!--Custom JavaScript -->
     <script src="{{ asset('js/custom.min.js') }}"></script>
 
+    <!-- <script src="{{ asset('plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>    -->
 
+    <script src="{{ asset('plugins/ion-rangeslider/js/ion-rangeSlider/ion.rangeSlider.min.js') }}"></script>
+    <script src="{{ asset('plugins/ion-rangeslider/js/ion-rangeSlider/ion.rangeSlider-init.js') }}"></script>
 
+    <!-- widdard -->
+    <script src="{{ asset('plugins/wizard/jquery.steps.min.js') }}"></script>    
+    <script src="{{ asset('plugins/sweetalert/sweetalert.min.js') }}"></script>
+    <script src="{{ asset('plugins/wizard/steps.js') }}"></script>
 
     @yield('script')
 

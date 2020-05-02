@@ -4,7 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-class Raport extends Model
+
+class Pending extends Model
 {
     use SoftDeletes;
     public function affectation()
