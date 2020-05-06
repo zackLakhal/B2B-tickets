@@ -36,7 +36,6 @@ class ReclamationController extends Controller
             ->leftJoin('agences', 'souscriptions.agence_id', '=', 'agences.id')
             ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
             ->leftJoin('clients', 'departements.client_id', '=', 'clients.id')
-            // ->leftJoin('clientusers', 'agences.id', '=', 'clientusers.clientable_id')
             ->select(
                 'reclamations.id as reclamation_id',
                 'reclamations.ref as reclamation_ref',
@@ -54,11 +53,6 @@ class ReclamationController extends Controller
                 'pendings.with_pv as pending_with_pv',
                 'closeds.pv as closed_pv_image',
                 'closeds.with_pv as closed_with_pv',
-                //    'clientusers.nom as chef_nom',
-                //     'clientusers.prénom as chef_prenom',
-                //      'clientusers.email as chef_email',
-                //       'clientusers.photo as chef_photo',
-                //        'clientusers.tel as chef_tel',
                 'nstusers.id as tech_id',
                 'nstusers.nom as tech_nom',
                 'nstusers.prénom as tech_prenom',
@@ -980,11 +974,6 @@ class ReclamationController extends Controller
                 'pendings.with_pv as pending_with_pv',
                 'closeds.pv as closed_pv_image',
                 'closeds.with_pv as closed_with_pv',
-                //    'clientusers.nom as chef_nom',
-                //     'clientusers.prénom as chef_prenom',
-                //      'clientusers.email as chef_email',
-                //       'clientusers.photo as chef_photo',
-                //        'clientusers.tel as chef_tel',
                 'nstusers.id as tech_id',
                 'nstusers.nom as tech_nom',
                 'nstusers.prénom as tech_prenom',

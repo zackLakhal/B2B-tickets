@@ -33,22 +33,29 @@ Route::get('/services', function () {
     return view('old_nst.services');
 });
 
-Route::get('/statistiques', function () {
-    return view('statistique.index');
-})->middleware('auth:nst');
+
+Route::prefix('/statistiques')->group(function () {
+    Route::get('/index', 'StatiqtiqueController@index')->middleware('auth:nst');
+    Route::post('/filter_index', 'StatiqtiqueController@filter_index')->middleware('auth:nst');
+    Route::get('/fill_list', 'StatiqtiqueController@fill_list')->middleware('auth:nst');
+    Route::post('/filter_data', 'StatiqtiqueController@filter_data')->middleware('auth:nst');
+    Route::get('/', function () {
+        return view('statistique.index');
+    })->middleware('auth:nst');
+});
 
 Route::get('/dashboard', function () {
     return view('statistique.dashboard');
 })->middleware('auth:nst');
 
-Route::get('/dashboard/reclamations/detail/{type}/{value}', function ($type,$value) {
-    return view('statistique.detail',['type' => $type, 'value' =>$value]);
+Route::get('/dashboard/reclamations/detail/{type}/{value}', function ($type, $value) {
+    return view('statistique.detail', ['type' => $type, 'value' => $value]);
 })->middleware('auth:nst');
 
 
- 
+
 Route::get('/dashboard/agence_dash', 'ReclamationController@agence_dash');
-Route::post('/dashboard/filter_agence_dash','ReclamationController@filter_agence_dash');
+Route::post('/dashboard/filter_agence_dash', 'ReclamationController@filter_agence_dash');
 
 
 Auth::routes();
@@ -217,7 +224,7 @@ Route::prefix('/outils')->group(function () {
                 Route::post('/restore/{id_a}', 'ClientController@restore_agence')->middleware('auth:nst');
                 Route::post('/create', 'ClientController@store_agence')->middleware('auth:nst');
                 Route::get('/affecter', 'ClientController@affecter_agence')->middleware('auth:nst');
-                Route::get('/', function ($id_c,$id_d) {
+                Route::get('/', function ($id_c, $id_d) {
                     return view('tools.agences', ['departement' => Departement::find($id_d)]);
                 })->middleware('auth:nst');
             });

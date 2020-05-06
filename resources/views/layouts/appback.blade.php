@@ -23,11 +23,17 @@
     <link href="{{ asset('plugins/icheck/skins/all.css') }}" rel="stylesheet">
     <link href="{{ asset('plugins/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
 
+    <link href="{{ asset('plugins/footable/css/footable.core.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/bootstrap-select/bootstrap-select.min.css') }}" rel="stylesheet" />
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 
     <link href="{{ asset('plugins/ion-rangeslider/css/ion.rangeSlider.css') }}" rel="stylesheet">
     <link href="{{ asset('plugins/ion-rangeslider/css/ion.rangeSlider.skinModern.css') }}" rel="stylesheet">
-    <link href="{{ asset('/plugins/wizard/steps.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/wizard/steps.css') }}" rel="stylesheet">
+
+    <link href="{{ asset('plugins/select2/dist/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -241,10 +247,15 @@
                     <ul id="sidebarnav">
                         <li class="nav-small-cap">PLATEFORME</li>
                         <li>
-                            <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="true"><i class="mdi mdi-file-chart"></i><span class="hide-menu">Statistiques </span></a>
+                            <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="true"><i class="mdi mdi mdi-table"></i><span class="hide-menu">Dashboard </span></a>
                             <ul aria-expanded="true" class="collapse">
-                                <li ><a  href="/dashboard">Dashboard</a></li>
-                                <li ><a  href="/statistiques">Consulter les statistiques</a></li>
+                                <li><a href="/dashboard">Consulter le Dashboard</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-file-chart"></i><span class="hide-menu">Statistiques </span></a>
+                            <ul aria-expanded="true" class="collapse">
+                                <li><a href="/statistiques">Consulter les statistiques</a></li>
                             </ul>
                         </li>
                         <li>
@@ -381,7 +392,7 @@
     <script src="{{ asset('plugins/ion-rangeslider/js/ion-rangeSlider/ion.rangeSlider-init.js') }}"></script>
 
     <!-- widdard -->
-    <script src="{{ asset('plugins/wizard/jquery.steps.min.js') }}"></script>    
+    <script src="{{ asset('plugins/wizard/jquery.steps.min.js') }}"></script>
     <script src="{{ asset('plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="{{ asset('plugins/wizard/steps.js') }}"></script>
 
@@ -402,6 +413,15 @@
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+
+    <script src="{{ asset('plugins/select2/dist/js/select2.full.min.js') }}" type="text/javascript"></script>
+
+    <!-- Footable -->
+    <script src="{{ asset('plugins/footable/js/footable.all.min.js') }}"></script>
+    <script href="{{ asset('plugins/bootstrap-select/bootstrap-select.min.js') }}" rel="stylesheet"></script>
+    <!--FooTable init-->
+    <!-- <script src="{{ asset('js/footable-init.js') }}"></script> -->
+
     <script src="{{ asset('plugins/dropify/dist/js/dropify.min.js') }}"></script>
     <!-- ============================================================== -->
     <!-- Style switcher -->
@@ -411,12 +431,8 @@
         $(document).ready(function() {
             $('.dropify').dropify();
             $('#myTable').DataTable();
-            $('#myTable1').DataTable();
-            $('#myTable2').DataTable();
-            $('#myTable3').DataTable();
-            $('#myTable4').DataTable();
-            $('#myTable5').DataTable();
-            $('#myTable6').DataTable();
+            
+            
         });
     </script>
 

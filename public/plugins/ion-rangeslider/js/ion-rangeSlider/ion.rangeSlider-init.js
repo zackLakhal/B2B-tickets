@@ -63,6 +63,12 @@ $("#year").ionRangeSlider({
     max: new Date().getFullYear()
 });
 
+$("#day").ionRangeSlider({
+    type: "double",
+    min: 1,
+    max: 31
+});
+
 
 
 

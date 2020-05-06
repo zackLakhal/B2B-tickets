@@ -13,7 +13,23 @@ $("#tab-wizard").steps({
     
     , onFinished: function (event, currentIndex) {
         filter_all()
-            
+       
+    }
+});
+
+$("#tab-wizard-stat").steps({
+    headerTag: "h6"
+    , bodyTag: "section"
+    , transitionEffect: "fade"
+    , titleTemplate: '<span class="step">#index#</span> #title#'
+    , labels: {
+        finish: "filtrer"
+    }
+    
+    , onFinished: function (event, currentIndex) {
+        filter_all()
+        $('#stat_button').trigger('click');
+        //$('.collapse').collapse() 
     }
 });
 

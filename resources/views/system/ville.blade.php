@@ -43,7 +43,7 @@
                 @endif
                 <button type="button" class="btn btn-primary pull-right" id="newmodal">+ nouvelle ville</button>
                 <div class="table-responsive m-t-40">
-                    <table id="myTable" class=" text-center  table table-bordered table-striped">
+                    <table id="myTable" class="text-center  table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>ville-id</th>
