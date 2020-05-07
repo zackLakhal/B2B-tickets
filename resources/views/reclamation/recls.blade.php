@@ -589,7 +589,7 @@
                 affectation +
                 acceptation +
                 traitement +
-                download_pdf +
+                // download_pdf +
 
                 "</div>" +
                 "</div>" +
@@ -837,7 +837,7 @@
                 affectation +
                 acceptation +
                 traitement +
-                download_pdf +
+                // download_pdf +
 
                 "</div>" +
                 "</div>" +
@@ -1079,7 +1079,7 @@
             affectation +
             acceptation +
             traitement +
-            download_pdf +
+            // download_pdf +
 
             "</div>" +
             "</div>" +
@@ -1269,7 +1269,7 @@
             affectation +
             acceptation +
             traitement +
-            download_pdf +
+            // download_pdf +
 
             "</div>" +
             "</div>" +
@@ -1513,7 +1513,7 @@
                 affectation +
                 acceptation +
                 traitement +
-                download_pdf +
+                // download_pdf +
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -1779,7 +1779,7 @@
                 affectation +
                 acceptation +
                 traitement +
-                download_pdf +
+                // download_pdf +
                 "</div>" +
                 "</div>" +
                 "</div>" +

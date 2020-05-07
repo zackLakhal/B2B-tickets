@@ -9,10 +9,12 @@ use App\Reclamation;
 use App\Client;
 use App\Departement;
 use App\Equipement;
+use App\Exports\StatistiqueExport;
 use App\Produit;
 use App\Souscription;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Maatwebsite\Excel\Facades\Excel;
 
 class StatiqtiqueController extends Controller
 {
@@ -238,8 +240,8 @@ class StatiqtiqueController extends Controller
             array_push($where, " (DAY( created_at ) = '" . $time_day_from . "')  ");
         }
 
-      
-        
+
+
         $filtredQuery =   "select * ,
         avg( IF(checked_at IS NULL, TIMESTAMPDIFF(SECOND,created_at, finished_at) ,  TIMESTAMPDIFF(SECOND,created_at, checked_at))) AS avg_created_time,
         avg(TIMESTAMPDIFF(SECOND,checked_at, finished_at)) as avg_pending_time,
@@ -253,7 +255,7 @@ class StatiqtiqueController extends Controller
 
         $WhereQuery = "";
 
-        if(count($where) != 0 ){
+        if (count($where) != 0) {
             foreach ($where as $filter) {
                 $WhereQuery = $WhereQuery  . $filter . " And ";
             }
@@ -261,13 +263,13 @@ class StatiqtiqueController extends Controller
         }
 
         $havingQuery = "";
-        $having_string ="";
+        $having_string = "";
 
-        $totalQuery = $filtredQuery . " where " . $WhereQuery." and " ;
+        $totalQuery = $filtredQuery . " where " . $WhereQuery . " and ";
 
-        if (count($having) == 0){
+        if (count($having) == 0) {
             $totalQuery = substr($totalQuery, 0, -4);
-        }else {
+        } else {
             $having_string = " having ";
             foreach ($having as $filter) {
                 $havingQuery = $havingQuery  . $filter . " And ";
@@ -275,7 +277,7 @@ class StatiqtiqueController extends Controller
             $havingQuery = substr($havingQuery, 0, -4);
         }
 
-        $totalQuery = $totalQuery." ".$havingQuery ;
+        $totalQuery = $totalQuery . " " . $havingQuery;
 
         $filtredQuery = $filtredQuery . " where " . $WhereQuery . " group by ";
 
@@ -304,14 +306,143 @@ class StatiqtiqueController extends Controller
                 break;
         }
 
-        $filtredQuery = $filtredQuery . "" . $stat_by . " ".( count($having) == 0 ? " " : $having_string)." ". $havingQuery . " order by " . $stat_by;
+        $filtredQuery = $filtredQuery . "" . $stat_by . " " . (count($having) == 0 ? " " : $having_string) . " " . $havingQuery . " order by " . $stat_by;
 
         $data = [
             '' . $request->stat_by => DB::select($filtredQuery),
-            'semi_total_' . $request->stat_by => ($request->stat_by == "produit" || $request->stat_by == "agence") ? DB::select($totalQuery." group by ".explode(',',$stat_by)[0]." order by " . $stat_by) : null ,
-            'total_' . $request->stat_by => DB::select($totalQuery. " order by " . $stat_by),
+            'semi_total_' . $request->stat_by => ($request->stat_by == "produit" || $request->stat_by == "agence") ? DB::select($totalQuery . " group by " . explode(',', $stat_by)[0] . " order by " . $stat_by) : null,
+            'total_' . $request->stat_by => DB::select($totalQuery . " order by " . $stat_by),
             'stat_by' => $request->stat_by
         ];
         return response()->json($data);
+    }
+
+    public function export_stat(Request $request)
+    {
+        $where = array();
+        $having = array();
+
+        
+
+        $request->fv_client == null ?:  array_push($having, "( client_id IN (" . $request->fv_client . ") )");
+        $request->fv_departement == null ?:  array_push($having, "( depart_id IN (" . $request->fv_departement . ") )");
+        $request->fv_agence == null ?:  array_push($having, "( agence_id IN (" . $request->fv_agence . ") )");
+        $request->fv_produit == null ?:  array_push($having, "( prod_id IN (" . $request->fv_produit . ") )");
+        $request->fv_equipement == null ?:  array_push($having, "( equip_id IN (" . $request->fv_equipement . ") )");
+        $request->fv_ref_equip == null ?:  array_push($having, "( equip_ref_id IN (" . $request->fv_ref_equip . ") )");
+
+
+
+
+        $time_mois_from = $request->input('time_mois_from');
+        $time_mois_to = $request->input('time_mois_to');
+
+        $time_year_from = $request->input('time_year_from');
+        $time_year_to = $request->input('time_year_to');
+
+        $time_day_from = $request->input('time_day_from');
+        $time_day_to = $request->input('time_day_to');
+
+        if ($time_year_from != $time_year_to) {
+            array_push($where, " (YEAR( created_at ) BETWEEN '" . $time_year_from . "' AND '" . $time_year_to . "')  ");
+        } else {
+            array_push($where, " (YEAR( created_at ) = '" . $time_year_from . "')  ");
+        }
+        if ($time_mois_from != $time_mois_to) {
+            array_push($where, " (MONTH( created_at ) BETWEEN '" . $time_mois_from . "' AND '" . $time_mois_to . "')  ");
+        } else {
+            array_push($where, " (MONTH( created_at ) = '" . $time_mois_from . "')  ");
+        }
+        if ($time_day_from != $time_day_to) {
+            array_push($where, " (DAY( created_at ) BETWEEN '" . $time_day_from . "' AND '" . $time_day_to . "')  ");
+        } else {
+            array_push($where, " (DAY( created_at ) = '" . $time_day_from . "')  ");
+        }
+
+
+
+        $filtredQuery =   "select * ,
+        avg( IF(checked_at IS NULL, TIMESTAMPDIFF(SECOND,created_at, finished_at) ,  TIMESTAMPDIFF(SECOND,created_at, checked_at))) AS avg_created_time,
+        avg(TIMESTAMPDIFF(SECOND,checked_at, finished_at)) as avg_pending_time,
+        count(reclamation_id) as nb_reclamation,
+        SUM(IF(etat_id = 1 , 1 , 0)) AS nb_created,
+        count(checked_at) as nb_pending,
+        count(finished_at) as nb_closed
+        from views_statistique ";
+
+        $totalQuery = "";
+
+        $WhereQuery = "";
+
+        if (count($where) != 0) {
+            foreach ($where as $filter) {
+                $WhereQuery = $WhereQuery  . $filter . " And ";
+            }
+            $WhereQuery = substr($WhereQuery, 0, -4);
+        }
+
+        $havingQuery = "";
+        $having_string = "";
+
+        $totalQuery = $filtredQuery . " where " . $WhereQuery . " and ";
+
+        if (count($having) == 0) {
+            $totalQuery = substr($totalQuery, 0, -4);
+        } else {
+            $having_string = " having ";
+            foreach ($having as $filter) {
+                $havingQuery = $havingQuery  . $filter . " And ";
+            }
+            $havingQuery = substr($havingQuery, 0, -4);
+        }
+
+        $totalQuery = $totalQuery . " " . $havingQuery;
+
+        $filtredQuery = $filtredQuery . " where " . $WhereQuery . " group by ";
+
+        $stat_by = "";
+        $nb_row = '';
+        switch ($request->stat_by) {
+            case 'client':
+                $stat_by = 'client_id';
+                $nb_row = 'G';
+                break;
+
+            case 'agence':
+                $stat_by = 'agence_id , prod_id';
+                $nb_row = 'H';
+                break;
+            case 'produit':
+                $stat_by = 'prod_id , agence_id';
+                $nb_row = 'I';
+                break;
+
+            case 'equipement':
+                $stat_by = 'equip_id';
+                $nb_row = 'H';
+                break;
+            case 'departement':
+                $stat_by = 'depart_id';
+                $nb_row = 'H';
+                break;
+
+            case 'reference':
+                $stat_by = 'equip_ref_id';
+                $nb_row = 'L';
+                break;
+        }
+
+        $filtredQuery = $filtredQuery . "" . $stat_by . " " . (count($having) == 0 ? " " : $having_string) . " " . $havingQuery . " order by " . $stat_by;
+
+        $data = [
+            '' . $request->stat_by => DB::select($filtredQuery),
+            'semi_total_' . $request->stat_by => ($request->stat_by == "produit" || $request->stat_by == "agence") ? DB::select($totalQuery . " group by " . explode(',', $stat_by)[0] . " order by " . $stat_by) : null,
+            'total_' . $request->stat_by => DB::select($totalQuery . " order by " . $stat_by),
+            'stat_by' => $request->stat_by,
+            'nb_row' => $nb_row
+        ];
+        //  return response()->json(Excel::download(new StatistiqueExport($data), 'clients_stat.xlsx'));
+        Excel::store(new StatistiqueExport($data), 'excel_stats/' . $request->stat_by . 's/' . $request->stat_by . '_' . Auth::id() . '_stat.xlsx');
+        return response()->json(Auth::id());
     }
 }

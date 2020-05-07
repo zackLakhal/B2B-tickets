@@ -36,6 +36,7 @@ Route::get('/services', function () {
 
 Route::prefix('/statistiques')->group(function () {
     Route::get('/index', 'StatiqtiqueController@index')->middleware('auth:nst');
+    Route::get('/export_stat', 'StatiqtiqueController@export_stat')->middleware('auth:nst');
     Route::post('/filter_index', 'StatiqtiqueController@filter_index')->middleware('auth:nst');
     Route::get('/fill_list', 'StatiqtiqueController@fill_list')->middleware('auth:nst');
     Route::post('/filter_data', 'StatiqtiqueController@filter_data')->middleware('auth:nst');

@@ -1,5 +1,19 @@
 @extends('layouts.appback')
+@section('css')
+<style>
+    .left {
+        display: block;
+        float: left;
+        width: 100px;
+    }
 
+    .right {
+        display: block;
+        float: right;
+        width: 100px;
+    }
+</style>
+@endsection
 @section('content')
 <div class="row page-titles">
     <div class="col-md-5 col-8 align-self-center">
@@ -64,6 +78,9 @@
             </div>
         </div>
     </div>
+</div>
+<div id="link">
+
 </div>
 <div class="row">
     <div class="col-12">
@@ -202,9 +219,9 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                                <div class="card-title text-center">
-                                    <h1>STATISTIQUE PAR CLIENT</h1>
-                                </div>
+                <div class="card-title text-center">
+                    <h1>STATISTIQUE PAR CLIENT</h1>
+                </div>
                 <table id="foo-client" class="table table-bordered table-hover toggle-circle" data-page-size="7">
                     <thead>
                         <tr>
@@ -217,16 +234,14 @@
                             <th>Moyenne en traitement</th>
                         </tr>
                     </thead>
-                    <div class="m-t-40">
-                        <div class="d-flex">
 
-                            <!-- <div class="ml-auto">
-                                <div class="form-group">
-                                    <input id="search-input-client" type="text" placeholder="Search" autocomplete="off">
-                                </div>
-                            </div> -->
-                        </div>
+                    <div class="form-group" >
+                        <span style="float:left; margin-bottom: 22px;"><button id="export_client" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
+                        <span style="float:right;">
+                            <a id="client_link" class="btn btn-secondary"  href=""><span class="btn-label" id="client_is_prep" ><i class="fa fa-check"></i></span>fichier excel</a>
+                        </span>
                     </div>
+
                     <tbody id="body_client">
 
 
@@ -296,15 +311,11 @@
                             <th>Moyenne en traitement</th>
                         </tr>
                     </thead>
-                    <div class="m-t-40">
-                        <div class="d-flex">
-
-                            <!-- <div class="ml-auto">
-                                <div class="form-group">
-                                    <input id="search-input-departement" type="text" placeholder="Search" autocomplete="off">
-                                </div>
-                            </div> -->
-                        </div>
+                    <div class="form-group" >
+                        <span style="float:left; margin-bottom: 22px;"><button id="export_departement" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
+                        <span style="float:right;">
+                            <a id="departement_link" class="btn btn-secondary" href=""><span class="btn-label"  ><i class="fa fa-check"></i></span>fichier excel</a>
+                        </span>
                     </div>
                     <tbody id="body_departement">
 
@@ -365,7 +376,7 @@
                     <thead>
                         <tr>
                             <th data-sort-initial="true" data-toggle="true">agence</th>
-                            <th >produit</th>
+                            <th>produit</th>
                             <th data-hide="phone, tablet">client</th>
                             <th data-hide="phone, tablet">departement</th>
                             <th>nombre de réclamation</th>
@@ -376,15 +387,11 @@
                             <th>Moyenne en traitement</th>
                         </tr>
                     </thead>
-                    <div class="m-t-40">
-                        <div class="d-flex">
-
-                            <!-- <div class="ml-auto">
-                                <div class="form-group">
-                                    <input id="search-input-agence" type="text" placeholder="Search" autocomplete="off">
-                                </div>
-                            </div> -->
-                        </div>
+                    <div class="form-group" >
+                        <span style="float:left; margin-bottom: 22px;"><button id="export_agence" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
+                        <span style="float:right;">
+                            <a id="agence_link" class="btn btn-secondary" href=""><span class="btn-label"  ><i class="fa fa-check"></i></span>fichier excel</a>
+                        </span>
                     </div>
                     <tbody id="body_agence">
 
@@ -475,7 +482,7 @@
                     <thead>
                         <tr>
                             <th data-sort-initial="true" data-toggle="true">produit</th>
-                            <th >agence</th>
+                            <th>agence</th>
                             <th data-hide="phone, tablet">client</th>
                             <th>nombre de réclamation</th>
                             <th>nombre de en cours</th>
@@ -485,15 +492,11 @@
                             <th>Moyenne en traitement</th>
                         </tr>
                     </thead>
-                    <div class="m-t-40">
-                        <div class="d-flex">
-
-                            <!-- <div class="ml-auto">
-                                <div class="form-group">
-                                    <input id="search-input-produit" type="text" placeholder="Search" autocomplete="off">
-                                </div>
-                            </div> -->
-                        </div>
+                    <div class="form-group" >
+                        <span style="float:left; margin-bottom: 22px;"><button id="export_produit" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
+                        <span style="float:right;">
+                            <a id="produit_link" class="btn btn-secondary" href=""><span class="btn-label"  ><i class="fa fa-check"></i></span>fichier excel</a>
+                        </span>
                     </div>
                     <tbody id="body_produit">
 
@@ -593,15 +596,11 @@
                             <th>Moyenne en traitement</th>
                         </tr>
                     </thead>
-                    <div class="m-t-40">
-                        <div class="d-flex">
-
-                            <!-- <div class="ml-auto">
-                                <div class="form-group">
-                                    <input id="search-input-equipement" type="text" placeholder="Search" autocomplete="off">
-                                </div>
-                            </div> -->
-                        </div>
+                    <div class="form-group" >
+                        <span style="float:left; margin-bottom: 22px;"><button id="export_equipement" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
+                        <span style="float:right;">
+                            <a id="equipement_link" class="btn btn-secondary" href=""><span class="btn-label"  ><i class="fa fa-check"></i></span>fichier excel</a>
+                        </span>
                     </div>
                     <tbody id="body_equipement">
 
@@ -675,15 +674,11 @@
                             <th>Moyenne en traitement</th>
                         </tr>
                     </thead>
-                    <div class="m-t-40">
-                        <div class="d-flex">
-
-                            <!-- <div class="ml-auto">
-                                <div class="form-group">
-                                    <input id="search-input-reference" type="text" placeholder="Search" autocomplete="off">
-                                </div>
-                            </div> -->
-                        </div>
+                    <div class="form-group" >
+                        <span style="float:left; margin-bottom: 22px;"><button id="export_reference" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
+                        <span style="float:right;">
+                            <a id="reference_link" class="btn btn-secondary" href=""><span class="btn-label"  ><i class="fa fa-check"></i></span>fichier excel</a>
+                        </span>
                     </div>
                     <tbody id="body_reference">
 
@@ -848,7 +843,7 @@
         console.log(jsonData)
         $('#body_' + jsonData.stat_by).html("");
         $('#bodytab_' + jsonData.stat_by).html("");
-        $('#bodytab_' + jsonData.stat_by+'_semi').html("");
+        $('#bodytab_' + jsonData.stat_by + '_semi').html("");
         switch (jsonData.stat_by) {
             case 'client':
                 for (var data in jsonData.client) {
@@ -1035,8 +1030,58 @@
         }
         //  $('#foo-'+jsonData.stat_by).footable();
         $('#foo-' + jsonData.stat_by).data('footable').redraw();
+        $('#'+jsonData.stat_by+'_link').attr('href', "")
+        $('#'+jsonData.stat_by+'_link').css('color','');
 
 
+    }
+
+    function exporter(input) {
+        console.log("here")
+        form_data = {};
+
+
+        var ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip']
+        var date_types = ['time_year', 'time_mois', 'time_day']
+
+        var stat_ids = ['client', 'departement', 'agence', 'produit', 'equipement', 'reference']
+        for (var val in stat_ids) {
+
+            if (input.id == 'export_' + stat_ids[val]) {
+                    
+                form_data['stat_by'] = stat_ids[val];
+                break;
+            }
+        }
+
+        for (var val in ids) {
+            var string = ""
+            if($('#' + ids[val]).val() != null){
+                for(var temp in $('#' + ids[val]).val()){
+                    string = string + ($('#' + ids[val]).val())[temp]+","
+                }
+                string=  string.slice(0,string.length - 1)
+            }
+            form_data[ids[val]] = string;
+        }
+
+        for (var j in date_types) {
+            form_data[date_types[j] + "_from"] = $('#' + date_types[j]).data().from;
+            form_data[date_types[j] + "_to"] = $('#' + date_types[j]).data().to;
+        }
+
+        var StringData = $.ajax({
+            url: 'http://127.0.0.1:8000/statistiques/export_stat',
+            dataType: "json",
+            type: "GET",
+            async: false,
+            data: form_data
+        }).responseText;
+         jsonData = JSON.parse(StringData);
+        console.log(jsonData)
+
+        $('#'+form_data['stat_by']+'_link').attr('href', "{{ asset('storage')}}/excel_stats/"+form_data['stat_by']+"s/"+form_data['stat_by']+"_"+jsonData+"_stat.xlsx")
+        $('#'+form_data['stat_by']+'_link').css('color','green');
 
     }
 
