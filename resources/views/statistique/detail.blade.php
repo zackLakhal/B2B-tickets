@@ -125,9 +125,11 @@
             data: inputs,
         }).responseText;
         jsonData = JSON.parse(StringData);
+        var role_id = $('#logged_info').attr('value');
         console.log(jsonData);
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.length; ind++) {
+
             if (jsonData[ind].tech_nom == null) {
                 tech = " <span id=\"tech" + ind + "\" value=\"0\"> pas de technicien affecté</span>"
             } else {
@@ -211,7 +213,11 @@
             if (jsonData[ind].affectation_id == null) {
                 affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">affecter</button>"
             } else {
-                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData[ind].tech_id + " ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">changer</a>"
+                if (jsonData[ind].etat_id != 3) {
+                    affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData[ind].tech_id + " ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">changer</a>"
+                } else {
+                    affectation = ""
+                }
             }
 
             if (jsonData[ind].pending_with_pv) {
@@ -270,7 +276,7 @@
                 "<div class=\"card m-b-0\">" +
                 "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
                 "<h5 class=\"mb-0\">" +
-                "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+                "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
                 "Effectuer un traitement" +
                 "</a>" +
                 "</h5>" +
@@ -278,10 +284,10 @@
                 "<div id=\"tach_coll" + ind + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
                 "<div class=\"card-body\">" +
                 "<div class=\"button-group text-center\">" +
-                affectation +
-                acceptation +
-                traitement +
-                download_pdf +
+                (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
+                // download_pdf +
 
                 "</div>" +
                 "</div>" +
@@ -292,7 +298,11 @@
                 "</div>" +
                 "</div>");
         }
+
     }
+
+
+
 
     function affecter(us_id, id, place) {
 
@@ -306,6 +316,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
+
         console.log(jsonData)
         $('#created_by').html("");
         for (let ind = 0; ind < jsonData.length; ind++) {
@@ -364,6 +375,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
+        var role_id = $('#logged_info').attr('value');
         console.log(jsonData)
         $('#affectation').modal('hide');
 
@@ -452,7 +464,11 @@
         if (jsonData.affectation_id == null) {
             affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
         } else {
-            affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+            if (jsonData.etat_id != 3) {
+                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+            } else {
+                affectation = ""
+            }
         }
         if (jsonData.pending_with_pv) {
             pending_with_pv = "<h4 id=\"pend_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.pending_pv_image + "\" target=\"_blank\"> en traitement</a></h4>";
@@ -512,7 +528,7 @@
             "<div class=\"card m-b-0\">" +
             "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
             "<h5 class=\"mb-0\">" +
-            "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+            "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
             "Effectuer un traitement" +
             "</a>" +
             "</h5>" +
@@ -520,10 +536,10 @@
             "<div id=\"tach_coll" + ind + "\" class=\"collapse  show\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
             "<div class=\"card-body\">" +
             "<div class=\"button-group text-center\">" +
-            affectation +
-            acceptation +
-            traitement +
-            download_pdf +
+            (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+            (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+            (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
+            // download_pdf +
 
             "</div>" +
             "</div>" +
@@ -552,6 +568,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
+        var role_id = $('#logged_info').attr('value');
 
 
         if (jsonData.tech_nom == null) {
@@ -640,7 +657,11 @@
         if (jsonData.affectation_id == null) {
             affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
         } else {
-            affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+            if (jsonData.etat_id != 3) {
+                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+            } else {
+                affectation = ""
+            }
         }
 
 
@@ -702,7 +723,7 @@
             "<div class=\"card m-b-0\">" +
             "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
             "<h5 class=\"mb-0\">" +
-            "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+            "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
             "Effectuer un traitement" +
             "</a>" +
             "</h5>" +
@@ -710,10 +731,10 @@
             "<div id=\"tach_coll" + ind + "\" class=\"collapse  show\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
             "<div class=\"card-body\">" +
             "<div class=\"button-group text-center\">" +
-            affectation +
-            acceptation +
-            traitement +
-            download_pdf +
+            (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+            (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+            (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
+            // download_pdf +
 
             "</div>" +
             "</div>" +
@@ -751,6 +772,7 @@
         $('#with_pv').selectpicker('refresh');
 
         $(".dropify-clear").trigger("click");
+
 
         $('#commentaire').val("");
 
@@ -797,6 +819,7 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
+            var role_id = $('#logged_info').attr('value');
             $('#exampleModal').modal('hide');
 
             var tech;
@@ -886,7 +909,11 @@
             if (jsonData.affectation_id == null) {
                 affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
             } else {
-                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+                if (jsonData.etat_id != 3) {
+                    affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+                } else {
+                    affectation = ""
+                }
             }
 
             if (jsonData.pending_with_pv) {
@@ -945,7 +972,7 @@
                 "<div class=\"card m-b-0\">" +
                 "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
                 "<h5 class=\"mb-0\">" +
-                "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+                "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
                 "Effectuer un traitement" +
                 "</a>" +
                 "</h5>" +
@@ -953,10 +980,10 @@
                 "<div id=\"tach_coll" + ind + "\" class=\"collapse  show\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
                 "<div class=\"card-body\">" +
                 "<div class=\"button-group text-center\">" +
-                affectation +
-                acceptation +
-                traitement +
-                download_pdf +
+                (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
+                // download_pdf +
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -1003,6 +1030,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
+        var role_id = $('#logged_info').attr('value');
         console.log(jsonData.id)
 
         if (jsonData.with_pv) {
@@ -1066,6 +1094,7 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
+
             $('#exampleModal').modal('hide');
             console.log(jsonData)
             var tech;
@@ -1152,7 +1181,11 @@
             if (jsonData.affectation_id == null) {
                 affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
             } else {
-                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+                if (jsonData.etat_id != 3) {
+                    affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+                } else {
+                    affectation = ""
+                }
             }
 
             if (jsonData.pending_with_pv) {
@@ -1211,7 +1244,7 @@
                 "<div class=\"card m-b-0\">" +
                 "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
                 "<h5 class=\"mb-0\">" +
-                "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+                "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
                 "Effectuer un traitement" +
                 "</a>" +
                 "</h5>" +
@@ -1219,10 +1252,10 @@
                 "<div id=\"tach_coll" + ind + "\" class=\"collapse  show\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
                 "<div class=\"card-body\">" +
                 "<div class=\"button-group text-center\">" +
-                affectation +
-                acceptation +
-                traitement +
-                download_pdf +
+                (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
+                // download_pdf +
                 "</div>" +
                 "</div>" +
                 "</div>" +

@@ -31,6 +31,7 @@
         </div>
     </div>
 </div>
+@if(auth::user()->role_id == 1 || auth::user()->role_id == 6)
 <div class="row">
     <div class="col-12 m-t-30">
         <div class="card">
@@ -45,9 +46,11 @@
         </div>
     </div>
 </div>
+
 <div class="">
     <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
 </div>
+@endif
 <div class="row" id="bodytab">
 
 </div>
@@ -205,7 +208,7 @@
 
         $('#fv_nom').html(" <option  value=\"0\"selected  >tout les clients </option>")
         $('#fv_email').html(" <option  value=\"0\"selected  >tout les clients </option>")
-
+        var role_id = $('#logged_info').attr('value');
         for (let ind = 0; ind < jsonData.length; ind++) {
 
             $('#fv_nom').append("<option value=\"" + jsonData[ind].id + "\">" + jsonData[ind].nom + "</option>");
@@ -229,8 +232,8 @@
                 "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData[ind].adress + "</spane></p>" +
                 "<div class=\"button-group text-center\">" +
                 butttondetail +
-                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData[ind].id + "," + ind + ")\">modifier</button>" +
-                buttonacive +
+                (role_id != '2' && role_id != '3' && role_id != '5' ? "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData[ind].id + "," + ind + ")\">modifier</button>" : "") +
+                (role_id == '6' || role_id == '1' ? buttonacive : "") +
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -517,7 +520,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-
+            var role_id = $('#logged_info').attr('value');
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -544,8 +547,8 @@
                     "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData.client.adress + "</spane></p>" +
                     "<div class=\"button-group text-center\">" +
                     butttondetail +
-                    "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.client.id + "," + ind + ")\">modifier</button>" +
-                    buttonacive +
+                    (role_id != '2' && role_id != '3' && role_id != '5' ? "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.client.id + "," + ind + ")\">modifier</button>" : "") +
+                    (role_id == '6' || role_id == '1' ? buttonacive : "") +
                     "</div>" +
                     "</div>" +
                     "</div>");

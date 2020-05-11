@@ -8,13 +8,28 @@ use Illuminate\Http\Request;
 use App\Clientuser;
 use App\Nstuser;
 use App\Client;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
     public function nst_index()
     {
-        $users = Nstuser::withTrashed()->get();
+
+        $users = null;
+        switch (Auth::user()->role_id) {
+            case 3:
+                $users = Nstuser::where('id', Auth::user()->id)->get();
+                break;
+            case 2:
+                $users = Nstuser::where('role_id', 3)->get();
+                $users[] = Nstuser::where('id','=',Auth::user()->id)->first();
+                break;
+            default:
+                $users = Nstuser::withTrashed()->get();
+                break;
+        }
+
         $roles = array();
         $affectations = array();
         foreach ($users as $user) {
@@ -257,7 +272,20 @@ class UserController extends Controller
 
     public function client_index()
     {
-        $users = Clientuser::withTrashed()->get();
+
+        $users = null;
+        switch (Auth::user()->role_id) {
+            case 4:
+                $users = Clientuser::where('id', Auth::user()->id)->get();
+                break;
+            case 5:
+                $users = Clientuser::where('created_by', Auth::user()->created_by)->get();
+                break;
+            default:
+                $users = Clientuser::withTrashed()->get();
+                break;
+        }
+
         $roles = array();
         $clients = array();
         foreach ($users as $user) {

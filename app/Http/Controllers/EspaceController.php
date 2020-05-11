@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
@@ -10,7 +11,7 @@ use App\Equipement;
 use DB;
 use App\Clientuser;
 use App\Souscription;
-use App \Anomalie;
+use App\Anomalie;
 use App\Reclamation;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +19,26 @@ class EspaceController extends Controller
 {
     public function all_agences()
     {
-        $agences = Agence::all();
+        $agences = null;
+        switch (Auth::user()->role_id) {
+
+            case 4:
+                $agences = DB::table('agences')
+                    ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
+                    ->select('agences.*')->where([
+                        ['agences.deleted_at', '<>', null],
+                        ['departements.client_id', '=', Auth::user()->clientable_id]
+                    ])->get();
+                break;
+            case 5:
+                $agences = Agence::where('id', '=', Auth::user()->clientable_id)->get();
+
+                break;
+            default:
+                $agences = Agence::all();
+                break;
+        }
+
 
         $villes = array();
         foreach ($agences as $agence) {
@@ -85,12 +105,12 @@ class EspaceController extends Controller
         return response()->json($objet);
     }
 
-    public function get_refs(Request $request,$id_a)
+    public function get_refs(Request $request, $id_a)
     {
 
         $objet = [
             'refs' =>  DB::table('views_detail_souscription')
-                ->select('views_detail_souscription.ref_id', 'views_detail_souscription.equip_id', 'views_detail_souscription.ref','reclamations.etat_id')
+                ->select('views_detail_souscription.ref_id', 'views_detail_souscription.equip_id', 'views_detail_souscription.ref', 'reclamations.etat_id')
                 ->leftJoin('reclamations', 'views_detail_souscription.ref_id', '=', 'reclamations.souscription_id')
                 ->where([
                     ['views_detail_souscription.agence_id', $id_a],
@@ -103,11 +123,11 @@ class EspaceController extends Controller
             'equipement' => Equipement::find($request->id_e)
 
         ];
-          
+
         return response()->json($objet);
     }
 
-    public function add_reclamation(Request $request,$id_a)
+    public function add_reclamation(Request $request, $id_a)
     {
 
         $validator = Validator::make($request->all(), [
@@ -119,11 +139,11 @@ class EspaceController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
         $reclamation = new Reclamation();
-        
+
         $reclamation->clientuser_id = Auth::id();
         $reclamation->souscription_id = $request->ref;
         $reclamation->anomalie_id = $request->anomalie;
@@ -134,15 +154,15 @@ class EspaceController extends Controller
 
         $reclamation->save();
 
-        $reclamation->ref = "".date('Y')."-R".time()."-".$reclamation->id;
+        $reclamation->ref = "" . date('Y') . "-R" . time() . "-" . $reclamation->id;
         $reclamation->save();
         $check;
         if (is_null($reclamation)) {
             $check = "faile";
-        }else{
+        } else {
             $check = "done";
         }
-       
+
         $objet =  [
             'check' => $check,
             'reclamation' => $reclamation,

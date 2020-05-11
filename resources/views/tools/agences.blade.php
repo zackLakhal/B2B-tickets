@@ -34,6 +34,8 @@
         </div>
     </div>
 </div>
+@if(auth::user()->role_id == 1 || auth::user()->role_id == 6 || auth::user()->role_id == 4)
+
 <div class="row">
     <div class="col-12 m-t-30">
         <div class="card">
@@ -51,6 +53,7 @@
 <div class="">
     <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
 </div>
+@endif
 <div class="row" id="bodytab">
 
 </div>
@@ -260,7 +263,7 @@
         jsonData = JSON.parse(StringData);
         // console.log(jsonData)
         $('#bodytab').html("");
-
+        var role_id = $('#logged_info').attr('value');
 
         $('#fv_nom').html(" <option  value=\"0\"selected  >tout les agences </option>")
         $('#fv_email').html(" <option  value=\"0\"selected  >tout les agences </option>")
@@ -318,7 +321,7 @@
                                 val = jsonData1.refs[f].ref
                             }
                             refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                                "<input type=\"text\" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                "<input type=\"text\" "+ (role_id == '1' || role_id == '6' ? "" : " disabled " ) +" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                                 "<span class=\"input-group-btn\">" +
                                 "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                 "</span>" +
@@ -376,7 +379,7 @@
                     "</div>" +
                     "</div>" +
                     "<div class=\"button-group text-center\">" +
-                    "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + jsonData.agences[ind].id + "," + jsonData.souscriptions[ind].produits[j].prod_id + "," + ind + ")\">supprimer</button>" +
+                    (role_id == '1' || role_id == '6'  ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + jsonData.agences[ind].id + "," + jsonData.souscriptions[ind].produits[j].prod_id + "," + ind + ")\">supprimer</button>" : "") +
                     "</div>" +
                     "</div>" +
                     "</div>";
@@ -401,7 +404,7 @@
                 "<br>" +
                 "<div class=\"button-group text-center\">" +
                 "<button class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.agences[ind].id + "," + ind + ")\">modifier</button>" +
-                buttonacive +
+                (role_id != '5' ? buttonacive : "") +
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -413,7 +416,7 @@
                 "<div class=\"card-body\">" +
 
                 "<div class=\"button-group text-center\">" +
-                "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agences[ind].id + "," + ind + ")\"> attacher produit</button>" +
+                (role_id == '1' || role_id == '6'  ? "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agences[ind].id + "," + ind + ")\"> attacher produit</button>" : "") +
                 "</div>" +
                 "<div id=\"accordionexample\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
                 produit +
@@ -493,6 +496,7 @@
                 data: inputs
             }).responseText;
             jsonData = JSON.parse(StringData);
+            var role_id = $('#logged_info').attr('value');
             // console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
 
@@ -606,7 +610,7 @@
         }).responseText;
         jsonData = JSON.parse(StringData);
         // console.log(jsonData)
-
+        var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
         for (let ind = 0; ind < jsonData.agences.length; ind++) {
@@ -661,7 +665,7 @@
                                 val = jsonData1.refs[f].ref
                             }
                             refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                                "<input type=\"text\" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                "<input type=\"text\" "+ (role_id == '1' || role_id == '6' ? "" : " disabled " ) +" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                                 "<span class=\"input-group-btn\">" +
                                 "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                 "</span>" +
@@ -719,7 +723,7 @@
                     "</div>" +
                     "</div>" +
                     "<div class=\"button-group text-center\">" +
-                    "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + jsonData.agences[ind].id + "," + jsonData.souscriptions[ind].produits[j].prod_id + "," + ind + ")\">supprimer</button>" +
+                    (role_id == '1' || role_id == '6'  ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + jsonData.agences[ind].id + "," + jsonData.souscriptions[ind].produits[j].prod_id + "," + ind + ")\">supprimer</button>" : "") +
                     "</div>" +
                     "</div>" +
                     "</div>";
@@ -756,7 +760,7 @@
                 "<div class=\"card-body\">" +
 
                 "<div class=\"button-group text-center\">" +
-                "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agences[ind].id + "," + ind + ")\"> attacher produit</button>" +
+                (role_id == '1' || role_id == '6'  ? "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agences[ind].id + "," + ind + ")\"> attacher produit</button>" : "") +
                 "</div>" +
                 "<div id=\"accordionexample\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
                 produit +
@@ -791,7 +795,7 @@
         jsonData = JSON.parse(StringData);
         console.log(jsonData)
         message("agence", "supprimé", jsonData.check);
-
+        var role_id = $('#logged_info').attr('value');
         produit = "";
         // if (jsonData.chef == null) {
         //     chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef d'agence</span>"
@@ -842,7 +846,7 @@
                             val = jsonData1.refs[f].ref
                         }
                         refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                            "<input type=\"text\" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                            "<input type=\"text\" "+ (role_id == '1' || role_id == '6' ? "" : " disabled " ) +" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                             "<span class=\"input-group-btn\">" +
                             "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                             "</span>" +
@@ -898,8 +902,7 @@
                 "</div>" +
                 "</div>" +
                 "<div class=\"button-group text-center\">" +
-
-                "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">supprimer</button>" +
+                (role_id == '1' || role_id == '6'  ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">supprimer</button>" : "") +
                 "</div>" +
                 "</div>" +
                 "</div>";
@@ -935,7 +938,7 @@
             "<hr>" +
             "<div class=\"card-body\">" +
             "<div class=\"button-group text-center\">" +
-            "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agence.id + "," + ind + ")\"> attacher produit</button>" +
+            (role_id == '1' || role_id == '6'  ? "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agence.id + "," + ind + ")\"> attacher produit</button>" : "") +
             "</div>" +
             "<div id=\"accordionexample\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
             produit +
@@ -965,7 +968,7 @@
 
         jsonData = JSON.parse(StringData);
         message("agence", "restauré", jsonData.check);
-
+        var role_id = $('#logged_info').attr('value');
         produit = "";
         // if (jsonData.chef == null) {
         //     chef = " <span id=\"chef" + ind + "\" value=\"0\"> pas de chef d'agence</span>"
@@ -1016,7 +1019,7 @@
                             val = jsonData1.refs[f].ref
                         }
                         refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                            "<input type=\"text\" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                            "<input type=\"text\" "+ (role_id == '1' || role_id == '6' ? "" : " disabled " ) +" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                             "<span class=\"input-group-btn\">" +
                             "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                             "</span>" +
@@ -1074,8 +1077,7 @@
                 "</div>" +
                 "</div>" +
                 "<div class=\"button-group text-center\">" +
-
-                "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">supprimer</button>" +
+                (role_id == '1' || role_id == '6'  ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">supprimer</button>" : "") +
                 "</div>" +
                 "</div>" +
                 "</div>";
@@ -1110,7 +1112,7 @@
             "<hr>" +
             "<div class=\"card-body\">" +
             "<div class=\"button-group text-center\">" +
-            "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agence.id + "," + ind + ")\"> attacher produit</button>" +
+            (role_id == '1' || role_id == '6'  ? "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agence.id + "," + ind + ")\"> attacher produit</button>" : "") +
             "</div>" +
             "<div id=\"accordionexample\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
             produit +
@@ -1159,7 +1161,7 @@
                 data: inputs
             }).responseText;
             jsonData = JSON.parse(StringData);
-
+            var role_id = $('#logged_info').attr('value');
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -1216,7 +1218,7 @@
                                     val = jsonData1.refs[f].ref
                                 }
                                 refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                                    "<input type=\"text\" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                    "<input type=\"text\" "+ (role_id == '1' || role_id == '6' ? "" : " disabled " ) +" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                                     "<span class=\"input-group-btn\">" +
                                     "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                     "</span>" +
@@ -1272,8 +1274,7 @@
                         "</div>" +
                         "</div>" +
                         "<div class=\"button-group text-center\">" +
-
-                        "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">supprimer</button>" +
+                        (role_id == '1' || role_id == '6'  ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">supprimer</button>" : "") +
                         "</div>" +
                         "</div>" +
                         "</div>";
@@ -1309,7 +1310,7 @@
                     "<div class=\"card-body\">" +
 
                     "<div class=\"button-group text-center\">" +
-                    "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agence.id + "," + ind + ")\"> attacher produit</button>" +
+                    (role_id == '1' || role_id == '6'  ? "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agence.id + "," + ind + ")\"> attacher produit</button>" : "") +
                     "</div>" +
                     "<div id=\"accordionexample\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
                     produit +

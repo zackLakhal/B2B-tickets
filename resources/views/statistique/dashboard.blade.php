@@ -36,9 +36,11 @@
         </div>
     </div>
 </div>
+@if(auth::user()->role_id != 5 && auth::user()->role_id != 4 )
 <div class="">
     <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
 </div>
+@endif
 <div class="row" id="bodytab">
 
 </div>
@@ -89,10 +91,14 @@
             url: "http://127.0.0.1:8000/dashboard/agence_dash",
             dataType: "json",
             type: "GET",
+            data: {
+                role_id :  $('#logged_info').attr('value'),
+                id : ' {{ auth::user()->id }} '
+            },
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        //    console.log(jsonData)
+            console.log(jsonData)
         $('#nom').html(" <option  value=\"0\"selected  >tout les client </option>")
         $('#email').html(" <option  value=\"0\"selected  >tout les client </option>")
 

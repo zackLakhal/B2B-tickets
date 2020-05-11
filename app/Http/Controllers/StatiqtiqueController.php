@@ -7,9 +7,11 @@ use App\Anomalie;
 use Illuminate\Http\Request;
 use App\Reclamation;
 use App\Client;
+use App\Clientuser;
 use App\Departement;
 use App\Equipement;
 use App\Exports\StatistiqueExport;
+use App\Nstuser;
 use App\Produit;
 use App\Souscription;
 use Illuminate\Support\Facades\Auth;
@@ -50,30 +52,41 @@ class StatiqtiqueController extends Controller
     public function fill_list()
     {
 
-        $data = array(
-            'fv_client' => Client::withTrashed()->get(),
-            'fv_departement'  => Departement::withTrashed()->get(),
-            'fv_agence'  => Agence::withTrashed()->get(),
-            'fv_produit' => Produit::withTrashed()->get(),
-            'fv_equipement' => Equipement::all(),
-            'fv_ref_equip' => Souscription::where('equip_ref', '<>', null)->get(),
-        );
+        // $data = array(
+        //     'fv_client' => Client::withTrashed()->get(),
+        //     'fv_departement'  => Departement::withTrashed()->get(),
+        //     'fv_agence'  => Agence::withTrashed()->get(),
+        //     'fv_produit' => Produit::withTrashed()->get(),
+        //     'fv_equipement' => Equipement::all(),
+        //     'fv_ref_equip' => Souscription::where('equip_ref', '<>', null)->get(),
+        // );
 
-        return response()->json($data);
-    }
+        // return response()->json($data);
 
-    public function filter_data(Request $request)
-    {
+        // $auth = Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id);
+
 
         $ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip'];
         $input_values = array();
+
+
+
+
         foreach ($ids as $id) {
-            if ($request->input("check_" . $id) == "true") {
-                $input_values[$id] = 0;
-            } else {
-                $input_values[$id] = $request->input($id);
-            }
+            $input_values[$id] = 0;
         }
+        if (Auth::user()->role_id == 4) {
+            $input_values['fv_client'] = Auth::user()->created_by;
+        }
+        
+        if (Auth::user()->role_id == 5) {
+            $agence = Agence::find(Auth::user()->clientable_id);
+            $departement = Departement::find($agence->departement_id);
+            $input_values['fv_agence'] = $agence->id;
+            $input_values['fv_departement'] = $departement->id;
+            $input_values['fv_client'] = $departement->client_id;
+        }
+
         $clients = null;
         $client_ids = null;
 
@@ -94,28 +107,28 @@ class StatiqtiqueController extends Controller
         $queryRef = " equip_ref IS NOT NULL  and  ";
         $paramsQuery = array();
 
-        if ($input_values['fv_client'] == null) {
+        if ($input_values['fv_client'] == 0) {
             $clients =  DB::table('clients')->select('*')->get();
             $client_ids = DB::table('clients')->select('*')->pluck('id');
         } else {
-            $clients =  DB::table('clients')->select('*')->whereIn('id', explode(',', $request->fv_client))->get();
-            $client_ids = DB::table('clients')->select('*')->whereIn('id', explode(',', $request->fv_client))->pluck('id');
+            $clients =  DB::table('clients')->select('*')->where('id', '=', $input_values['fv_client'])->get();
+            $client_ids = DB::table('clients')->select('*')->where('id', '=', $input_values['fv_client'])->pluck('id');
         }
 
-        if ($input_values['fv_departement'] == null) {
+        if ($input_values['fv_departement'] == 0) {
             $departements =  DB::table('departements')->select('*')->whereIn('client_id', $client_ids)->get();
             $departement_ids = DB::table('departements')->select('*')->whereIn('client_id', $client_ids)->pluck('id');
         } else {
-            $departements =  DB::table('departements')->select('*')->whereIn('id', explode(',', $request->fv_departement))->whereIn('client_id', $client_ids)->get();
-            $departement_ids = DB::table('departements')->select('*')->whereIn('id', explode(',', $request->fv_departement))->whereIn('client_id', $client_ids)->pluck('id');
+            $departements =  DB::table('departements')->select('*')->where('id', '=', $input_values['fv_departement'])->whereIn('client_id', $client_ids)->get();
+            $departement_ids = DB::table('departements')->select('*')->where('id', '=', $input_values['fv_departement'])->whereIn('client_id', $client_ids)->pluck('id');
         }
 
-        if ($input_values['fv_agence'] == null) {
+        if ($input_values['fv_agence'] == 0) {
             $agences =  DB::table('agences')->select('*')->whereIn('departement_id', $departement_ids)->get();
             $agence_ids = DB::table('agences')->select('*')->whereIn('departement_id', $departement_ids)->pluck('id');
         } else {
-            $agences =  DB::table('agences')->select('*')->whereIn('id', explode(',', $request->fv_agence))->whereIn('departement_id', $departement_ids)->get();
-            $agence_ids = DB::table('agences')->select('*')->whereIn('id', explode(',', $request->fv_agence))->whereIn('departement_id', $departement_ids)->pluck('id');
+            $agences =  DB::table('agences')->select('*')->where('id', '=', $input_values['fv_agence'])->whereIn('departement_id', $departement_ids)->get();
+            $agence_ids = DB::table('agences')->select('*')->where('id', '=', $input_values['fv_agence'])->whereIn('departement_id', $departement_ids)->pluck('id');
         }
 
         $ags = "";
@@ -124,7 +137,7 @@ class StatiqtiqueController extends Controller
         }
         array_push($paramsQuery, " agence_id IN (" . $ags . ") ");
 
-        if ($input_values['fv_produit'] == null) {
+        if ($input_values['fv_produit'] == 0) {
             $produits =  DB::table('souscriptions')
                 ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
                 ->select('produits.*')->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->get();
@@ -134,10 +147,10 @@ class StatiqtiqueController extends Controller
         } else {
             $produits =  DB::table('souscriptions')
                 ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
-                ->select('produits.*')->whereIn('produits.id',  explode(',', $request->fv_produit))->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->get();
+                ->select('produits.*')->where('produits.id', '=', $input_values['fv_produit'])->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->get();
             $produit_ids = DB::table('souscriptions')
                 ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
-                ->select('produits.*')->whereIn('produits.id',  explode(',', $request->fv_produit))->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->pluck('id');
+                ->select('produits.*')->where('produits.id', '=', $input_values['fv_produit'])->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->pluck('id');
         }
 
         $ags = "";
@@ -146,7 +159,7 @@ class StatiqtiqueController extends Controller
         }
         array_push($paramsQuery, " produit_id IN (" . $ags . ") ");
 
-        if ($input_values['fv_equipement'] == null) {
+        if ($input_values['fv_equipement'] == 0) {
             $equipements =  DB::table('souscriptions')
                 ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
                 ->select('equipements.*')->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->get();
@@ -156,10 +169,164 @@ class StatiqtiqueController extends Controller
         } else {
             $equipements =  DB::table('souscriptions')
                 ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
-                ->select('equipements.*')->whereIn('equipements.id', explode(',', $request->fv_equipement))->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->get();
+                ->select('equipements.*')->where('equipements.id', '=', $input_values['fv_equipement'])->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->get();
             $equipement_ids = DB::table('souscriptions')
                 ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
-                ->select('equipements.*')->whereIn('equipements.id', explode(',', $request->fv_equipement))->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->pluck('id');
+                ->select('equipements.*')->where('equipements.id', '=', $input_values['fv_equipement'])->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->pluck('id');
+        }
+
+        $ags = "";
+        for ($i = 0; $i < count($equipement_ids); $i++) {
+            $i == count($equipement_ids) - 1 ?  $ags = $ags . " " . $equipement_ids[$i] : $ags = $ags . " " . $equipement_ids[$i] . " , ";
+        }
+        array_push($paramsQuery, " equipement_id IN (" . $ags . ") ");
+
+        if (count($paramsQuery) == 0) {
+            $queryRef = substr($queryRef, 0, -5);
+        } else {
+            foreach ($paramsQuery as $filter) {
+                $queryRef = $queryRef  . $filter . " And ";
+            }
+            $queryRef = substr($queryRef, 0, -4);
+        }
+
+        if (count($agence_ids) == 0 || count($equipement_ids) == 0 || count($produit_ids) == 0) {
+            $ref_equips = [];
+        } else {
+            $ref_equips =  DB::table('souscriptions')->select('*')
+                ->whereRaw($queryRef)
+                ->groupBy('equip_ref')->get();
+        }
+
+        $data = array(
+            'fv_client' => $clients,
+            'fv_departement'  => $departements,
+            'fv_agence'  => $agences,
+            'fv_produit' => $produits,
+            'fv_equipement' => $equipements,
+            'fv_ref_equip' => $ref_equips,
+            'inputs' => $input_values
+        );
+
+        return response()->json($data);
+    }
+
+    public function filter_data(Request $request)
+    {
+        $ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip'];
+        $input_values = array();
+
+        
+        // $auth = Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id);
+        
+
+        foreach ($ids as $id) {
+            if ($request->input("check_" . $id) == "true") {
+                $input_values[$id] = 0;
+            } else {
+                $input_values[$id] = $request->input($id);
+            }
+        }
+
+        if (Auth::user()->role_id == 4) {
+            $input_values['fv_client'] = Auth::user()->created_by;
+        }
+        
+        if (Auth::user()->role_id == 5) {
+            $agence = Agence::find(Auth::user()->clientable_id);
+            $departement = Departement::find($agence->departement_id);
+            $input_values['fv_agence'] = $agence->id;
+            $input_values['fv_departement'] = $departement->id;
+            $input_values['fv_client'] = $departement->client_id;
+        }
+
+
+        $clients = null;
+        $client_ids = null;
+
+        $departements = null;
+        $departement_ids = null;
+
+        $agences = null;
+        $agence_ids = null;
+
+        $produits = null;
+        $produit_ids = null;
+
+        $equipements = null;
+        $equipement_ids = null;
+
+        $ref_equips = null;
+
+        $queryRef = " equip_ref IS NOT NULL  and  ";
+        $paramsQuery = array();
+
+        if ($input_values['fv_client'] == 0) {
+            $clients =  DB::table('clients')->select('*')->get();
+            $client_ids = DB::table('clients')->select('*')->pluck('id');
+        } else {
+            $clients =  DB::table('clients')->select('*')->whereIn('id', explode(',', $input_values['fv_client']))->get();
+            $client_ids = DB::table('clients')->select('*')->whereIn('id', explode(',', $input_values['fv_client']))->pluck('id');
+        }
+
+        if ($input_values['fv_departement'] == 0) {
+            $departements =  DB::table('departements')->select('*')->whereIn('client_id', $client_ids)->get();
+            $departement_ids = DB::table('departements')->select('*')->whereIn('client_id', $client_ids)->pluck('id');
+        } else {
+            $departements =  DB::table('departements')->select('*')->whereIn('id', explode(',', $input_values['fv_departement']))->whereIn('client_id', $client_ids)->get();
+            $departement_ids = DB::table('departements')->select('*')->whereIn('id', explode(',', $input_values['fv_departement']))->whereIn('client_id', $client_ids)->pluck('id');
+        }
+
+        if ($input_values['fv_agence'] == 0) {
+            $agences =  DB::table('agences')->select('*')->whereIn('departement_id', $departement_ids)->get();
+            $agence_ids = DB::table('agences')->select('*')->whereIn('departement_id', $departement_ids)->pluck('id');
+        } else {
+            $agences =  DB::table('agences')->select('*')->whereIn('id', explode(',', $input_values['fv_agence']))->whereIn('departement_id', $departement_ids)->get();
+            $agence_ids = DB::table('agences')->select('*')->whereIn('id', explode(',', $input_values['fv_agence']))->whereIn('departement_id', $departement_ids)->pluck('id');
+        }
+
+        $ags = "";
+        for ($i = 0; $i < count($agence_ids); $i++) {
+            $i == count($agence_ids) - 1 ?  $ags = $ags . " " . $agence_ids[$i] : $ags = $ags . " " . $agence_ids[$i] . " , ";
+        }
+        array_push($paramsQuery, " agence_id IN (" . $ags . ") ");
+
+        if ($input_values['fv_produit'] == 0) {
+            $produits =  DB::table('souscriptions')
+                ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
+                ->select('produits.*')->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->get();
+            $produit_ids = DB::table('souscriptions')
+                ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
+                ->select('produits.*')->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->pluck('id');
+        } else {
+            $produits =  DB::table('souscriptions')
+                ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
+                ->select('produits.*')->whereIn('produits.id',  explode(',', $input_values['fv_produit']))->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->get();
+            $produit_ids = DB::table('souscriptions')
+                ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
+                ->select('produits.*')->whereIn('produits.id',  explode(',', $input_values['fv_produit']))->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->pluck('id');
+        }
+
+        $ags = "";
+        for ($i = 0; $i < count($produit_ids); $i++) {
+            $i == count($produit_ids) - 1 ?  $ags = $ags . " " . $produit_ids[$i] : $ags = $ags . " " . $produit_ids[$i] . " , ";
+        }
+        array_push($paramsQuery, " produit_id IN (" . $ags . ") ");
+
+        if ($input_values['fv_equipement'] == 0) {
+            $equipements =  DB::table('souscriptions')
+                ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
+                ->select('equipements.*')->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->get();
+            $equipement_ids = DB::table('souscriptions')
+                ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
+                ->select('equipements.*')->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->pluck('id');
+        } else {
+            $equipements =  DB::table('souscriptions')
+                ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
+                ->select('equipements.*')->whereIn('equipements.id', explode(',', $input_values['fv_equipement']))->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->get();
+            $equipement_ids = DB::table('souscriptions')
+                ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
+                ->select('equipements.*')->whereIn('equipements.id', explode(',', $input_values['fv_equipement']))->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->pluck('id');
         }
 
         $ags = "";
@@ -433,13 +600,15 @@ class StatiqtiqueController extends Controller
         }
 
         $filtredQuery = $filtredQuery . "" . $stat_by . " " . (count($having) == 0 ? " " : $having_string) . " " . $havingQuery . " order by " . $stat_by;
-
+        $date = $time_day_from."/".$time_mois_from ."/".$time_year_from." - ".$time_day_to."/".$time_mois_to ."/".$time_year_to;
+    
         $data = [
             '' . $request->stat_by => DB::select($filtredQuery),
             'semi_total_' . $request->stat_by => ($request->stat_by == "produit" || $request->stat_by == "agence") ? DB::select($totalQuery . " group by " . explode(',', $stat_by)[0] . " order by " . $stat_by) : null,
             'total_' . $request->stat_by => DB::select($totalQuery . " order by " . $stat_by),
             'stat_by' => $request->stat_by,
-            'nb_row' => $nb_row
+            'nb_row' => $nb_row,
+            'date' => $date
         ];
         //  return response()->json(Excel::download(new StatistiqueExport($data), 'clients_stat.xlsx'));
         Excel::store(new StatistiqueExport($data), 'excel_stats/' . $request->stat_by . 's/' . $request->stat_by . '_' . Auth::id() . '_stat.xlsx');

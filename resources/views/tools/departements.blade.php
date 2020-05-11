@@ -33,6 +33,7 @@
         </div>
     </div>
 </div>
+@if(auth::user()->role_id == 1 || auth::user()->role_id == 6 || auth::user()->role_id == 4)
 <div class="row">
     <div class="col-12 m-t-30">
         <div class="card">
@@ -47,9 +48,11 @@
         </div>
     </div>
 </div>
+
 <div class="">
     <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
 </div>
+@endif
 <div class="row" id="bodytab">
 
 </div>
@@ -203,7 +206,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-
+        var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
         $('#fv_nom').html(" <option  value=\"0\"selected  >tout les départements </option>")
@@ -251,8 +254,8 @@
                 "<br>" +
                 "<div class=\"button-group text-center\">" +
                 butttondetail +
-                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.departements[ind].id + "," + ind + ")\">modifier</button>" +
-                buttonacive +
+                (role_id != '5' ? "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.departements[ind].id + "," + ind + ")\">modifier</button>" : "") +
+                (role_id != '5' ? buttonacive : "") +
                 "</div>" +
                 "</div>" +
                 "</div>" +

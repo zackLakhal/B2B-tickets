@@ -14,11 +14,12 @@ class testlogingSeeder extends Seeder
     {
        
         DB::table('nstusers')->insert([
-            'id' => 1,
-            'name' => 'nst1',
-            'email' => 'nst1@gmail.com',
-            'password' => Hash::make(123456)
-            
+            'name' => 'sudo',
+            'email' => 'sudo'.'@gmail.com',
+            'password' => Hash::make('sudo_nst'),
+            'role_id' => 6,
+            'nom' => "admin",
+            'prénom' => "admin" 
         ]);
     }
 }

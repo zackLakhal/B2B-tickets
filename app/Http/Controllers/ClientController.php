@@ -10,6 +10,7 @@ use App\Client;
 use App\Departement;
 use App\Agence;
 use App\Clientuser;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
@@ -18,7 +19,20 @@ class ClientController extends Controller
 
     public function all_clients()
     {
-        $clients = Client::withTrashed()->get();
+        $clients = null;
+        switch (Auth::user()->role_id) {
+            case 4:
+                $clients = Client::where('id', Auth::user()->created_by)->get();
+                break;
+            case 5:
+                $clients = Client::where('id', Auth::user()->created_by)->get();
+                break;
+            default:
+                $clients = Client::withTrashed()->get();
+                break;
+        }
+
+
         return response()->json($clients);
     }
 
@@ -42,7 +56,19 @@ class ClientController extends Controller
 
     public function active_clients()
     {
-        $clients = Client::all();
+        $clients = null;
+        switch (Auth::user()->role_id) {
+            case 4:
+                $clients = Client::where('id', Auth::user()->created_by)->get();
+                break;
+            case 5:
+                $clients = Client::where('id', Auth::user()->created_by)->get();
+                break;
+            default:
+                $clients = Client::all();
+                break;
+        }
+
         return response()->json($clients);
     }
 
@@ -293,9 +319,24 @@ class ClientController extends Controller
 
     public function all_departements($id_c)
     {
-        $departements = Departement::withTrashed()
-            ->where('client_id', $id_c)
-            ->get();
+        $departements = null;
+        switch (Auth::user()->role_id) {
+            case 5:
+                $departements = DB::table('departements')
+                    ->leftJoin('agences', 'agences.departement_id', '=', 'departements.id')
+                    ->select('departements.*')->where([
+                        ['departements.deleted_at', '<>', null],
+                        ['agences.id', '=', Auth::user()->clientable_id]
+                    ])->get();
+                break;
+
+            default:
+                $departements = Departement::withTrashed()
+                    ->where('client_id', $id_c)
+                    ->get();
+                break;
+        }
+
         // $chefs = array();
         // foreach ($departements as $departement) {
         //     $chefs[] = Clientuser::where([
@@ -314,7 +355,7 @@ class ClientController extends Controller
 
     public function filter_all_departements($id_c, Request $request)
     {
-        
+
 
         $filters = array();
         $filters[] = ['client_id', $id_c];
@@ -547,10 +588,21 @@ class ClientController extends Controller
 
     public function all_agences($id_c, $id_d)
     {
+        $agences = null;
+        switch (Auth::user()->role_id) {
+            case 5:
+                $agences = Agence::where('id', '=', Auth::user()->clientable_id)
+                    ->get();
+                break;
 
-        $agences = Agence::withTrashed()
-            ->where('departement_id', '=', $id_d)
-            ->get();
+            default:
+                $agences = Agence::withTrashed()
+                    ->where('departement_id', '=', $id_d)
+                    ->get();
+                break;
+        }
+
+
 
         //   $chefs = array();
         $villes = array();
@@ -588,18 +640,18 @@ class ClientController extends Controller
     public function filter_all_agences($id_c, $id_d, Request $request)
     {
 
-        
+
         $filters = array();
         $filters[] = ['departement_id', '=', $id_d];
         $agences = null;
-        $request->agence_id == "0" ? $filters[] = ['id','<>',0] :  $filters[] = ['id','=',$request->agence_id];
-        
-        if($request->ville_id != "0"){
-            $filters[] = ['ville_id','=',$request->ville_id];
+        $request->agence_id == "0" ? $filters[] = ['id', '<>', 0] :  $filters[] = ['id', '=', $request->agence_id];
+
+        if ($request->ville_id != "0") {
+            $filters[] = ['ville_id', '=', $request->ville_id];
         }
-        if($request->is_all == "true"){
+        if ($request->is_all == "true") {
             $agences = Agence::where($filters)->withTrashed()->get();
-        }else{
+        } else {
 
             $request->is_deleted == 'true' ?  $agences = Agence::onlyTrashed()->where($filters)->get() : $agences = Agence::where($filters)->get();
         }

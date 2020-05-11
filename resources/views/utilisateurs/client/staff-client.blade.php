@@ -43,9 +43,11 @@
         </div>
     </div>
 </div> -->
+@if(auth::user()->role_id != 5 )
 <div class="">
     <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
 </div>
+@endif
 <div id="bodytab" class="row el-element-overlay">
 
 </div>
@@ -96,7 +98,7 @@
             <div class="demo-radio-button" id="dr_group">
                 <input name="deleted" type="radio" id="active" value="false" checked />
                 <label for="active">actif</label>
-                <input name="deleted" type="radio" id="deleted" value="true"/>
+                <input name="deleted" type="radio" id="deleted" value="true" />
                 <label for="deleted">supprimé</label>
 
             </div>
@@ -228,7 +230,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-
+        var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
         $('#fv_nom').html(" <option  value=\"0\"selected  >tout les staff </option>")
@@ -262,7 +264,7 @@
                 "<div class=\"el-overlay scrl-up\">" +
                 "<ul class=\"el-info\">" +
                 "<li><a class=\"btn default btn-warning\" onclick=\"modifier(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                buttonacive +
+                (role_id == '1' || role_id == '6' ? buttonacive : "") +
                 "</ul>" +
                 "</div>" +
                 "</div>" +
@@ -319,7 +321,7 @@
         $('#fv_email').selectpicker('refresh');
         $('#fv_client').selectpicker('refresh');
         // $('#fv_dr').attr("checked", "");
-        
+
         document.getElementsByTagName('fv_dr').checked = false;
         //document.getElementsByTagName('rd_email').checked = false;
         document.getElementsByTagName('rd_nom').checked = true;
@@ -378,7 +380,7 @@
         }).responseText;
         jsonData = JSON.parse(StringData);
         console.log(jsonData)
-
+        var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
         for (let ind = 0; ind < jsonData.users.length; ind++) {
@@ -408,7 +410,7 @@
                 "<div class=\"el-overlay scrl-up\">" +
                 "<ul class=\"el-info\">" +
                 "<li><a class=\"btn default btn-warning\" onclick=\"modifier(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                buttonacive +
+                (role_id == '1' || role_id == '6' ? buttonacive : "") +
                 "</ul>" +
                 "</div>" +
                 "</div>" +
@@ -761,6 +763,7 @@
                 contentType: false
             }).responseText;
             jsonData = JSON.parse(StringData);
+            var role_id = $('#logged_info').attr('value');
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -790,7 +793,7 @@
                     "<div class=\"el-overlay scrl-up\">" +
                     "<ul class=\"el-info\">" +
                     "<li><a class=\"btn default btn-warning\"  onclick=\"modifier(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                    buttonacive +
+                    (role_id == '1' || role_id == '6' ? buttonacive : "") +
                     "</ul>" +
                     "</div>" +
                     "</div>" +

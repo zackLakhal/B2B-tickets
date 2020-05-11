@@ -224,7 +224,7 @@
                     <!-- User profile image -->
                     <div class="profile-img"> <img src="{{ asset('storage').'/'.auth::user()->photo }}" alt="user" /> </div>
                     <!-- User profile text-->
-                    <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">{{auth::user()->name}}</a>
+                    <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true" id="logged_info" value="{{auth::user()->role_id}}">{{auth::user()->name}}</a>
                         <div class="dropdown-menu animated flipInY">
                             <a href="#" class="dropdown-item"><i class="ti-user"></i> My Profile</a>
                             <!-- <a href="#" class="dropdown-item"><i class="ti-wallet"></i> My Balance</a>
@@ -252,44 +252,64 @@
                                 <li><a href="/dashboard">Consulter le Dashboard</a></li>
                             </ul>
                         </li>
+                        @if(auth::user()->role_id != 3)
                         <li>
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-file-chart"></i><span class="hide-menu">Statistiques </span></a>
                             <ul aria-expanded="true" class="collapse">
                                 <li><a href="/statistiques">Consulter les statistiques</a></li>
                             </ul>
                         </li>
+                        @endif
+                        @if(auth::user()->role_id != 5)
                         <li>
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="fa fa-user"></i><span class="hide-menu">Utilisateurs </span></a>
                             <ul aria-expanded="false" class="collapse">
+                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 4 || auth::user()->role_id == 5)
                                 <li><a href="/utilisateur/staff-nst">Gérer Staff-nst</a></li>
+                                @endif
+                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 2 || auth::user()->role_id == 3)
                                 <li><a href="/utilisateur/staff-client">Gérer Staff-client</a></li>
+                                @endif
                             </ul>
                         </li>
+                        @endif
+                        @if(auth::user()->role_id != 2 && auth::user()->role_id != 3)
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-cellphone-link"></i><span class="hide-menu">Outils Client</span></a>
                             <ul aria-expanded="false" class="collapse">
+                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 4 || auth::user()->role_id == 5)
                                 <li><a href="/outils/espace-client">Espace client</a></li>
                                 <li><a href="/outils/clients">Gérer les clients</a></li>
+                                @endif
+                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1)
                                 <li><a href="/outils/produits">Gérer les produits</a></li>
-
+                                @endif
                             </ul>
                         </li>
-
+                        @endif
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-email-alert"></i><span class="hide-menu"> Réclamations</span></a>
                             <ul aria-expanded="false" class="collapse">
                                 <li><a href="/reclamation/recls">Gérer les réclamations</a></li>
+                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1)
                                 <li><a href="/reclamation/anomalie">Gérer les anomalies</a></li>
+                                @endif
+                                @if(auth::user()->role_id == 6)
                                 <li><a href="/reclamation/etat">Gérer les états</a></li>
-
+                                @endif
                             </ul>
                         </li>
+                        @if(auth::user()->role_id != 2 && auth::user()->role_id != 3 && auth::user()->role_id != 4 && auth::user()->role_id != 5)
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-brightness-7"></i><span class="hide-menu"> Système</span></a>
                             <ul aria-expanded="false" class="collapse">
+                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1)
                                 <li><a href="/system/request">Gérer les requests</a></li>
                                 <li><a href="/system/ville">Gérer les villes</a></li>
+                                @endif
+                                @if(auth::user()->role_id == 6)
                                 <li><a href="/system/role">Gérer les rôles</a></li>
+                                @endif
                             </ul>
                         </li>
-
+                        @endif
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->
@@ -298,11 +318,11 @@
             <!-- Bottom points-->
             <div class="sidebar-footer">
                 <!-- item-->
-                <a href="" class="link" data-toggle="tooltip" title="Settings"><i class="ti-settings"></i></a>
+                <!-- <a href="" class="link" data-toggle="tooltip" title="Settings"><i class="ti-settings"></i></a> -->
                 <!-- item-->
-                <a href="" class="link" data-toggle="tooltip" title="Email"><i class="mdi mdi-gmail"></i></a>
+                <!-- <a href="" class="link" data-toggle="tooltip" title="Email"><i class="mdi mdi-gmail"></i></a> -->
                 <!-- item-->
-                <a data-toggle="tooltip" title="Logout" class="link" href="{{ route('logout') }}" onclick="event.preventDefault();
+                <a style="margin-left: 35%" data-toggle="tooltip" title="Logout" class="link" href="{{ route('logout') }}" onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                     <i class="mdi mdi-power"></i>
 
@@ -431,8 +451,8 @@
         $(document).ready(function() {
             $('.dropify').dropify();
             $('#myTable').DataTable();
-            
-            
+
+
         });
     </script>
 

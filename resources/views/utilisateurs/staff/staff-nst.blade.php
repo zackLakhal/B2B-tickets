@@ -31,6 +31,7 @@
         </div>
     </div>
 </div>
+@if(auth::user()->role_id == 1 || auth::user()->role_id == 6)
 <div class="row">
     <div class="col-12 m-t-30">
         <div class="card">
@@ -45,10 +46,12 @@
         </div>
     </div>
 </div>
-
+@endif
+@if(auth::user()->role_id != 3 )
 <div class="">
     <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
 </div>
+@endif
 <div id="bodytab" class="row el-element-overlay">
 
 </div>
@@ -212,9 +215,9 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-
+        console.log(jsonData)
         $('#bodytab').html("");
-
+        var role_id = $('#logged_info').attr('value');
         $('#fv_nom').html(" <option  value=\"0\"selected  >tout les staff </option>")
         $('#fv_email').html(" <option  value=\"0\"selected  >tout les staff </option>")
         for (let ind = 0; ind < jsonData.users.length; ind++) {
@@ -274,7 +277,7 @@
                 "<div class=\"el-overlay scrl-up\">" +
                 "<ul class=\"el-info\">" +
                 "<li><a class=\"btn default btn-warning\" onclick=\"modifier(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                buttonacive +
+                 (role_id == '1' || role_id == '6' ? buttonacive : "") +
                 "</ul>" +
                 "</div>" +
                 "</div>" +
@@ -369,7 +372,7 @@
         }).responseText;
         jsonData = JSON.parse(StringData);
         console.log(jsonData)
-
+        var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
         for (let ind = 0; ind < jsonData.users.length; ind++) {
@@ -427,7 +430,7 @@
                 "<div class=\"el-overlay scrl-up\">" +
                 "<ul class=\"el-info\">" +
                 "<li><a class=\"btn default btn-warning\" onclick=\"modifier(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                buttonacive +
+                 (role_id == '1' || role_id == '6' ? buttonacive : "") +
                 "</ul>" +
                 "</div>" +
                 "</div>" +
@@ -862,6 +865,7 @@
             }).responseText;
             jsonData = JSON.parse(StringData);
             console.log(jsonData)
+            var role_id = $('#logged_info').attr('value');
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -917,7 +921,7 @@
                     "<div class=\"el-overlay scrl-up\">" +
                     "<ul class=\"el-info\">" +
                     "<li><a class=\"btn default btn-warning\"  onclick=\"modifier(" + jsonData.user.id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                    buttonacive +
+                    (role_id == '1' || role_id == '6' ? buttonacive : "") +
                     "</ul>" +
                     "</div>" +
                     "</div>" +

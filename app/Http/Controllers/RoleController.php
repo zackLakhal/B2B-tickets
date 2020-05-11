@@ -21,7 +21,7 @@ class RoleController extends Controller
 
     public function active_index(){
 
-        $roles = Role::all();
+        $roles = Role::where('id','<>',6)->get();
         return response()->json($roles);
     }
 

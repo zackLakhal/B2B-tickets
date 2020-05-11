@@ -243,6 +243,7 @@
             async: false
         }).responseText;
         jsonData = JSON.parse(StringData);
+        var role_id = $('#logged_info').attr('value');
         $('#equip_list').html("");
         for (let j = 0; j < jsonData.equipements.length; j++) {
             $('#equip_list').append("<div class=\"col-md-4\">" +
@@ -265,9 +266,8 @@
                 jsonData.equipements[j].info +
                 "</p>" +
                 "<div class=\"button-group text-center\">" +
-                "<button  class=\"btn btn-warning\" \" onclick=\"reclamer(" + produit + "," + jsonData.equipements[j].equip_id + ")\">réclamer sur l'équipement</button>" +
+                (role_id != '1'  ? "<button  class=\"btn btn-warning\" \" onclick=\"reclamer(" + produit + "," + jsonData.equipements[j].equip_id + ")\">réclamer sur l'équipement</button>" : "") +
                 "</div>" +
-                
                 "</div>" +
                 "</div>" +
                 "</div>" +

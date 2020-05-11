@@ -14,15 +14,32 @@ use App\Souscription;
 
 use App\Nstuser;
 use App\Affectation;
+use App\Clientuser;
 use App\Closed;
 use App\Pending;
 use Illuminate\Support\Facades\DB;
 use DateTime;
+use Illuminate\Support\Facades\Auth;
 
 class ReclamationController extends Controller
 {
     public function index()
     {
+        $where = null;
+        switch (Auth::user()->role_id) {
+            case 3:
+                $where = ['nstusers.id', '=', Auth::user()->id];
+                break;
+            case 4:
+                $where = ['clients.id', '=', Auth::user()->created_by];
+                break;
+            case 5:
+                $where = ['agences.id', '=', Auth::user()->clientable_id];
+                break;
+            default:
+                $where = ['reclamations.id', '<>', '0'];
+                break;
+        }
         $reclamations = DB::table('reclamations')
             ->leftJoin('anomalies', 'reclamations.anomalie_id', '=', 'anomalies.id')
             ->leftJoin('etats', 'reclamations.etat_id', '=', 'etats.id')
@@ -67,42 +84,69 @@ class ReclamationController extends Controller
                 'agences.nom as agence_nom',
                 'departements.nom as depart_nom',
                 'clients.nom as client_nom'
-            )
+            )->where([$where])
             ->groupBy('reclamations.id')
             ->orderBy('reclamation_ref', 'desc')->get();
 
         return response()->json($reclamations);
     }
 
-    public function agence_dash()
+    public function agence_dash(Request $request)
     {
 
-        $clients = array();
-        $clienttemps = Client::all();
+        $clienttemps = null;
+        $clientwhere = array();
+        $agencewhere = [['etats.id', '<>', 3]];
+        
+       $user = intval($request->role_id) == 4 || intval($request->role_id) == 5 ? Clientuser::find(intval($request->id)) : Nstuser::find(intval($request->id));
+       // return response()->json($request->all());
 
+        switch ($user->role_id) {
+            case 3:
+                $clientwhere[1] = ['affectations.nstuser_id', '=', $user->id];
+                $agencewhere[2] = ['affectations.nstuser_id', '=', $user->id];
+                $clienttemps = Client::all();
+                break;
+            case 4:
+                $clienttemps = Client::where('id',$user->created_by)->get();
+                break;
+            case 5:
+                $clienttemps = Client::where('id',$user->created_by)->get();
+                $clientwhere[1] = ['agences.id', '=', $user->clientable_id];
+                $agencewhere[2] = ['agences.id', '=', $user->clientable_id];
+                break;
+            default:
+                $clienttemps = Client::all();
+                break;
+        }
+
+        $clients = array();
 
         foreach ($clienttemps as $key => $clienttemp) {
             $agences = array();
-
+            $clientwhere[0] = ['departements.client_id', '=', $clienttemp->id];
             $temps = DB::table('agences')
                 ->leftJoin('souscriptions', 'agences.id', '=', 'souscriptions.agence_id')
                 ->leftJoin('reclamations', 'souscriptions.id', '=', 'reclamations.souscription_id')
+                ->leftJoin('affectations', 'reclamations.id', '=', 'affectations.reclamation_id')
                 ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
                 ->select(
                     'reclamations.ref as reclamation_ref',
                     'agences.nom as agence_nom',
                     'agences.id as agence_id',
                     'departements.client_id as client_id',
-                )->where('departements.client_id', '=', $clienttemp->id)
+                )->where($clientwhere)
                 ->groupBy('agences.id')
                 ->orderBy('reclamation_ref', 'desc')->get();
 
             foreach ($temps as $key => $temp) {
+                $agencewhere[1] = ['agences.id', '=', $temp->agence_id];
                 $agences[] = [
                     'agence' => $temp,
                     'reclamations' => DB::table('reclamations')
                         ->leftJoin('etats', 'reclamations.etat_id', '=', 'etats.id')
                         ->leftJoin('souscriptions', 'reclamations.souscription_id', '=', 'souscriptions.id')
+                        ->leftJoin('affectations', 'reclamations.id', '=', 'affectations.reclamation_id')
                         ->leftJoin('agences', 'souscriptions.agence_id', '=', 'agences.id')
                         ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
                         ->select(
@@ -114,14 +158,10 @@ class ReclamationController extends Controller
                             'agences.nom as agence_nom',
                             'agences.id as agence_id',
                             'departements.client_id as client_id',
-                        )->where([
-                            ['agences.id', '=', $temp->agence_id],
-                            ['etats.id', '<>', 3],
-                        ])->groupBy('reclamations.id')
+                        )->where($agencewhere)->groupBy('reclamations.id')
                         ->orderBy('reclamation_ref', 'desc')->get()
                 ];
             }
-
             $clients[] = [
                 'client' => $clienttemp,
                 'agences' => $agences
@@ -598,15 +638,170 @@ class ReclamationController extends Controller
     public function fill_list()
     {
 
+        // $data = array(
+        //     'fv_client' => Client::withTrashed()->get(),
+        //     'fv_departement'  => Departement::withTrashed()->get(),
+        //     'fv_agence'  => Agence::withTrashed()->get(),
+        //     'fv_produit' => Produit::withTrashed()->get(),
+        //     'fv_equipement' => Equipement::all(),
+        //     'fv_ref_equip' => Souscription::where('equip_ref', '<>', null)->get(),
+        //    
+        //     'auth' => (Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id))
+        // );
+
+        // return response()->json($data);
+        $auth = Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id);
+
+
+        $ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip'];
+        $input_values = array();
+
+
+
+
+        foreach ($ids as $id) {
+            $input_values[$id] = 0;
+        }
+        if (Auth::user()->role_id == 4) {
+            $input_values['fv_client'] = Auth::user()->created_by;
+        }
+        $tech = null;
+        if (Auth::user()->role_id == 3) {
+            $tech = Nstuser::where('id', Auth::user()->id)->get();
+            $input_values['fv_tech'] = Auth::user()->id;
+        } else {
+            $tech = Nstuser::where('role_id', 3)->get();
+            $input_values['fv_tech'] = 0;
+        }
+        if (Auth::user()->role_id == 5) {
+            $agence = Agence::find(Auth::user()->clientable_id);
+            $departement = Departement::find($agence->departement_id);
+            $input_values['fv_agence'] = $agence->id;
+            $input_values['fv_departement'] = $departement->id;
+            $input_values['fv_client'] = $departement->client_id;
+        }
+
+        $clients = null;
+        $client_ids = null;
+
+        $departements = null;
+        $departement_ids = null;
+
+        $agences = null;
+        $agence_ids = null;
+
+        $produits = null;
+        $produit_ids = null;
+
+        $equipements = null;
+        $equipement_ids = null;
+
+        $ref_equips = null;
+
+        $queryRef = " equip_ref IS NOT NULL  and  ";
+        $paramsQuery = array();
+
+        if ($input_values['fv_client'] == 0) {
+            $clients =  DB::table('clients')->select('*')->get();
+            $client_ids = DB::table('clients')->select('*')->pluck('id');
+        } else {
+            $clients =  DB::table('clients')->select('*')->where('id', '=', $input_values['fv_client'])->get();
+            $client_ids = DB::table('clients')->select('*')->where('id', '=', $input_values['fv_client'])->pluck('id');
+        }
+
+        if ($input_values['fv_departement'] == 0) {
+            $departements =  DB::table('departements')->select('*')->whereIn('client_id', $client_ids)->get();
+            $departement_ids = DB::table('departements')->select('*')->whereIn('client_id', $client_ids)->pluck('id');
+        } else {
+            $departements =  DB::table('departements')->select('*')->where('id', '=', $input_values['fv_departement'])->whereIn('client_id', $client_ids)->get();
+            $departement_ids = DB::table('departements')->select('*')->where('id', '=', $input_values['fv_departement'])->whereIn('client_id', $client_ids)->pluck('id');
+        }
+
+        if ($input_values['fv_agence'] == 0) {
+            $agences =  DB::table('agences')->select('*')->whereIn('departement_id', $departement_ids)->get();
+            $agence_ids = DB::table('agences')->select('*')->whereIn('departement_id', $departement_ids)->pluck('id');
+        } else {
+            $agences =  DB::table('agences')->select('*')->where('id', '=', $input_values['fv_agence'])->whereIn('departement_id', $departement_ids)->get();
+            $agence_ids = DB::table('agences')->select('*')->where('id', '=', $input_values['fv_agence'])->whereIn('departement_id', $departement_ids)->pluck('id');
+        }
+
+        $ags = "";
+        for ($i = 0; $i < count($agence_ids); $i++) {
+            $i == count($agence_ids) - 1 ?  $ags = $ags . " " . $agence_ids[$i] : $ags = $ags . " " . $agence_ids[$i] . " , ";
+        }
+        array_push($paramsQuery, " agence_id IN (" . $ags . ") ");
+
+        if ($input_values['fv_produit'] == 0) {
+            $produits =  DB::table('souscriptions')
+                ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
+                ->select('produits.*')->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->get();
+            $produit_ids = DB::table('souscriptions')
+                ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
+                ->select('produits.*')->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->pluck('id');
+        } else {
+            $produits =  DB::table('souscriptions')
+                ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
+                ->select('produits.*')->where('produits.id', '=', $input_values['fv_produit'])->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->get();
+            $produit_ids = DB::table('souscriptions')
+                ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
+                ->select('produits.*')->where('produits.id', '=', $input_values['fv_produit'])->whereIn('souscriptions.agence_id', $agence_ids)->groupBy('souscriptions.produit_id')->pluck('id');
+        }
+
+        $ags = "";
+        for ($i = 0; $i < count($produit_ids); $i++) {
+            $i == count($produit_ids) - 1 ?  $ags = $ags . " " . $produit_ids[$i] : $ags = $ags . " " . $produit_ids[$i] . " , ";
+        }
+        array_push($paramsQuery, " produit_id IN (" . $ags . ") ");
+
+        if ($input_values['fv_equipement'] == 0) {
+            $equipements =  DB::table('souscriptions')
+                ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
+                ->select('equipements.*')->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->get();
+            $equipement_ids = DB::table('souscriptions')
+                ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
+                ->select('equipements.*')->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->pluck('id');
+        } else {
+            $equipements =  DB::table('souscriptions')
+                ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
+                ->select('equipements.*')->where('equipements.id', '=', $input_values['fv_equipement'])->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->get();
+            $equipement_ids = DB::table('souscriptions')
+                ->leftJoin('equipements', 'souscriptions.equipement_id', '=', 'equipements.id')
+                ->select('equipements.*')->where('equipements.id', '=', $input_values['fv_equipement'])->whereIn('souscriptions.produit_id', $produit_ids)->groupBy('souscriptions.equipement_id')->pluck('id');
+        }
+
+        $ags = "";
+        for ($i = 0; $i < count($equipement_ids); $i++) {
+            $i == count($equipement_ids) - 1 ?  $ags = $ags . " " . $equipement_ids[$i] : $ags = $ags . " " . $equipement_ids[$i] . " , ";
+        }
+        array_push($paramsQuery, " equipement_id IN (" . $ags . ") ");
+
+        if (count($paramsQuery) == 0) {
+            $queryRef = substr($queryRef, 0, -5);
+        } else {
+            foreach ($paramsQuery as $filter) {
+                $queryRef = $queryRef  . $filter . " And ";
+            }
+            $queryRef = substr($queryRef, 0, -4);
+        }
+
+        if (count($agence_ids) == 0 || count($equipement_ids) == 0 || count($produit_ids) == 0) {
+            $ref_equips = [];
+        } else {
+            $ref_equips =  DB::table('souscriptions')->select('*')
+                ->whereRaw($queryRef)
+                ->groupBy('equip_ref')->get();
+        }
+
         $data = array(
-            'fv_client' => Client::withTrashed()->get(),
-            'fv_departement'  => Departement::withTrashed()->get(),
-            'fv_agence'  => Agence::withTrashed()->get(),
-            'fv_produit' => Produit::withTrashed()->get(),
-            'fv_equipement' => Equipement::all(),
-            'fv_ref_equip' => Souscription::where('equip_ref', '<>', null)->get(),
+            'fv_client' => $clients,
+            'fv_departement'  => $departements,
+            'fv_agence'  => $agences,
+            'fv_produit' => $produits,
+            'fv_equipement' => $equipements,
+            'fv_ref_equip' => $ref_equips,
             'fv_anomalie' => Anomalie::withTrashed()->get(),
-            'fv_tech' => Nstuser::where('role_id', 3)->withTrashed()->get(),
+            'fv_tech' => $tech,
+            'inputs' => $input_values
         );
 
         return response()->json($data);
@@ -761,167 +956,165 @@ class ReclamationController extends Controller
             array_push($where, " `reclamations`.`id` =  '" . $request->fv_reclamation . "' ");
         } else {
             array_push($where, " `reclamations`.`id` <> '0' ");
-    
-        $request->fv_etat == null ?:  array_push($where, " `etats`.`id` IN  (" . $request->fv_etat . ") ");
-        $request->fv_client == "0" ?:  array_push($where, " `clients`.`id` =  '" . $request->fv_client . "' ");
-        $request->fv_departement == "0" ?:  array_push($where, " `departements`.`id` =  '" . $request->fv_departement . "' ");
-        $request->fv_agence == "0" ?:  array_push($where, " `souscriptions`.`agence_id` =  '" . $request->fv_agence . "' ");
-        $request->fv_produit == "0" ?:  array_push($where, " `souscriptions`.`produit_id` =  '" . $request->fv_produit . "' ");
-        $request->fv_equipement == "0" ?:  array_push($where, " `souscriptions`.`equipement_id` =  '" . $request->fv_equipement . "' ");
-        $request->fv_ref_equip == "0" ?:  array_push($where, " `souscriptions`.`equip_ref` =  '" . $request->fv_ref_equip . "' ");
-        $request->fv_anomalie == "0" ?:  array_push($where, " `anomalies`.`id` =  '" . $request->fv_anomalie . " ");
+
+            $request->fv_etat == null ?:  array_push($where, " `etats`.`id` IN  (" . $request->fv_etat . ") ");
+            $request->fv_client == "0" ?:  array_push($where, " `clients`.`id` =  '" . $request->fv_client . "' ");
+            $request->fv_departement == "0" ?:  array_push($where, " `departements`.`id` =  '" . $request->fv_departement . "' ");
+            $request->fv_agence == "0" ?:  array_push($where, " `souscriptions`.`agence_id` =  '" . $request->fv_agence . "' ");
+            $request->fv_produit == "0" ?:  array_push($where, " `souscriptions`.`produit_id` =  '" . $request->fv_produit . "' ");
+            $request->fv_equipement == "0" ?:  array_push($where, " `souscriptions`.`equipement_id` =  '" . $request->fv_equipement . "' ");
+            $request->fv_ref_equip == "0" ?:  array_push($where, " `souscriptions`.`equip_ref` =  '" . $request->fv_ref_equip . "' ");
+            $request->fv_anomalie == "0" ?:  array_push($where, " `anomalies`.`id` =  '" . $request->fv_anomalie . " ");
 
 
 
-        if (!($request->non_affected == "true" &&  $request->is_accepted == "false" && $request->is_pending == "false")) {
+            if (!($request->non_affected == "true" &&  $request->is_accepted == "false" && $request->is_pending == "false")) {
 
-            $request->fv_tech == "0" ?:  array_push($where, " `nstusers`.`id` =  '" . $request->fv_tech . "' ");
-        } 
-        if (!($request->non_affected == "true" &&  $request->is_accepted == "true" && $request->is_pending == "true") && !($request->non_affected == "false" &&  $request->is_accepted == "false" && $request->is_pending == "false")){
-            $temps = "";
-
-            $QR = " ( ";
-            $request->non_affected != "true" ?: $QR = $QR."  `affectations`.`id` IS NULL OR  ";
-           
-            $request->is_pending != "true" ?: $temps = $temps . " 0 , ";
-            $request->is_accepted != "true" ?: $temps = $temps . " 1 , ";
-
-            $temps = $temps . " 2 ";
-
-            
-
-            array_push($where,$QR." affectations.accepted IN (" . $temps . ") )");
-           
-
-        }
-
-        if($request->non_affected == "false" &&  $request->is_accepted == "false" && $request->is_pending == "false"){
-             array_push($where, " ( `affectations`.`id` IS NULL OR affectations.accepted IN ( 0 , 1 ) )");
-        }
-
-        if ($request->fv_created == "true") {
-
-            $mois_created_from = $request->input('mois_created_from');
-            $mois_created_to = $request->input('mois_created_to');
-
-            $year_created_from = $request->input('year_created_from');
-            $year_created_to = $request->input('year_created_to');
-
-            $day_created_from = $request->input('day_created_from');
-            $day_created_to = $request->input('day_created_to');
-
-            if ($year_created_from != $year_created_to) {
-                array_push($having, " (YEAR( reclamations.created_at ) BETWEEN '" . $year_created_from . "' AND '" . $year_created_to . "')  ");
-            } else {
-                array_push($having, " (YEAR( reclamations.created_at ) = '" . $year_created_from . "')  ");
+                $request->fv_tech == "0" ?:  array_push($where, " `nstusers`.`id` =  '" . $request->fv_tech . "' ");
             }
-            if ($mois_created_from != $mois_created_to) {
-                array_push($having, " (MONTH( reclamations.created_at ) BETWEEN '" . $mois_created_from . "' AND '" . $mois_created_to . "')  ");
-            } else {
-                array_push($having, " (MONTH( reclamations.created_at ) = '" . $mois_created_from . "')  ");
+            if (!($request->non_affected == "true" &&  $request->is_accepted == "true" && $request->is_pending == "true") && !($request->non_affected == "false" &&  $request->is_accepted == "false" && $request->is_pending == "false")) {
+                $temps = "";
+
+                $QR = " ( ";
+                $request->non_affected != "true" ?: $QR = $QR . "  `affectations`.`id` IS NULL OR  ";
+
+                $request->is_pending != "true" ?: $temps = $temps . " 0 , ";
+                $request->is_accepted != "true" ?: $temps = $temps . " 1 , ";
+
+                $temps = $temps . " 2 ";
+
+
+
+                array_push($where, $QR . " affectations.accepted IN (" . $temps . ") )");
             }
-            if ($day_created_from != $day_created_to) {
-                array_push($having, " (DAY( reclamations.created_at ) BETWEEN '" . $day_created_from . "' AND '" . $day_created_to . "')  ");
-            } else {
-                array_push($having, " (DAY( reclamations.created_at ) = '" . $day_created_from . "')  ");
+
+            if ($request->non_affected == "false" &&  $request->is_accepted == "false" && $request->is_pending == "false") {
+                array_push($where, " ( `affectations`.`id` IS NULL OR affectations.accepted IN ( 0 , 1 ) )");
             }
-        }
 
-        if ($request->fv_accepted == "true") {
+            if ($request->fv_created == "true") {
 
-            $mois_accepted_from = $request->input('mois_accepted_from');
-            $mois_accepted_to = $request->input('mois_accepted_to');
+                $mois_created_from = $request->input('mois_created_from');
+                $mois_created_to = $request->input('mois_created_to');
 
-            $year_accepted_from = $request->input('year_accepted_from');
-            $year_accepted_to = $request->input('year_accepted_to');
+                $year_created_from = $request->input('year_created_from');
+                $year_created_to = $request->input('year_created_to');
 
-            $day_accepted_from = $request->input('day_accepted_from');
-            $day_accepted_to = $request->input('day_accepted_to');
+                $day_created_from = $request->input('day_created_from');
+                $day_created_to = $request->input('day_created_to');
 
-            if ($year_accepted_from != $year_accepted_to) {
-                array_push($having, " (YEAR( affectations.accepted_at ) BETWEEN '" . $year_accepted_from . "' AND '" . $year_accepted_to . "')  ");
-            } else {
-                array_push($having, " (YEAR( affectations.accepted_at ) = '" . $year_accepted_from . "')  ");
+                if ($year_created_from != $year_created_to) {
+                    array_push($having, " (YEAR( reclamations.created_at ) BETWEEN '" . $year_created_from . "' AND '" . $year_created_to . "')  ");
+                } else {
+                    array_push($having, " (YEAR( reclamations.created_at ) = '" . $year_created_from . "')  ");
+                }
+                if ($mois_created_from != $mois_created_to) {
+                    array_push($having, " (MONTH( reclamations.created_at ) BETWEEN '" . $mois_created_from . "' AND '" . $mois_created_to . "')  ");
+                } else {
+                    array_push($having, " (MONTH( reclamations.created_at ) = '" . $mois_created_from . "')  ");
+                }
+                if ($day_created_from != $day_created_to) {
+                    array_push($having, " (DAY( reclamations.created_at ) BETWEEN '" . $day_created_from . "' AND '" . $day_created_to . "')  ");
+                } else {
+                    array_push($having, " (DAY( reclamations.created_at ) = '" . $day_created_from . "')  ");
+                }
             }
-            if ($mois_accepted_from != $mois_accepted_to) {
-                array_push($having, " (MONTH( affectations.accepted_at ) BETWEEN '" . $mois_accepted_from . "' AND '" . $mois_accepted_to . "')  ");
-            } else {
-                array_push($having, " (MONTH( affectations.accepted_at ) = '" . $mois_accepted_from . "')  ");
-            }
-            if ($day_accepted_from != $day_accepted_to) {
-                array_push($having, " (DAY( affectations.accepted_at ) BETWEEN '" . $day_accepted_from . "' AND '" . $day_accepted_to . "')  ");
-            } else {
-                array_push($having, " (DAY( affectations.accepted_at ) = '" . $day_accepted_from . "')  ");
-            }
-        }
-        $check_pending = false;
 
-        if ($request->fv_etat != null) {
-            $temps = explode(",", $request->fv_etat);
-            foreach ($temps as $temp) {
-                if ($temp == "2") {
-                    $check_pending = true;
-                    break;
+            if ($request->fv_accepted == "true") {
+
+                $mois_accepted_from = $request->input('mois_accepted_from');
+                $mois_accepted_to = $request->input('mois_accepted_to');
+
+                $year_accepted_from = $request->input('year_accepted_from');
+                $year_accepted_to = $request->input('year_accepted_to');
+
+                $day_accepted_from = $request->input('day_accepted_from');
+                $day_accepted_to = $request->input('day_accepted_to');
+
+                if ($year_accepted_from != $year_accepted_to) {
+                    array_push($having, " (YEAR( affectations.accepted_at ) BETWEEN '" . $year_accepted_from . "' AND '" . $year_accepted_to . "')  ");
+                } else {
+                    array_push($having, " (YEAR( affectations.accepted_at ) = '" . $year_accepted_from . "')  ");
+                }
+                if ($mois_accepted_from != $mois_accepted_to) {
+                    array_push($having, " (MONTH( affectations.accepted_at ) BETWEEN '" . $mois_accepted_from . "' AND '" . $mois_accepted_to . "')  ");
+                } else {
+                    array_push($having, " (MONTH( affectations.accepted_at ) = '" . $mois_accepted_from . "')  ");
+                }
+                if ($day_accepted_from != $day_accepted_to) {
+                    array_push($having, " (DAY( affectations.accepted_at ) BETWEEN '" . $day_accepted_from . "' AND '" . $day_accepted_to . "')  ");
+                } else {
+                    array_push($having, " (DAY( affectations.accepted_at ) = '" . $day_accepted_from . "')  ");
+                }
+            }
+            $check_pending = false;
+
+            if ($request->fv_etat != null) {
+                $temps = explode(",", $request->fv_etat);
+                foreach ($temps as $temp) {
+                    if ($temp == "2") {
+                        $check_pending = true;
+                        break;
+                    }
+                }
+            }
+
+            if ($check_pending == true && $request->fv_pending == "true") {
+
+                $mois_pending_from = $request->input('mois_pending_from');
+                $mois_pending_to = $request->input('mois_pending_to');
+
+                $year_pending_from = $request->input('year_pending_from');
+                $year_pending_to = $request->input('year_pending_to');
+
+                $day_pending_from = $request->input('day_pending_from');
+                $day_pending_to = $request->input('day_pending_to');
+
+                if ($year_pending_from != $year_pending_to) {
+                    array_push($having, " (YEAR( reclamations.checked_at ) BETWEEN '" . $year_pending_from . "' AND '" . $year_pending_to . "')  ");
+                } else {
+                    array_push($having, " (YEAR( reclamations.checked_at ) = '" . $year_pending_from . "')  ");
+                }
+                if ($mois_pending_from != $mois_pending_to) {
+                    array_push($having, " (MONTH( reclamations.checked_at ) BETWEEN '" . $mois_pending_from . "' AND '" . $mois_pending_to . "')  ");
+                } else {
+                    array_push($having, " (MONTH( reclamations.checked_at ) = '" . $mois_pending_from . "')  ");
+                }
+                if ($day_pending_from != $day_pending_to) {
+                    array_push($having, " (DAY( reclamations.checked_at ) BETWEEN '" . $day_pending_from . "' AND '" . $day_pending_to . "')  ");
+                } else {
+                    array_push($having, " (DAY( reclamations.checked_at ) = '" . $day_pending_from . "')  ");
+                }
+            }
+
+            if ($request->fv_closed == "true") {
+
+                $mois_closed_from = $request->input('mois_closed_from');
+                $mois_closed_to = $request->input('mois_closed_to');
+
+                $year_closed_from = $request->input('year_closed_from');
+                $year_closed_to = $request->input('year_closed_to');
+
+                $day_closed_from = $request->input('day_closed_from');
+                $day_closed_to = $request->input('day_closed_to');
+
+                if ($year_closed_from != $year_closed_to) {
+                    array_push($having, " (YEAR( reclamations.finished_at ) BETWEEN '" . $year_closed_from . "' AND '" . $year_closed_to . "')  ");
+                } else {
+                    array_push($having, " (YEAR( reclamations.finished_at ) = '" . $year_closed_from . "')  ");
+                }
+                if ($mois_closed_from != $mois_closed_to) {
+                    array_push($having, " (MONTH( reclamations.finished_at ) BETWEEN '" . $mois_closed_from . "' AND '" . $mois_closed_to . "')  ");
+                } else {
+                    array_push($having, " (MONTH( reclamations.finished_at ) = '" . $mois_closed_from . "')  ");
+                }
+                if ($day_closed_from != $day_closed_to) {
+                    array_push($having, " (DAY( reclamations.finished_at ) BETWEEN '" . $day_closed_from . "' AND '" . $day_closed_to . "')  ");
+                } else {
+                    array_push($having, " (DAY( reclamations.finished_at ) = '" . $day_closed_from . "')  ");
                 }
             }
         }
-
-        if ($check_pending == true && $request->fv_pending == "true") {
-
-            $mois_pending_from = $request->input('mois_pending_from');
-            $mois_pending_to = $request->input('mois_pending_to');
-
-            $year_pending_from = $request->input('year_pending_from');
-            $year_pending_to = $request->input('year_pending_to');
-
-            $day_pending_from = $request->input('day_pending_from');
-            $day_pending_to = $request->input('day_pending_to');
-
-            if ($year_pending_from != $year_pending_to) {
-                array_push($having, " (YEAR( reclamations.checked_at ) BETWEEN '" . $year_pending_from . "' AND '" . $year_pending_to . "')  ");
-            } else {
-                array_push($having, " (YEAR( reclamations.checked_at ) = '" . $year_pending_from . "')  ");
-            }
-            if ($mois_pending_from != $mois_pending_to) {
-                array_push($having, " (MONTH( reclamations.checked_at ) BETWEEN '" . $mois_pending_from . "' AND '" . $mois_pending_to . "')  ");
-            } else {
-                array_push($having, " (MONTH( reclamations.checked_at ) = '" . $mois_pending_from . "')  ");
-            }
-            if ($day_pending_from != $day_pending_to) {
-                array_push($having, " (DAY( reclamations.checked_at ) BETWEEN '" . $day_pending_from . "' AND '" . $day_pending_to . "')  ");
-            } else {
-                array_push($having, " (DAY( reclamations.checked_at ) = '" . $day_pending_from . "')  ");
-            }
-        }
-
-        if ($request->fv_closed == "true") {
-
-            $mois_closed_from = $request->input('mois_closed_from');
-            $mois_closed_to = $request->input('mois_closed_to');
-
-            $year_closed_from = $request->input('year_closed_from');
-            $year_closed_to = $request->input('year_closed_to');
-
-            $day_closed_from = $request->input('day_closed_from');
-            $day_closed_to = $request->input('day_closed_to');
-
-            if ($year_closed_from != $year_closed_to) {
-                array_push($having, " (YEAR( reclamations.finished_at ) BETWEEN '" . $year_closed_from . "' AND '" . $year_closed_to . "')  ");
-            } else {
-                array_push($having, " (YEAR( reclamations.finished_at ) = '" . $year_closed_from . "')  ");
-            }
-            if ($mois_closed_from != $mois_closed_to) {
-                array_push($having, " (MONTH( reclamations.finished_at ) BETWEEN '" . $mois_closed_from . "' AND '" . $mois_closed_to . "')  ");
-            } else {
-                array_push($having, " (MONTH( reclamations.finished_at ) = '" . $mois_closed_from . "')  ");
-            }
-            if ($day_closed_from != $day_closed_to) {
-                array_push($having, " (DAY( reclamations.finished_at ) BETWEEN '" . $day_closed_from . "' AND '" . $day_closed_to . "')  ");
-            } else {
-                array_push($having, " (DAY( reclamations.finished_at ) = '" . $day_closed_from . "')  ");
-            }
-        }
-    }
 
         $WhereQuery = "  ";
 

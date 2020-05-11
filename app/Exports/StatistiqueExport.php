@@ -34,31 +34,39 @@ class StatistiqueExport implements FromView, ShouldAutoSize, WithEvents
             ]
         ];
 
-        $this->line = count($this->data[$this->data['stat_by']]) + 2;
+        $this->line = count($this->data[$this->data['stat_by']]) + 3;
 
 
         return [
             AfterSheet::class    => function (AfterSheet $event) use ($styleArray) {
-                $cellRange = 'A1:W1'; // All headers
-                $event->sheet->getDelegate()->getStyle($cellRange)->getFont()->setName('Calibri');
-                $event->sheet->getDelegate()->getStyle($cellRange)->getFont()->setSize(14);
-                $event->sheet->getStyle($cellRange)->ApplyFromArray($styleArray);
-                $event->sheet->getDelegate()->getStyle('A' . $this->line . ':'.$this->data['nb_row'].'' . $this->line)->getFont()->setSize(14);
-                $event->sheet->getStyle('A' . $this->line . ':'.$this->data['nb_row'].'' . $this->line)->ApplyFromArray($styleArray);
-                $event->sheet->getStyle('A' . $this->line . ':'.$this->data['nb_row'].'' . $this->line)->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('C6C4C8');     
-                
-                // $event->sheet->getStyle('A9:G9')->ApplyFromArray($styleArray);
-                // $event->sheet->getStyle('A12:G12')->ApplyFromArray($styleArray);
-                // $event->sheet->getStyle('A19:G19')->ApplyFromArray($styleArray);
-                // $event->sheet->getStyle('A27:G27')->ApplyFromArray($styleArray);
-                // $event->sheet->getStyle('A31:G31')->ApplyFromArray($styleArray);
-                // $event->sheet->getStyle('A35:G35')->ApplyFromArray($styleArray);
-                // $event->sheet->getStyle('A36:G36')->ApplyFromArray($styleArray);
-                // $event->sheet->getStyle('A42:G42')->ApplyFromArray($styleArray);
-                // $event->sheet->getStyle('A43:G43')->ApplyFromArray($styleArray);
-                $event->sheet->getStyle('A1:'.$this->data['nb_row'].'' . $this->line)->applyFromArray([
+
+                $event->sheet->getDelegate()->getStyle('A1:W1')->getFont()->setName('Calibri');
+                $event->sheet->getDelegate()->getStyle('A1:W1')->getFont()->setSize(50);
+              //  $event->sheet->getStyle('A1:W1')->ApplyFromArray($styleArray);
+                $event->sheet->getStyle('A1:W1')->applyFromArray([
+
+                    'alignment' => [
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    ],
+                    'font' => [
+                        'bold' => true,
+                    ]
+                ]);
+
+                $event->sheet->getDelegate()->getStyle('A2:W2')->getFont()->setName('Calibri');
+                $event->sheet->getDelegate()->getStyle('A2:W2')->getFont()->setSize(14);
+                $event->sheet->getStyle('A2:W2')->ApplyFromArray($styleArray);
+                $event->sheet->getStyle('A2:W2')->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()->setARGB('C6C4C8');
+
+                $event->sheet->getDelegate()->getStyle('A' . $this->line . ':' . $this->data['nb_row'] . '' . $this->line)->getFont()->setSize(14);
+                $event->sheet->getStyle('A' . $this->line . ':' . $this->data['nb_row'] . '' . $this->line)->ApplyFromArray($styleArray);
+                $event->sheet->getStyle('A' . $this->line . ':' . $this->data['nb_row'] . '' . $this->line)->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('5EEA67');
+
+                $event->sheet->getStyle('A2:' . $this->data['nb_row'] . '' . $this->line)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -67,15 +75,15 @@ class StatistiqueExport implements FromView, ShouldAutoSize, WithEvents
                     ]
                 ]);
 
-                if($this->data['stat_by'] == 'produit' || $this->data['stat_by'] == 'agence' ){
-                    $event->sheet->getStyle('A' . $this->line . ':'.$this->data['nb_row'].'' . $this->line)->applyFromArray([
-                        
-                            'alignment' => [
-                                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                            ],
-                        
+                if ($this->data['stat_by'] == 'produit' || $this->data['stat_by'] == 'agence') {
+                    $event->sheet->getStyle('A' . $this->line . ':' . $this->data['nb_row'] . '' . $this->line)->applyFromArray([
+
+                        'alignment' => [
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        ],
+
                     ]);
-                    $event->sheet->getStyle('A'.($this->line +1).':'.$this->data['nb_row'].''.($this->line + count($this->data['semi_total_'.$this->data['stat_by']])  + 1))->applyFromArray([
+                    $event->sheet->getStyle('A' . ($this->line + 1) . ':' . $this->data['nb_row'] . '' . ($this->line + count($this->data['semi_total_' . $this->data['stat_by']])  + 1))->applyFromArray([
                         'borders' => [
                             'allBorders' => [
                                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -83,14 +91,13 @@ class StatistiqueExport implements FromView, ShouldAutoSize, WithEvents
                             ],
                         ]
                     ]);
-                    $event->sheet->getStyle('A' . ($this->line + count($this->data['semi_total_'.$this->data['stat_by']]) + 1). ':'.$this->data['nb_row'].''. ($this->line + count($this->data['semi_total_'.$this->data['stat_by']]) + 1))->getFill()
-                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setARGB('FFFF0000');
-                    $event->sheet->getDelegate()->getStyle('A' . ($this->line + count($this->data['semi_total_'.$this->data['stat_by']]) + 1). ':'.$this->data['nb_row'].''. ($this->line + count($this->data['semi_total_'.$this->data['stat_by']]) + 1))->getFont()->setName('Calibri');
-                    $event->sheet->getDelegate()->getStyle('A' . ($this->line + count($this->data['semi_total_'.$this->data['stat_by']]) + 1). ':'.$this->data['nb_row'].''. ($this->line + count($this->data['semi_total_'.$this->data['stat_by']]) + 1))->getFont()->setSize(14);
-                    $event->sheet->getDelegate()->getStyle('A' . ($this->line + count($this->data['semi_total_'.$this->data['stat_by']]) + 1). ':'.$this->data['nb_row'].''. ($this->line + count($this->data['semi_total_'.$this->data['stat_by']]) + 1))->ApplyFromArray($styleArray);
-
-                }        
+                    $event->sheet->getStyle('A' . ($this->line + count($this->data['semi_total_' . $this->data['stat_by']]) + 1) . ':' . $this->data['nb_row'] . '' . ($this->line + count($this->data['semi_total_' . $this->data['stat_by']]) + 1))->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()->setARGB('DEEA67');
+                    $event->sheet->getDelegate()->getStyle('A' . ($this->line + count($this->data['semi_total_' . $this->data['stat_by']]) + 1) . ':' . $this->data['nb_row'] . '' . ($this->line + count($this->data['semi_total_' . $this->data['stat_by']]) + 1))->getFont()->setName('Calibri');
+                    $event->sheet->getDelegate()->getStyle('A' . ($this->line + count($this->data['semi_total_' . $this->data['stat_by']]) + 1) . ':' . $this->data['nb_row'] . '' . ($this->line + count($this->data['semi_total_' . $this->data['stat_by']]) + 1))->getFont()->setSize(14);
+                    $event->sheet->getDelegate()->getStyle('A' . ($this->line + count($this->data['semi_total_' . $this->data['stat_by']]) + 1) . ':' . $this->data['nb_row'] . '' . ($this->line + count($this->data['semi_total_' . $this->data['stat_by']]) + 1))->ApplyFromArray($styleArray);
+                }
             },
         ];
     }

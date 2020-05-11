@@ -77,7 +77,7 @@
                                             <div class="col-md-12 text-center">
                                                 <div class="switch">
                                                     <label>Non
-                                                        <input id="fv_dr" type="checkbox"><span class="lever switch-col-light-green"></span>Oui</label>
+                                                        <input id="fv_dr" type="checkbox" checked><span class="lever switch-col-light-green"></span>Oui</label>
                                                 </div>
                                             </div>
                                             <br>
@@ -228,7 +228,7 @@
                                             <div class="col-md-12 text-center">
                                                 <div class="switch">
                                                     <label>Non
-                                                        <input id="fv_created" type="checkbox"  onchange="$(this).is(':checked') ? $('#fl_created').show() : $('#fl_created').hide() "><span class="lever switch-col-deep-purple"></span>Oui</label>
+                                                        <input id="fv_created" type="checkbox" onchange="$(this).is(':checked') ? $('#fl_created').show() : $('#fl_created').hide() "><span class="lever switch-col-deep-purple"></span>Oui</label>
                                                 </div>
                                             </div>
                                             <br>
@@ -415,6 +415,7 @@
 <script>
     $(document).ready(function() {
         init()
+        filter_all()
     });
 
     function init() {
@@ -431,6 +432,8 @@
         }).responseText;
         jsonData = JSON.parse(StringData);
         console.log(jsonData);
+        var role_id = $('#logged_info').attr('value');
+
         $('#bodytab').html("");
         $('#fv_ref_select').html(" <option  value=\"0\" selected  >tout les réclamations </option>")
         for (let ind = 0; ind < jsonData.length; ind++) {
@@ -519,7 +522,12 @@
             if (jsonData[ind].affectation_id == null) {
                 affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">affecter</button>"
             } else {
-                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData[ind].tech_id + " ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">changer</a>"
+
+                if (jsonData[ind].etat_id != 3) {
+                    affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData[ind].tech_id + " ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">changer</a>"
+                } else {
+                    affectation = ""
+                }
             }
 
             if (jsonData[ind].pending_with_pv) {
@@ -578,7 +586,7 @@
                 "<div class=\"card m-b-0\">" +
                 "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
                 "<h5 class=\"mb-0\">" +
-                "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+                "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
                 "Effectuer un traitement" +
                 "</a>" +
                 "</h5>" +
@@ -586,11 +594,9 @@
                 "<div id=\"tach_coll" + ind + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
                 "<div class=\"card-body\">" +
                 "<div class=\"button-group text-center\">" +
-                affectation +
-                acceptation +
-                traitement +
-                // download_pdf +
-
+                (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -612,7 +618,7 @@
         // $('#fl_etat').hide();
         //$('#extra_space').hide();
 
-        document.getElementsByTagName('fv_dr').checked = false;
+        document.getElementsByTagName('fv_dr').checked = true;
 
         document.getElementsByTagName('fl_created').checked = false;
         document.getElementsByTagName('fl_accepted').checked = false;
@@ -630,7 +636,7 @@
 
     function filter_all() {
 
-       
+
 
         var ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip', 'fv_anomalie', 'fv_etat', 'fv_tech']
         var dates = ['created', 'accepted', 'pending', 'closed']
@@ -638,7 +644,7 @@
 
         form_data = new FormData();
 
-        var recl_id 
+        var recl_id
         $('#rd_list').is(':checked') ? recl_id = $('#fv_ref_select').val() : recl_id = $('#fv_ref_text').val()
         form_data.append('fv_reclamation', recl_id);
 
@@ -654,7 +660,7 @@
         }
 
         for (var i in dates) {
-            
+
             form_data.append('fv_' + dates[i], $('#fv_' + dates[i]).is(':checked'));
             for (var j in date_types) {
                 form_data.append(date_types[j] + "_" + dates[i] + "_from", $('#' + date_types[j] + "_" + dates[i]).data().from);
@@ -681,8 +687,13 @@
         }).responseText;
         jsonData = JSON.parse(StringData);
         console.log(jsonData);
+        var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
+        
+        $('#fv_ref_select').html(" <option  value=\"0\" selected  >tout les réclamations </option>")
         for (let ind = 0; ind < jsonData.length; ind++) {
+            $('#fv_ref_select').append(" <option  value=\"" + jsonData[ind].reclamation_id + "\"> " + jsonData[ind].reclamation_ref + " </option>")
+
 
             if (jsonData[ind].tech_nom == null) {
                 tech = " <span id=\"tech" + ind + "\" value=\"0\"> pas de technicien affecté</span>"
@@ -767,7 +778,11 @@
             if (jsonData[ind].affectation_id == null) {
                 affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">affecter</button>"
             } else {
-                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData[ind].tech_id + " ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">changer</a>"
+                if (jsonData[ind].etat_id != 3) {
+                    affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData[ind].tech_id + " ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">changer</a>"
+                } else {
+                    affectation = ""
+                }
             }
 
             if (jsonData[ind].pending_with_pv) {
@@ -826,7 +841,7 @@
                 "<div class=\"card m-b-0\">" +
                 "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
                 "<h5 class=\"mb-0\">" +
-                "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+                "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
                 "Effectuer un traitement" +
                 "</a>" +
                 "</h5>" +
@@ -834,10 +849,9 @@
                 "<div id=\"tach_coll" + ind + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
                 "<div class=\"card-body\">" +
                 "<div class=\"button-group text-center\">" +
-                affectation +
-                acceptation +
-                traitement +
-                // download_pdf +
+                (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
 
                 "</div>" +
                 "</div>" +
@@ -920,6 +934,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
+        var role_id = $('#logged_info').attr('value');
         console.log(jsonData)
         $('#affectation').modal('hide');
 
@@ -1008,7 +1023,11 @@
         if (jsonData.affectation_id == null) {
             affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
         } else {
-            affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+            if (jsonData.etat_id != 3) {
+                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+            } else {
+                affectation = ""
+            }
         }
         if (jsonData.pending_with_pv) {
             pending_with_pv = "<h4 id=\"pend_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.pending_pv_image + "\" target=\"_blank\"> en traitement</a></h4>";
@@ -1068,7 +1087,7 @@
             "<div class=\"card m-b-0\">" +
             "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
             "<h5 class=\"mb-0\">" +
-            "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+            "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
             "Effectuer un traitement" +
             "</a>" +
             "</h5>" +
@@ -1076,9 +1095,10 @@
             "<div id=\"tach_coll" + ind + "\" class=\"collapse  show\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
             "<div class=\"card-body\">" +
             "<div class=\"button-group text-center\">" +
-            affectation +
-            acceptation +
-            traitement +
+            (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+            (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+            (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
+
             // download_pdf +
 
             "</div>" +
@@ -1108,7 +1128,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-
+        var role_id = $('#logged_info').attr('value');
 
         if (jsonData.tech_nom == null) {
             tech = " <span id=\"tech" + ind + "\" value=\"0\"> pas de technicien affecté</span>"
@@ -1196,7 +1216,11 @@
         if (jsonData.affectation_id == null) {
             affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
         } else {
-            affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+            if (jsonData.etat_id != 3) {
+                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+            } else {
+                affectation = ""
+            }
         }
 
 
@@ -1258,7 +1282,7 @@
             "<div class=\"card m-b-0\">" +
             "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
             "<h5 class=\"mb-0\">" +
-            "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+            "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
             "Effectuer un traitement" +
             "</a>" +
             "</h5>" +
@@ -1266,9 +1290,10 @@
             "<div id=\"tach_coll" + ind + "\" class=\"collapse  show\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
             "<div class=\"card-body\">" +
             "<div class=\"button-group text-center\">" +
-            affectation +
-            acceptation +
-            traitement +
+            (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+            (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+            (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
+
             // download_pdf +
 
             "</div>" +
@@ -1354,6 +1379,7 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
+            var role_id = $('#logged_info').attr('value');
             $('#exampleModal').modal('hide');
 
             var tech;
@@ -1443,7 +1469,13 @@
             if (jsonData.affectation_id == null) {
                 affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
             } else {
-                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+                if (jsonData.etat_id != 3) {
+
+                    affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+                } else {
+
+                    affectation = ""
+                }
             }
 
             if (jsonData.pending_with_pv) {
@@ -1457,7 +1489,6 @@
             } else {
                 closed_with_pv = "";
             }
-
             $('#card' + ind).html(
 
                 "<div id=\"ref" + ind + "\" class=\"ribbon ribbon-bookmark ribbon-left ribbon-" + ref_color + "\" style=\"font-weight: bold; font-size : 25px\">Ref : " + jsonData.reclamation_ref + "</div>" +
@@ -1502,7 +1533,7 @@
                 "<div class=\"card m-b-0\">" +
                 "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
                 "<h5 class=\"mb-0\">" +
-                "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+                "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
                 "Effectuer un traitement" +
                 "</a>" +
                 "</h5>" +
@@ -1510,9 +1541,10 @@
                 "<div id=\"tach_coll" + ind + "\" class=\"collapse  show\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
                 "<div class=\"card-body\">" +
                 "<div class=\"button-group text-center\">" +
-                affectation +
-                acceptation +
-                traitement +
+                (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
+
                 // download_pdf +
                 "</div>" +
                 "</div>" +
@@ -1561,7 +1593,7 @@
 
         jsonData = JSON.parse(StringData);
         console.log(jsonData.id)
-
+        var role_id = $('#logged_info').attr('value');
         if (jsonData.with_pv) {
             $('#pv_id').show()
             $('#with_pv').val('true');
@@ -1709,7 +1741,11 @@
             if (jsonData.affectation_id == null) {
                 affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
             } else {
-                affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+                if (jsonData.etat_id != 3) {
+                    affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
+                } else {
+                    affectation = ""
+                }
             }
 
             if (jsonData.pending_with_pv) {
@@ -1768,7 +1804,7 @@
                 "<div class=\"card m-b-0\">" +
                 "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
                 "<h5 class=\"mb-0\">" +
-                "<a style=\"color:red;font:25px bold;\"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+                "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
                 "Effectuer un traitement" +
                 "</a>" +
                 "</h5>" +
@@ -1776,9 +1812,9 @@
                 "<div id=\"tach_coll" + ind + "\" class=\"collapse  show\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
                 "<div class=\"card-body\">" +
                 "<div class=\"button-group text-center\">" +
-                affectation +
-                acceptation +
-                traitement +
+                (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
                 // download_pdf +
                 "</div>" +
                 "</div>" +
@@ -1814,15 +1850,15 @@
     }
 
     function fill_list() {
-
-        $('#fv_client').html(" <option  value=\"0\"selected >tout  </option>")
-        $('#fv_departement').html(" <option  value=\"0\"selected >tout  </option>")
-        $('#fv_agence').html(" <option  value=\"0\"selected >tout </option>")
+        console.log($('#logged_info').attr('value'))
+        $('#fv_client').html(" <option " + ($('#logged_info').attr('value') != '4' && $('#logged_info').attr('value') != '5' ? " selected " : " disabled ") + "  value=\"0\" >tout  </option>")
+        $('#fv_departement').html("<option " + ($('#logged_info').attr('value') != '5' ? " selected" : " disabled ") + " value=\"0\" >tout  </option>")
+        $('#fv_agence').html(" <option  " + ($('#logged_info').attr('value') != '5' ? " selected" : " disabled ") + " value=\"0\" >tout </option>")
         $('#fv_produit').html(" <option  value=\"0\"selected >tout  </option>")
         $('#fv_equipement').html(" <option  value=\"0\"selected >tout  </option>")
         $('#fv_ref_equip').html(" <option  value=\"0\"selected >tout  </option>")
         $('#fv_anomalie').html(" <option  value=\"0\"selected >tout </option>")
-        $('#fv_tech').html(" <option  value=\"0\"selected >tout les  </option>")
+        $('#fv_tech').html(" <option " + ($('#logged_info').attr('value') != '3' ? " selected " : " disabled ") + " value=\"0\" >tout  </option>")
 
 
         var StringData = $.ajax({
@@ -1832,7 +1868,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        // console.log(jsonData)
+        console.log(jsonData)
 
         var ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement']
 
@@ -1840,7 +1876,8 @@
 
         for (let ind = 0; ind < ids.length; ind++) {
             for (let j = 0; j < jsonData[ids[ind]].length; j++) {
-                $('#' + ids[ind]).append("<option value=\"" + jsonData[ids[ind]][j].id + "\">" + jsonData[ids[ind]][j].nom + "</option>");
+
+                $('#' + ids[ind]).append("<option " + (jsonData['inputs'][ids[ind]] != 0 ? " selected " : " ") + " value=\"" + jsonData[ids[ind]][j].id + "\">" + jsonData[ids[ind]][j].nom + "</option>");
             }
         }
 
@@ -1853,7 +1890,7 @@
         }
 
         for (let j = 0; j < jsonData['fv_tech'].length; j++) {
-            $('#fv_tech').append("<option value=\"" + jsonData['fv_tech'][j].id + "\">" + jsonData['fv_tech'][j].nom + " " + jsonData['fv_tech'][j].prénom + "</option>");
+            $('#fv_tech').append("<option " + (jsonData['inputs']['fv_tech'] != 0 ? " selected " : " ") + " value=\"" + jsonData['fv_tech'][j].id + "\">" + jsonData['fv_tech'][j].nom + " " + jsonData['fv_tech'][j].prénom + "</option>");
         }
 
     }

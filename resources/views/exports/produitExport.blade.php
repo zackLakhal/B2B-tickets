@@ -1,6 +1,9 @@
 <table>
     <thead>
         <tr>
+            <td colspan="9"> statistique {{$data['date']}} </td>
+        </tr>
+        <tr>
             <th>produit</th>
             <th>agence</th>
             <th>client</th>
@@ -25,22 +28,22 @@
             <td> {{ is_null($result->avg_created_time) ? 'N/A' : seconds2human($result->avg_created_time)   }}</td>
             <td> {{ is_null($result->avg_pending_time) ? 'N/A' :  seconds2human($result->avg_pending_time) }}</td>
         </tr>
-            @foreach($data['semi_total_produit'] as $semi)
-                @if($semi->prod_id == $result->prod_id)
-                    <tr>
-                        <td>total {{ $semi->prod_nom }} </td>
-                        <td>N/A </td>
-                        <td>N/A </td>
-                        <td> {{ $semi->nb_reclamation }}</td>
-                        <td> {{ $semi->nb_created }}</td>
-                        <td> {{ $semi->nb_pending }}</td>
-                        <td> {{ $semi->nb_closed }}</td>
-                        <td> {{ is_null($semi->avg_created_time) ? 'N/A' : seconds2human($semi->avg_created_time)   }}</td>
-                        <td> {{ is_null($semi->avg_pending_time) ? 'N/A' :  seconds2human($semi->avg_pending_time) }}</td>
-                    </tr>
-                    @break
-                @endif
-            @endforeach
+        @endforeach
+        <tr>
+            <td colspan="9"> total par produit </td>
+        </tr>
+        @foreach($data['semi_total_produit'] as $semi)
+        <tr>
+            <td>total {{ $semi->prod_nom }} </td>
+            <td>N/A </td>
+            <td>N/A </td>
+            <td> {{ $semi->nb_reclamation }}</td>
+            <td> {{ $semi->nb_created }}</td>
+            <td> {{ $semi->nb_pending }}</td>
+            <td> {{ $semi->nb_closed }}</td>
+            <td> {{ is_null($semi->avg_created_time) ? 'N/A' : seconds2human($semi->avg_created_time)   }}</td>
+            <td> {{ is_null($semi->avg_pending_time) ? 'N/A' :  seconds2human($semi->avg_pending_time) }}</td>
+        </tr>
         @endforeach
         @foreach($data['total_produit'] as $result)
         <tr>
@@ -58,13 +61,13 @@
     </tbody>
 </table>
 <?php
-function seconds2human($ss) {
-    $s = $ss%60;
-    $m = floor(($ss%3600)/60);
-    $h = floor(($ss%86400)/3600);
-    $d = floor(($ss%2592000)/86400);
-    $M = floor($ss/2592000);
-        
+function seconds2human($ss)
+{
+    $s = $ss % 60;
+    $m = floor(($ss % 3600) / 60);
+    $h = floor(($ss % 86400) / 3600);
+    $d = floor(($ss % 2592000) / 86400);
+    $M = floor($ss / 2592000);
+
     return "$M mois, $d j, $h h, $m min, $s sec";
 }
-

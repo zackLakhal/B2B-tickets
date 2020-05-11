@@ -746,49 +746,7 @@
         var foo_equipement = $('#foo-equipement').footable();
         var foo_reference = $('#foo-reference').footable();
 
-        // $('#myTable1').DataTable();
-        // $('#myTable2').DataTable();
-        // $('#myTable3').DataTable();
-        // $('#myTable4').DataTable();
-        // $('#myTable5').DataTable();
-        // $('#myTable6').DataTable();
-
-        // $('#search-input-client').on('change', function(e) {
-        //     e.preventDefault();
-        //     foo_client.trigger('footable_filter', {
-        //         filter: $(this).val()
-        //     });
-        // });
-        // $('#search-input-departement').on('input', function(e) {
-        //     e.preventDefault();
-        //     foo_departement.trigger('footable_filter', {
-        //         filter: $(this).val()
-        //     });
-        // });
-        // $('#search-input-agence').on('input', function(e) {
-        //     e.preventDefault();
-        //     foo_agence.trigger('footable_filter', {
-        //         filter: $(this).val()
-        //     });
-        // });
-        // $('#search-input-produit').on('input', function(e) {
-        //     e.preventDefault();
-        //     foo_produit.trigger('footable_filter', {
-        //         filter: $(this).val()
-        //     });
-        // });
-        // $('#search-input-equipement').on('input', function(e) {
-        //     e.preventDefault();
-        //     foo_equipement.trigger('footable_filter', {
-        //         filter: $(this).val()
-        //     });
-        // });
-        // $('#search-input-reference').on('input', function(e) {
-        //     e.preventDefault();
-        //     foo_reference.trigger('footable_filter', {
-        //         filter: $(this).val()
-        //     });
-        // });
+      
         $(".select2").select2();
         var ids = ['client', 'departement', 'agence', 'produit', 'equipement']
         for (var id in ids) {
@@ -1199,7 +1157,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        // console.log(jsonData)
+         console.log(jsonData)
 
         var ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement']
 
@@ -1207,7 +1165,7 @@
 
         for (let ind = 0; ind < ids.length; ind++) {
             for (let j = 0; j < jsonData[ids[ind]].length; j++) {
-                $('#' + ids[ind]).append("<option value=\"" + jsonData[ids[ind]][j].id + "\">" + jsonData[ids[ind]][j].nom + "</option>");
+                $('#' + ids[ind]).append("<option " + (jsonData['inputs'][ids[ind]] != 0 ? " selected " : " ") + " value=\"" + jsonData[ids[ind]][j].id + "\">" + jsonData[ids[ind]][j].nom + "</option>");
             }
         }
 
@@ -1254,11 +1212,12 @@
             }
         }
 
-
+        console.log(jsonData['inputs']['fv_produit'])
         for (var ind in checks) {
             for (let j = 0; j < jsonData[ind].length; j++) {
                 if (checks[ind]) {
-                    $('#' + ind).append("<option value=\"" + jsonData[ind][j].id + "\" >" + jsonData[ind][j].nom + "</option>");
+                    
+                    $('#' + ind).append("<option " + (jsonData['inputs'][checks[ind]] != 0 && jsonData['inputs'][checks[ind]] != null ? " selected " : " ") + " value=\" " + jsonData[ind][j].id + "\" >" + jsonData[ind][j].nom + "</option>");
                 }
             }
         }
