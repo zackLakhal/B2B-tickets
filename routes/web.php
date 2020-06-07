@@ -15,6 +15,7 @@ use App\Agence;
 */
 
 Route::get('/', function () {
+    Artisan::call('config:cache');
     return view('old_nst.index');
 });
 Route::get('/about', function () {
@@ -35,28 +36,28 @@ Route::get('/services', function () {
 
 
 Route::prefix('/statistiques')->group(function () {
-    Route::get('/index', 'StatiqtiqueController@index')->middleware('auth:nst');
-    Route::get('/export_stat', 'StatiqtiqueController@export_stat')->middleware('auth:nst');
-    Route::post('/filter_index', 'StatiqtiqueController@filter_index')->middleware('auth:nst');
-    Route::get('/fill_list', 'StatiqtiqueController@fill_list')->middleware('auth:nst');
-    Route::post('/filter_data', 'StatiqtiqueController@filter_data')->middleware('auth:nst');
+    Route::get('/index', 'StatiqtiqueController@index');
+    Route::get('/export_stat', 'StatiqtiqueController@export_stat');
+    Route::post('/filter_index', 'StatiqtiqueController@filter_index');
+    Route::get('/fill_list', 'StatiqtiqueController@fill_list');
+    Route::post('/filter_data', 'StatiqtiqueController@filter_data');
     Route::get('/', function () {
         return view('statistique.index');
-    })->middleware('auth:nst');
+    })->middleware('auth:nst,client');
 });
 
 Route::get('/dashboard', function () {
     return view('statistique.dashboard');
-})->middleware('auth:nst');
+})->middleware('auth:nst,client');
 
 Route::get('/dashboard/reclamations/detail/{type}/{value}', function ($type, $value) {
     return view('statistique.detail', ['type' => $type, 'value' => $value]);
-})->middleware('auth:nst');
+})->middleware('auth:nst,client');
 
 
 
-Route::get('/dashboard/agence_dash', 'ReclamationController@agence_dash');
-Route::post('/dashboard/filter_agence_dash', 'ReclamationController@filter_agence_dash');
+Route::get('/dashboard/agence_dash', 'ReclamationController@agence_dash')->middleware('auth:nst,client');
+Route::post('/dashboard/filter_agence_dash', 'ReclamationController@filter_agence_dash')->middleware('auth:nst,client');
 
 
 Auth::routes();
@@ -74,7 +75,7 @@ Route::post('/nst-login', 'Auth\NstLoginController@login')->name('nst.login');
 
 Route::get('/client-home', 'HomeClientController@index')->middleware('auth:client')->name('client');
 
-Route::get('/nst-home', 'HomeNstController@index')->middleware('auth:nst')->name('nst');
+Route::get('/nst-home', 'HomeNstController@index')->middleware('auth:nst,client')->name('nst');
 
 
 Auth::routes();
@@ -84,37 +85,37 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::prefix('/system')->group(function () {
     Route::prefix('/role')->group(function () {
 
-        Route::get('/index', 'RoleController@index')->middleware('auth:nst');
-        Route::get('/active_index', 'RoleController@active_index')->middleware('auth:nst');
-        Route::post('/{edit}/{id}', 'RoleController@edit')->middleware('auth:nst');
-        Route::post('/create', 'RoleController@store')->middleware('auth:nst');
+        Route::get('/index', 'RoleController@index');
+        Route::get('/active_index', 'RoleController@active_index');
+        Route::post('/{edit}/{id}', 'RoleController@edit');
+        Route::post('/create', 'RoleController@store');
         Route::get('/', function () {
             return view('system.role');
-        })->middleware('auth:nst');
+        })->middleware('auth:nst,client');
     });
     Route::prefix('/ville')->group(function () {
 
-        Route::get('/index', 'VilleController@index')->middleware('auth:nst');
-        Route::get('/active_index', 'VilleController@active_index')->middleware('auth:nst');
-        Route::post('/{edit}/{id}', 'VilleController@edit')->middleware('auth:nst');
-        Route::post('/create', 'VilleController@store')->middleware('auth:nst');
+        Route::get('/index', 'VilleController@index');
+        Route::get('/active_index', 'VilleController@active_index');
+        Route::post('/{edit}/{id}', 'VilleController@edit');
+        Route::post('/create', 'VilleController@store');
         Route::get('/', function () {
             return view('system.ville');
-        })->middleware('auth:nst');
+        })->middleware('auth:nst,client');
         //   Route::get('/active_index', 'RoleController@active_index')->middleware('auth');
 
     });
 
     Route::prefix('/request')->group(function () {
 
-        Route::get('/index', 'RequestController@index')->middleware('auth:nst');
-        Route::post('/filter_index', 'RequestController@filter_index')->middleware('auth:nst');
+        Route::get('/index', 'RequestController@index')->middleware('auth:nst,client');
+        Route::post('/filter_index', 'RequestController@filter_index')->middleware('auth:nst,client');
         Route::post('/store', 'RequestController@store');
-        Route::get('/detail/{id}', 'RequestController@detail')->middleware('auth:nst');
-        Route::get('/traiter/{id}', 'RequestController@traiter')->middleware('auth:nst');
+        Route::get('/detail/{id}', 'RequestController@detail')->middleware('auth:nst,client');
+        Route::get('/traiter/{id}', 'RequestController@traiter')->middleware('auth:nst,client');
         Route::get('/', function () {
             return view('system.requete');
-        })->middleware('auth:nst');
+        })->middleware('auth:nst,client');
         //   Route::get('/active_index', 'RoleController@active_index')->middleware('auth');
 
     });
@@ -122,68 +123,68 @@ Route::prefix('/system')->group(function () {
 
 Route::prefix('/reclamation')->group(function () {
     Route::prefix('/etat')->group(function () {
-        Route::get('/index', 'EtatController@index')->middleware('auth:nst');
-        Route::post('/{edit}/{id}', 'EtatController@edit')->middleware('auth:nst');
-        Route::post('/create', 'EtatController@store')->middleware('auth:nst');
+        Route::get('/index', 'EtatController@index');
+        Route::post('/{edit}/{id}', 'EtatController@edit');
+        Route::post('/create', 'EtatController@store');
         Route::get('/', function () {
             return view('reclamation.etat');
-        })->middleware('auth:nst');
+        })->middleware('auth:nst,client');
     });
 
     Route::prefix('/anomalie')->group(function () {
 
-        Route::get('/index', 'AnomalieController@index')->middleware('auth:nst');
-        Route::post('/{edit}/{id}', 'AnomalieController@edit')->middleware('auth:nst');
-        Route::post('/create', 'AnomalieController@store')->middleware('auth:nst');
+        Route::get('/index', 'AnomalieController@index');
+        Route::post('/{edit}/{id}', 'AnomalieController@edit');
+        Route::post('/create', 'AnomalieController@store');
         Route::get('/', function () {
             return view('reclamation.anomalie');
-        })->middleware('auth:nst');
+        })->middleware('auth:nst,client');
     });
 
     Route::prefix('/recls')->group(function () {
-        Route::get('/index', 'ReclamationController@index')->middleware('auth:nst');
-        Route::post('/filter_index', 'ReclamationController@filter_index')->middleware('auth:nst');
-        Route::get('/fill_list', 'ReclamationController@fill_list')->middleware('auth:nst');
-        Route::post('/filter_data', 'ReclamationController@filter_data')->middleware('auth:nst');
-        Route::get('/get_techniciens/{us_id}', 'ReclamationController@get_techniciens')->middleware('auth:nst');
-        Route::get('/get_reclamation', 'ReclamationController@get_reclamation')->middleware('auth:nst');
-        Route::get('/get_rapport', 'ReclamationController@get_rapport')->middleware('auth:nst');
-        Route::post('/set_techniciens', 'ReclamationController@set_techniciens')->middleware('auth:nst');
-        Route::post('/accepter', 'ReclamationController@accepter')->middleware('auth:nst');
-        Route::post('/save_raport', 'ReclamationController@save_raport')->middleware('auth:nst');
-        Route::post('/edit_raport', 'ReclamationController@edit_raport')->middleware('auth:nst');
-        Route::get('/{edit}/{id}', 'ReclamationController@edit')->middleware('auth:nst');
-        Route::get('/create', 'ReclamationController@store')->middleware('auth:nst');
+        Route::get('/index', 'ReclamationController@index');
+        Route::post('/filter_index', 'ReclamationController@filter_index');
+        Route::get('/fill_list', 'ReclamationController@fill_list');
+        Route::post('/filter_data', 'ReclamationController@filter_data');
+        Route::get('/get_techniciens/{us_id}', 'ReclamationController@get_techniciens');
+        Route::get('/get_reclamation', 'ReclamationController@get_reclamation');
+        Route::get('/get_rapport', 'ReclamationController@get_rapport');
+        Route::post('/set_techniciens', 'ReclamationController@set_techniciens');
+        Route::post('/accepter', 'ReclamationController@accepter');
+        Route::post('/save_raport', 'ReclamationController@save_raport');
+        Route::post('/edit_raport', 'ReclamationController@edit_raport');
+        Route::get('/{edit}/{id}', 'ReclamationController@edit');
+        Route::get('/create', 'ReclamationController@store');
         Route::get('/', function () {
             return view('reclamation.recls');
-        })->middleware('auth:nst');
+        })->middleware('auth:nst,client');
     });
 });
 
 Route::prefix('/utilisateur')->group(function () {
     Route::prefix('/staff-client')->group(function () {
 
-        Route::get('/index', 'UserController@client_index')->middleware('auth:nst');
-        Route::post('/filter_index', 'UserController@filter_client_index')->middleware('auth:nst');
-        Route::get('/{id_c}/my_users_departement', 'UserController@my_users_departement')->middleware('auth:nst');
-        Route::get('/{id_c}/my_users_agence', 'UserController@my_users_agence')->middleware('auth:nst');
-        Route::post('/{edit}/{id}', 'UserController@client_edit')->middleware('auth:nst');
-        Route::post('/create', 'UserController@client_store')->middleware('auth:nst');
-        Route::post('/save_pass', 'UserController@save_pass')->middleware('auth:nst');
+        Route::get('/index', 'UserController@client_index');
+        Route::post('/filter_index', 'UserController@filter_client_index');
+        Route::get('/{id_c}/my_users_departement', 'UserController@my_users_departement');
+        Route::get('/{id_c}/my_users_agence', 'UserController@my_users_agence');
+        Route::post('/{edit}/{id}', 'UserController@client_edit');
+        Route::post('/create', 'UserController@client_store');
+        Route::post('/save_pass', 'UserController@save_pass');
         Route::get('/', function () {
             return view('utilisateurs.client.staff-client');
-        })->middleware('auth:nst');
+        })->middleware('auth:nst,client');
     });
 
     Route::prefix('/staff-nst')->group(function () {
 
-        Route::get('/index', 'UserController@nst_index')->middleware('auth:nst');
-        Route::post('/filter_index', 'UserController@filter_nst_index')->middleware('auth:nst');
-        Route::post('/{edit}/{id}', 'UserController@nst_edit')->middleware('auth:nst');
-        Route::post('/create', 'UserController@nst_store')->middleware('auth:nst');
+        Route::get('/index', 'UserController@nst_index');
+        Route::post('/filter_index', 'UserController@filter_nst_index');
+        Route::post('/{edit}/{id}', 'UserController@nst_edit');
+        Route::post('/create', 'UserController@nst_store');
         Route::get('/', function () {
             return view('utilisateurs.staff.staff-nst');
-        })->middleware('auth:nst');
+        })->middleware('auth:nst,client');
     });
 });
 
@@ -191,43 +192,43 @@ Route::prefix('/utilisateur')->group(function () {
 Route::prefix('/outils')->group(function () {
     Route::prefix('/clients')->group(function () {
 
-        Route::get('/index', 'ClientController@all_clients')->middleware('auth:nst');
-        Route::post('/filter_index', 'ClientController@filter_all_clients')->middleware('auth:nst');
-        Route::get('/active_index', 'ClientController@active_clients')->middleware('auth:nst');
-        Route::post('/edit/{id_c}', 'ClientController@edit_client')->middleware('auth:nst');
-        Route::post('/delete/{id_c}', 'ClientController@delete_client')->middleware('auth:nst');
-        Route::post('/restore/{id_c}', 'ClientController@restore_client')->middleware('auth:nst');
-        Route::post('/create', 'ClientController@store_client')->middleware('auth:nst');
+        Route::get('/index', 'ClientController@all_clients');
+        Route::post('/filter_index', 'ClientController@filter_all_clients');
+        Route::get('/active_index', 'ClientController@active_clients');
+        Route::post('/edit/{id_c}', 'ClientController@edit_client');
+        Route::post('/delete/{id_c}', 'ClientController@delete_client');
+        Route::post('/restore/{id_c}', 'ClientController@restore_client');
+        Route::post('/create', 'ClientController@store_client');
         Route::get('/', function () {
             return view('tools.clients');
-        })->middleware('auth:nst');
+        })->middleware('auth:nst,client');
 
         Route::prefix('{id_c}/departements')->group(function () {
 
-            Route::get('/index', 'ClientController@all_departements')->middleware('auth:nst');
-            Route::post('/filter_index', 'ClientController@filter_all_departements')->middleware('auth:nst');
-            Route::get('/affecter', 'ClientController@affecter')->middleware('auth:nst');
-            Route::post('/edit/{id_d}', 'ClientController@edit_departement')->middleware('auth:nst');
-            Route::post('/delete/{id_d}', 'ClientController@delete_departement')->middleware('auth:nst');
-            Route::post('/restore/{id_d}', 'ClientController@restore_departement')->middleware('auth:nst');
-            Route::post('/create', 'ClientController@store_departement')->middleware('auth:nst');
+            Route::get('/index', 'ClientController@all_departements');
+            Route::post('/filter_index', 'ClientController@filter_all_departements');
+            Route::get('/affecter', 'ClientController@affecter');
+            Route::post('/edit/{id_d}', 'ClientController@edit_departement');
+            Route::post('/delete/{id_d}', 'ClientController@delete_departement');
+            Route::post('/restore/{id_d}', 'ClientController@restore_departement');
+            Route::post('/create', 'ClientController@store_departement');
             Route::get('/', function ($id_c) {
 
                 return view('tools.departements', ['client' => Client::find($id_c)]);
-            })->middleware('auth:nst');
+            })->middleware('auth:nst,client');
 
             Route::prefix('{id_d}/agences')->group(function () {
 
-                Route::get('/index', 'ClientController@all_agences')->middleware('auth:nst');
-                Route::post('/filter_index', 'ClientController@filter_all_agences')->middleware('auth:nst');
-                Route::post('/edit/{id_a}', 'ClientController@edit_agence')->middleware('auth:nst');
-                Route::post('/delete/{id_a}', 'ClientController@delete_agence')->middleware('auth:nst');
-                Route::post('/restore/{id_a}', 'ClientController@restore_agence')->middleware('auth:nst');
-                Route::post('/create', 'ClientController@store_agence')->middleware('auth:nst');
-                Route::get('/affecter', 'ClientController@affecter_agence')->middleware('auth:nst');
+                Route::get('/index', 'ClientController@all_agences');
+                Route::post('/filter_index', 'ClientController@filter_all_agences');
+                Route::post('/edit/{id_a}', 'ClientController@edit_agence');
+                Route::post('/delete/{id_a}', 'ClientController@delete_agence');
+                Route::post('/restore/{id_a}', 'ClientController@restore_agence');
+                Route::post('/create', 'ClientController@store_agence');
+                Route::get('/affecter', 'ClientController@affecter_agence');
                 Route::get('/', function ($id_c, $id_d) {
                     return view('tools.agences', ['departement' => Departement::find($id_d)]);
-                })->middleware('auth:nst');
+                })->middleware('auth:nst,client');
             });
         });
     });
@@ -235,42 +236,42 @@ Route::prefix('/outils')->group(function () {
 
     Route::prefix('/produits')->group(function () {
 
-        Route::get('/index', 'ProduitController@index')->middleware('auth:nst');
-        Route::post('/filter_index', 'ProduitController@filter_index')->middleware('auth:nst');
-        Route::get('/equip_prod', 'ProduitController@equip_prod')->middleware('auth:nst');
-        Route::post('/attach_prod', 'ProduitController@attach_prod')->middleware('auth:nst');
-        Route::get('/detach_prod', 'ProduitController@detach_prod')->middleware('auth:nst');
-        Route::get('/active_index', 'ProduitController@active_produits')->middleware('auth:nst');
-        Route::get('/save_ref', 'ProduitController@save_ref')->middleware('auth:nst');
-        Route::post('/edit/{id_c}', 'ProduitController@edit_produit')->middleware('auth:nst');
-        Route::post('/delete/{id_c}', 'ProduitController@delete_produit')->middleware('auth:nst');
-        Route::post('/restore/{id_c}', 'ProduitController@restore_produit')->middleware('auth:nst');
-        Route::post('/create', 'ProduitController@store_produit')->middleware('auth:nst');
+        Route::get('/index', 'ProduitController@index');
+        Route::post('/filter_index', 'ProduitController@filter_index');
+        Route::get('/equip_prod', 'ProduitController@equip_prod');
+        Route::post('/attach_prod', 'ProduitController@attach_prod');
+        Route::get('/detach_prod', 'ProduitController@detach_prod');
+        Route::get('/active_index', 'ProduitController@active_produits');
+        Route::get('/save_ref', 'ProduitController@save_ref');
+        Route::post('/edit/{id_c}', 'ProduitController@edit_produit');
+        Route::post('/delete/{id_c}', 'ProduitController@delete_produit');
+        Route::post('/restore/{id_c}', 'ProduitController@restore_produit');
+        Route::post('/create', 'ProduitController@store_produit');
 
         Route::get('/', function () {
             return view('tools.produits');
-        })->middleware('auth:nst');
+        })->middleware('auth:nst,client');
         Route::prefix('{id_p}/equipements')->group(function () {
-            Route::get('/index', 'ProduitController@index_equipement')->middleware('auth:nst');
-            Route::post('/edit/{id_a}', 'ProduitController@edit_equipement')->middleware('auth:nst');
-            Route::post('/delete/{id_a}', 'ProduitController@delete_equipement')->middleware('auth:nst');
-            Route::post('/restore/{id_a}', 'ProduitController@restore_equipement')->middleware('auth:nst');
-            Route::post('/create', 'ProduitController@store_equipement')->middleware('auth:nst');
+            Route::get('/index', 'ProduitController@index_equipement');
+            Route::post('/edit/{id_a}', 'ProduitController@edit_equipement');
+            Route::post('/delete/{id_a}', 'ProduitController@delete_equipement');
+            Route::post('/restore/{id_a}', 'ProduitController@restore_equipement');
+            Route::post('/create', 'ProduitController@store_equipement');
         });
     });
 
     Route::prefix('espace-client')->group(function () {
         Route::get('/', function () {
             return view('tools.espace.index');
-        })->middleware('auth:nst');
-        Route::get('/index', 'EspaceController@all_agences')->middleware('auth:nst');
+        })->middleware('auth:nst,client');
         Route::get('/agence/{id}', function ($id) {
             $agence = Agence::find($id);
             return view('tools.espace.agence', ['agence' => $agence]);
-        })->middleware('auth:nst');
-        Route::get('/agence/{id}/detail', 'EspaceController@detail_agence')->middleware('auth:nst');
-        Route::get('/agence/{id_a}/get_equipements/{id_p}', 'EspaceController@get_equipements')->middleware('auth:nst');
-        Route::get('/agence/{id_a}/get_refs', 'EspaceController@get_refs')->middleware('auth:nst');
-        Route::post('/agence/{id_a}/reclamer', 'EspaceController@add_reclamation')->middleware('auth:nst');
+        })->middleware('auth:nst,client');
+        Route::get('/index', 'EspaceController@all_agences');
+        Route::get('/agence/{id}/detail', 'EspaceController@detail_agence');
+        Route::get('/agence/{id_a}/get_equipements/{id_p}', 'EspaceController@get_equipements');
+        Route::get('/agence/{id_a}/get_refs', 'EspaceController@get_refs');
+        Route::post('/agence/{id_a}/reclamer', 'EspaceController@add_reclamation');
     });
 });

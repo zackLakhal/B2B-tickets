@@ -365,7 +365,7 @@
         form_data.append("is_all", $('#fv_dr').is(':checked'));
         form_data.append("is_deleted", is_deleted);
 
-        // console.log(jsonData)
+        // // console.log(jsonData)
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/utilisateur/staff-client/filter_index",
             dataType: "json",
@@ -379,7 +379,7 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
         var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
@@ -864,7 +864,7 @@
             jsonData = JSON.parse(StringData);
 
             $('#messagefooter').html("")
-            console.log(jsonData)
+            // console.log(jsonData)
             var message = "";
             if (jsonData.check == "done") {
                 message = "votre mot de passe est changé avec succès";

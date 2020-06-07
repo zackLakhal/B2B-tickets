@@ -92,9 +92,13 @@ class ProduitController extends Controller
             );
             $produit->image = $path;
             $produit->save();
+            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
         } else {
             $produit->image = "produits/placeholder.jpg";
             $produit->save();
+            copy('/home/marocnst/public_html/storage/app/public/produits/placeholder.jpg', '/home/marocnst/public_html/public/storage/produits/placeholder.jpg');
+
         }
 
 
@@ -159,9 +163,13 @@ class ProduitController extends Controller
             );
             $produit->image = $path;
             $produit->save();
+            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
         } else {
             $produit->image = "produits/placeholder.jpg";
             $produit->save();
+            copy('/home/marocnst/public_html/storage/app/public/produits/placeholder.jpg', '/home/marocnst/public_html/public/storage/produits/placeholder.jpg');
+
         }
 
         $equipements = array();
@@ -350,9 +358,13 @@ class ProduitController extends Controller
             );
             $temp->image = $path;
             $temp->save();
+            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
         } else {
             $temp->image = "produits/placeholder.jpg";
             $temp->save();
+            copy('/home/marocnst/public_html/storage/app/public/produits/placeholder.jpg', '/home/marocnst/public_html/public/storage/produits/placeholder.jpg');
+
         }
 
         $done = true;
@@ -417,9 +429,12 @@ class ProduitController extends Controller
             );
             $temp->image = $path;
             $temp->save();
+            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
         } else {
             $temp->image = "produits/placeholder.jpg";
             $temp->save();
+            copy('/home/marocnst/public_html/storage/app/public/produits/placeholder.jpg', '/home/marocnst/public_html/public/storage/produits/placeholder.jpg');
+
         }
 
         $done = true;

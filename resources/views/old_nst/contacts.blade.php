@@ -86,7 +86,7 @@
       data: inputs
     }).responseText;
     jsonData = JSON.parse(StringData);
-    console.log(jsonData)
+    // console.log(jsonData)
     if ($.isEmptyObject(jsonData.error)) {
 
       clearInputs(jsonData.inputs);

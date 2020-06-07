@@ -204,6 +204,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
+        // console.log(jsonData)
         $('#bodytab').html("");
 
         $('#fv_nom').html(" <option  value=\"0\"selected  >tout les clients </option>")
@@ -293,7 +294,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+            // console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -349,7 +350,7 @@
         form_data.append("is_all", $('#fv_dr').is(':checked'));
         form_data.append("is_deleted", is_deleted);
 
-        // console.log(jsonData)
+        // // console.log(jsonData)
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/outils/clients/filter_index",
             dataType: "json",
@@ -363,7 +364,7 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
 
         $('#bodytab').html("");
 

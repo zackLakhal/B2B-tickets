@@ -215,7 +215,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         console.log(jsonData)
         $('#bodytab').html("");
         var role_id = $('#logged_info').attr('value');
         $('#fv_nom').html(" <option  value=\"0\"selected  >tout les staff </option>")
@@ -249,15 +249,15 @@
                 for (let t = 0; t < 3; t++) {
                     if (jsonData.affectations[ind][t] != null) {
                         switch (jsonData.affectations[ind][t].etat_id) {
-                            case 1:
+                            case '1':
                                 et_1 = "" + jsonData.affectations[ind][t].nb;
                                 break;
 
-                            case 2:
+                            case '2':
                                 et_2 = "" + jsonData.affectations[ind][t].nb;
                                 break;
 
-                            case 3:
+                            case '3':
                                 et_3 = "" + jsonData.affectations[ind][t].nb;
                                 break;
                         }
@@ -357,7 +357,7 @@
         form_data.append("is_all", $('#fv_dr').is(':checked'));
         form_data.append("is_deleted", is_deleted);
 
-        // console.log(jsonData)
+        // // console.log(jsonData)
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/utilisateur/staff-nst/filter_index",
             dataType: "json",
@@ -371,7 +371,7 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
         var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
@@ -402,15 +402,15 @@
                 for (let t = 0; t < 3; t++) {
                     if (jsonData.affectations[ind][t] != null) {
                         switch (jsonData.affectations[ind][t].etat_id) {
-                            case 1:
+                            case '1':
                                 et_1 = "" + jsonData.affectations[ind][t].nb;
                                 break;
 
-                            case 2:
+                            case '2':
                                 et_2 = "" + jsonData.affectations[ind][t].nb;
                                 break;
 
-                            case 3:
+                            case '3':
                                 et_3 = "" + jsonData.affectations[ind][t].nb;
                                 break;
                         }
@@ -515,7 +515,7 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
-            console.log(jsonData);
+            // console.log(jsonData);
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -543,15 +543,15 @@
                     for (let t = 0; t < 3; t++) {
                         if (jsonData.affectation[t] != null) {
                             switch (jsonData.affectation[t].etat_id) {
-                                case 1:
+                                case '1':
                                     et_1 = "" + jsonData.affectation[t].nb;
                                     break;
 
-                                case 2:
+                                case '2':
                                     et_2 = "" + jsonData.affectation[t].nb;
                                     break;
 
-                                case 3:
+                                case '3':
                                     et_3 = "" + jsonData.affectation[t].nb;
                                     break;
                             }
@@ -649,15 +649,15 @@
             for (let t = 0; t < 3; t++) {
                 if (jsonData.affectation[t] != null) {
                     switch (jsonData.affectation[t].etat_id) {
-                        case 1:
+                        case '1':
                             et_1 = "" + jsonData.affectation[t].nb;
                             break;
 
-                        case 2:
+                        case '2':
                             et_2 = "" + jsonData.affectation[t].nb;
                             break;
 
-                        case 3:
+                        case '3':
                             et_3 = "" + jsonData.affectation[t].nb;
                             break;
                     }
@@ -753,15 +753,15 @@
             for (let t = 0; t < 3; t++) {
                 if (jsonData.affectation[t] != null) {
                     switch (jsonData.affectation[t].etat_id) {
-                        case 1:
+                        case '1':
                             et_1 = "" + jsonData.affectation[t].nb;
                             break;
 
-                        case 2:
+                        case '2':
                             et_2 = "" + jsonData.affectation[t].nb;
                             break;
 
-                        case 3:
+                        case '3':
                             et_3 = "" + jsonData.affectation[t].nb;
                             break;
                     }
@@ -864,7 +864,7 @@
                 contentType: false
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+            // console.log(jsonData)
             var role_id = $('#logged_info').attr('value');
             if ($.isEmptyObject(jsonData.error)) {
 
@@ -894,15 +894,15 @@
                     for (let t = 0; t < 3; t++) {
                         if (jsonData.affectation[t] != null) {
                             switch (jsonData.affectation[t].etat_id) {
-                                case 1:
+                                case '1':
                                     et_1 = "" + jsonData.affectation[t].nb;
                                     break;
 
-                                case 2:
+                                case '2':
                                     et_2 = "" + jsonData.affectation[t].nb;
                                     break;
 
-                                case 3:
+                                case '3':
                                     et_3 = "" + jsonData.affectation[t].nb;
                                     break;
                             }
@@ -990,7 +990,7 @@
             jsonData = JSON.parse(StringData);
 
             $('#messagefooter').html("")
-            console.log(jsonData)
+            // console.log(jsonData)
             var message = "";
             if (jsonData.check == "done") {
                 message = "votre mot de passe est changé avec succès";

@@ -798,7 +798,7 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
         $('#body_' + jsonData.stat_by).html("");
         $('#bodytab_' + jsonData.stat_by).html("");
         $('#bodytab_' + jsonData.stat_by + '_semi').html("");
@@ -1036,7 +1036,7 @@
             data: form_data
         }).responseText;
          jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         //console.log(jsonData)
 
         $('#'+form_data['stat_by']+'_link').attr('href', "{{ asset('storage')}}/excel_stats/"+form_data['stat_by']+"s/"+form_data['stat_by']+"_"+jsonData+"_stat.xlsx")
         $('#'+form_data['stat_by']+'_link').css('color','green');
@@ -1157,7 +1157,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-         console.log(jsonData)
+         // console.log(jsonData)
 
         var ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement']
 
@@ -1205,14 +1205,14 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
         for (var val in checks) {
             if (checks[val]) {
                 $('#' + val).html("")
             }
         }
 
-        console.log(jsonData['inputs']['fv_produit'])
+        // console.log(jsonData['inputs']['fv_produit'])
         for (var ind in checks) {
             for (let j = 0; j < jsonData[ind].length; j++) {
                 if (checks[ind]) {

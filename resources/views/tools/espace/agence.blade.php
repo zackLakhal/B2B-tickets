@@ -266,7 +266,7 @@
                 jsonData.equipements[j].info +
                 "</p>" +
                 "<div class=\"button-group text-center\">" +
-                (role_id != '1'  ? "<button  class=\"btn btn-warning\" \" onclick=\"reclamer(" + produit + "," + jsonData.equipements[j].equip_id + ")\">réclamer sur l'équipement</button>" : "") +
+                (role_id != '2' && role_id != '3'  ? "<button  class=\"btn btn-warning\" \" onclick=\"reclamer(" + produit + "," + jsonData.equipements[j].equip_id + ")\">réclamer sur l'équipement</button>" : "") +
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -331,7 +331,7 @@
                 data: inputs,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+            // console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);

@@ -329,7 +329,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+            // console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -429,7 +429,7 @@
         form_data.append("is_all", $('#fv_dr').is(':checked'));
         form_data.append("is_deleted", is_deleted);
 
-        // console.log(jsonData)
+        // // console.log(jsonData)
         var buttonaciveproduit;
         var buttonaciveequipement;
 
@@ -446,7 +446,7 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
 
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.length; ind++) {
@@ -549,7 +549,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
         message(type, "supprimé", jsonData.check);
         if (jsonData.produit.deleted_at == null) {
             buttonaciveproduit = "<button  class=\"btn btn-danger\"  onclick=\"supprimer('produit'," + jsonData.produit.id + "," + ind + ", -1)\">supprimer</button>"

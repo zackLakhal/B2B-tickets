@@ -17,13 +17,19 @@ class UserController extends Controller
     {
 
         $users = null;
-        switch (Auth::user()->role_id) {
+        $auth = null;
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+        switch ($auth->role_id) {
             case 3:
-                $users = Nstuser::where('id', Auth::user()->id)->get();
+                $users = Nstuser::where('id', $auth->id)->get();
                 break;
             case 2:
                 $users = Nstuser::where('role_id', 3)->get();
-                $users[] = Nstuser::where('id','=',Auth::user()->id)->first();
+                $users[] = Nstuser::where('id', '=', $auth->id)->first();
+                break;
+            case 1:
+                $users = Nstuser::where('role_id','<>', 6)->get();
+                
                 break;
             default:
                 $users = Nstuser::withTrashed()->get();
@@ -38,6 +44,7 @@ class UserController extends Controller
                 ->leftJoin('reclamations', 'reclamations.id', '=', 'affectations.reclamation_id')
                 ->leftJoin('etats', 'etats.id', '=', 'reclamations.etat_id')
                 ->select('reclamations.etat_id', DB::raw('count(reclamations.id) as nb'))->where([
+                    ['etats.id', '<>', null],
                     ['affectations.nstuser_id', '=', $user->id]
                 ])->groupBy('reclamations.etat_id')->get();
         }
@@ -54,18 +61,18 @@ class UserController extends Controller
     {
         $filters = array();
         $users = null;
-        $request->role_id == "0" ? $filters[] = ['role_id','<>',0] :  $filters[] = ['role_id','=',$request->role_id];
-        
-        if($request->user_id != "0"){
-            $filters[] = ['id','=',$request->user_id];
+        $request->role_id == "0" ? $filters[] = ['role_id', '<>', 6] :  $filters[] = ['role_id', '=', $request->role_id];
+
+        if ($request->user_id != "0") {
+            $filters[] = ['id', '=', $request->user_id];
         }
-        if($request->is_all == "true"){
+        if ($request->is_all == "true") {
             $users = Nstuser::where($filters)->withTrashed()->get();
-        }else{
+        } else {
 
             $request->is_deleted == 'true' ?  $users = Nstuser::onlyTrashed()->where($filters)->get() : $users = Nstuser::where($filters)->get();
         }
-       // return response()->json($filters);
+        // return response()->json($filters);
 
         $roles = array();
         $affectations = array();
@@ -161,9 +168,13 @@ class UserController extends Controller
                 );
                 $user->photo = $path;
                 $user->save();
+                copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
             } else {
                 $user->photo = "avatars/placeholder.jpg";
                 $user->save();
+                copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
+
             }
 
             $done = true;
@@ -239,9 +250,13 @@ class UserController extends Controller
             );
             $user->photo = $path;
             $user->save();
+            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
         } else {
             $user->photo = "avatars/placeholder.jpg";
             $user->save();
+            copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
+
         }
 
         $check;
@@ -272,14 +287,15 @@ class UserController extends Controller
 
     public function client_index()
     {
-
+        $auth = null;
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         $users = null;
-        switch (Auth::user()->role_id) {
-            case 4:
-                $users = Clientuser::where('id', Auth::user()->id)->get();
-                break;
+        switch ($auth->role_id) {
             case 5:
-                $users = Clientuser::where('created_by', Auth::user()->created_by)->get();
+                $users = Clientuser::where('id', $auth->id)->get();
+                break;
+            case 4:
+                $users = Clientuser::where('created_by', $auth->created_by)->get();
                 break;
             default:
                 $users = Clientuser::withTrashed()->get();
@@ -306,20 +322,20 @@ class UserController extends Controller
 
     public function filter_client_index(Request $request)
     {
-        
+
         $filters = array();
         $users = null;
-        $request->role_id == "0" ? $filters[] = ['role_id','<>',0] :  $filters[] = ['role_id','=',$request->role_id];
-        
-        if($request->client_id != "0"){
-            $filters[] = ['created_by','=',$request->client_id];
+        $request->role_id == "0" ? $filters[] = ['role_id', '<>', 0] :  $filters[] = ['role_id', '=', $request->role_id];
+
+        if ($request->client_id != "0") {
+            $filters[] = ['created_by', '=', $request->client_id];
         }
-        if($request->user_id != "0"){
-            $filters[] = ['id','=',$request->user_id];
+        if ($request->user_id != "0") {
+            $filters[] = ['id', '=', $request->user_id];
         }
-        if($request->is_all == "true"){
+        if ($request->is_all == "true") {
             $users = Clientuser::where($filters)->withTrashed()->get();
-        }else{
+        } else {
 
             $request->is_deleted == 'true' ?  $users = Clientuser::onlyTrashed()->where($filters)->get() : $users = Clientuser::where($filters)->get();
         }
@@ -461,9 +477,13 @@ class UserController extends Controller
                 );
                 $user->photo = $path;
                 $user->save();
+                copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
             } else {
                 $user->photo = "avatars/placeholder.jpg";
                 $user->save();
+                copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
+
             }
             $done = true;
         }
@@ -538,9 +558,13 @@ class UserController extends Controller
             );
             $user->photo = $path;
             $user->save();
+            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
         } else {
             $user->photo = "avatars/placeholder.jpg";
             $user->save();
+            copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
+
         }
 
 

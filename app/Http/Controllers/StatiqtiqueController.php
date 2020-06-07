@@ -63,24 +63,25 @@ class StatiqtiqueController extends Controller
 
         // return response()->json($data);
 
-        // $auth = Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id);
+        // $auth = $auth->role_id == 4 || $auth->role_id == 5 ? Clientuser::find($auth->id) : Nstuser::find($auth->id);
 
 
         $ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip'];
         $input_values = array();
 
 
-
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
 
         foreach ($ids as $id) {
             $input_values[$id] = 0;
         }
-        if (Auth::user()->role_id == 4) {
-            $input_values['fv_client'] = Auth::user()->created_by;
+        if ($auth->role_id == 4) {
+            $input_values['fv_client'] = $auth->created_by;
         }
         
-        if (Auth::user()->role_id == 5) {
-            $agence = Agence::find(Auth::user()->clientable_id);
+        if ($auth->role_id == 5) {
+            $agence = Agence::find($auth->clientable_id);
             $departement = Departement::find($agence->departement_id);
             $input_values['fv_agence'] = $agence->id;
             $input_values['fv_departement'] = $departement->id;
@@ -213,12 +214,14 @@ class StatiqtiqueController extends Controller
 
     public function filter_data(Request $request)
     {
+        
         $ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip'];
         $input_values = array();
 
         
-        // $auth = Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id);
-        
+        // $auth = $auth->role_id == 4 || $auth->role_id == 5 ? Clientuser::find($auth->id) : Nstuser::find($auth->id);
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
 
         foreach ($ids as $id) {
             if ($request->input("check_" . $id) == "true") {
@@ -228,12 +231,12 @@ class StatiqtiqueController extends Controller
             }
         }
 
-        if (Auth::user()->role_id == 4) {
-            $input_values['fv_client'] = Auth::user()->created_by;
+        if ($auth->role_id == 4) {
+            $input_values['fv_client'] = $auth->created_by;
         }
         
-        if (Auth::user()->role_id == 5) {
-            $agence = Agence::find(Auth::user()->clientable_id);
+        if ($auth->role_id == 5) {
+            $agence = Agence::find($auth->clientable_id);
             $departement = Departement::find($agence->departement_id);
             $input_values['fv_agence'] = $agence->id;
             $input_values['fv_departement'] = $departement->id;
@@ -489,7 +492,9 @@ class StatiqtiqueController extends Controller
         $where = array();
         $having = array();
 
-        
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+
 
         $request->fv_client == null ?:  array_push($having, "( client_id IN (" . $request->fv_client . ") )");
         $request->fv_departement == null ?:  array_push($having, "( depart_id IN (" . $request->fv_departement . ") )");
@@ -611,7 +616,7 @@ class StatiqtiqueController extends Controller
             'date' => $date
         ];
         //  return response()->json(Excel::download(new StatistiqueExport($data), 'clients_stat.xlsx'));
-        Excel::store(new StatistiqueExport($data), 'excel_stats/' . $request->stat_by . 's/' . $request->stat_by . '_' . Auth::id() . '_stat.xlsx');
-        return response()->json(Auth::id());
+        Excel::store(new StatistiqueExport($data), 'excel_stats/' . $request->stat_by . 's/' . $request->stat_by . '_' . $auth->id . '_stat.xlsx');
+        return response()->json($auth->id);
     }
 }

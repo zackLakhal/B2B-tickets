@@ -206,6 +206,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
+        console.log(jsonData)
         var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
@@ -373,7 +374,7 @@
         form_data.append("is_all", $('#fv_dr').is(':checked'));
         form_data.append("is_deleted", is_deleted);
 
-        // console.log(jsonData)
+        // // console.log(jsonData)
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/outils/clients/" + $('#id_c').val() + "/departements/filter_index",
             dataType: "json",
@@ -387,7 +388,7 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         console.log(jsonData)
 
         $('#bodytab').html("");
 

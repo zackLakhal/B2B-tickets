@@ -12,7 +12,9 @@ use DB;
 use App\Clientuser;
 use App\Souscription;
 use App\Anomalie;
+use App\Nstuser;
 use App\Reclamation;
+use App\Ville;
 use Illuminate\Support\Facades\Auth;
 
 class EspaceController extends Controller
@@ -20,18 +22,20 @@ class EspaceController extends Controller
     public function all_agences()
     {
         $agences = null;
-        switch (Auth::user()->role_id) {
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+        switch ($auth->role_id) {
 
             case 4:
                 $agences = DB::table('agences')
                     ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
                     ->select('agences.*')->where([
-                        ['agences.deleted_at', '<>', null],
-                        ['departements.client_id', '=', Auth::user()->clientable_id]
+                        ['agences.deleted_at', '=', null],
+                        ['departements.client_id', '=', $auth->clientable_id]
                     ])->get();
                 break;
             case 5:
-                $agences = Agence::where('id', '=', Auth::user()->clientable_id)->get();
+                $agences = Agence::where('id', '=', $auth->clientable_id)->get();
 
                 break;
             default:
@@ -43,7 +47,7 @@ class EspaceController extends Controller
         $villes = array();
         foreach ($agences as $agence) {
 
-            $villes[] = $agence->ville;
+            $villes[] = Ville::find($agence->ville_id);
         }
 
 
@@ -129,7 +133,8 @@ class EspaceController extends Controller
 
     public function add_reclamation(Request $request, $id_a)
     {
-
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         $validator = Validator::make($request->all(), [
 
             'ref' => 'required',
@@ -143,8 +148,8 @@ class EspaceController extends Controller
         }
 
         $reclamation = new Reclamation();
-
-        $reclamation->clientuser_id = Auth::id();
+        
+        $reclamation->clientuser_id = $auth;
         $reclamation->souscription_id = $request->ref;
         $reclamation->anomalie_id = $request->anomalie;
 

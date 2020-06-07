@@ -260,19 +260,19 @@
                             </ul>
                         </li>
                         @endif
-                        @if(auth::user()->role_id != 5)
+                        
                         <li>
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="fa fa-user"></i><span class="hide-menu">Utilisateurs </span></a>
                             <ul aria-expanded="false" class="collapse">
-                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 4 || auth::user()->role_id == 5)
+                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 2 || auth::user()->role_id == 3)
                                 <li><a href="/utilisateur/staff-nst">Gérer Staff-nst</a></li>
                                 @endif
-                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 2 || auth::user()->role_id == 3)
+                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 4 || auth::user()->role_id == 5)
                                 <li><a href="/utilisateur/staff-client">Gérer Staff-client</a></li>
                                 @endif
                             </ul>
                         </li>
-                        @endif
+                        
                         @if(auth::user()->role_id != 2 && auth::user()->role_id != 3)
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-cellphone-link"></i><span class="hide-menu">Outils Client</span></a>
                             <ul aria-expanded="false" class="collapse">

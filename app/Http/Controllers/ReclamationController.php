@@ -26,15 +26,17 @@ class ReclamationController extends Controller
     public function index()
     {
         $where = null;
-        switch (Auth::user()->role_id) {
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+        switch ($auth->role_id) {
             case 3:
-                $where = ['nstusers.id', '=', Auth::user()->id];
+                $where = ['nstusers.id', '=', $auth->id];
                 break;
             case 4:
-                $where = ['clients.id', '=', Auth::user()->created_by];
+                $where = ['clients.id', '=', $auth->created_by];
                 break;
             case 5:
-                $where = ['agences.id', '=', Auth::user()->clientable_id];
+                $where = ['agences.id', '=', $auth->clientable_id];
                 break;
             default:
                 $where = ['reclamations.id', '<>', '0'];
@@ -365,6 +367,9 @@ class ReclamationController extends Controller
                 $rec->id . "_" . $image
             );
             $rapport->pv = $path;
+            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
+            
         }
         $rapport->save();
 
@@ -519,6 +524,8 @@ class ReclamationController extends Controller
                 $rec->id . "_" . $image
             );
             $rapport->pv = $path;
+            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
         }
         $rapport->save();
 
@@ -576,7 +583,7 @@ class ReclamationController extends Controller
 
     public function filter_agence_dash(Request $request)
     {
-        return response()->json($request->all());
+        // return response()->json($request->all());
 
         $clients = array();
         $clienttemps = null;
@@ -650,7 +657,7 @@ class ReclamationController extends Controller
         // );
 
         // return response()->json($data);
-        $auth = Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id);
+       // $auth = Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id);
 
 
         $ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip'];
@@ -658,23 +665,24 @@ class ReclamationController extends Controller
 
 
 
-
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         foreach ($ids as $id) {
             $input_values[$id] = 0;
         }
-        if (Auth::user()->role_id == 4) {
-            $input_values['fv_client'] = Auth::user()->created_by;
+        if ($auth->role_id == 4) {
+            $input_values['fv_client'] = $auth->created_by;
         }
         $tech = null;
-        if (Auth::user()->role_id == 3) {
-            $tech = Nstuser::where('id', Auth::user()->id)->get();
-            $input_values['fv_tech'] = Auth::user()->id;
+        if ($auth->role_id == 3) {
+            $tech = Nstuser::where('id', $auth->id)->get();
+            $input_values['fv_tech'] = $auth->id;
         } else {
             $tech = Nstuser::where('role_id', 3)->get();
             $input_values['fv_tech'] = 0;
         }
-        if (Auth::user()->role_id == 5) {
-            $agence = Agence::find(Auth::user()->clientable_id);
+        if ($auth->role_id == 5) {
+            $agence = Agence::find($auth->clientable_id);
             $departement = Departement::find($agence->departement_id);
             $input_values['fv_agence'] = $agence->id;
             $input_values['fv_departement'] = $departement->id;

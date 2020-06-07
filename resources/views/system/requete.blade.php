@@ -207,7 +207,7 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
 
         $('#bodytab').html("");
 

@@ -98,7 +98,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+            // console.log(jsonData)
         $('#nom').html(" <option  value=\"0\"selected  >tout les client </option>")
         $('#email').html(" <option  value=\"0\"selected  >tout les client </option>")
 
@@ -137,7 +137,7 @@
 
                 }
 
-                //   console.log(jsonData[ind].agences[j].reclamations.length);
+                //   // console.log(jsonData[ind].agences[j].reclamations.length);
 
                 if (jsonData[ind].agences[j].reclamations.length > 0) {
                     if (nb == 0) {
@@ -213,7 +213,7 @@
 
     $('#filter').click(function() {
 
-         //    console.log(jsonData)
+         //    // console.log(jsonData)
        
 
      
@@ -239,7 +239,7 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+             console.log(jsonData)
         
 
         $('#bodytab').html("");
@@ -277,7 +277,7 @@
 
                 }
 
-                //   console.log(jsonData[ind].agences[j].reclamations.length);
+                //   // console.log(jsonData[ind].agences[j].reclamations.length);
 
                 if (jsonData[ind].agences[j].reclamations.length > 0) {
                     if (nb == 0) {

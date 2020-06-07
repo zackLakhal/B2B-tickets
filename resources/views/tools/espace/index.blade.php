@@ -97,7 +97,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData);
+         console.log(jsonData);
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.agences.length; ind++) {
 

@@ -10,6 +10,7 @@ use App\Client;
 use App\Departement;
 use App\Agence;
 use App\Clientuser;
+use App\Nstuser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -20,12 +21,14 @@ class ClientController extends Controller
     public function all_clients()
     {
         $clients = null;
-        switch (Auth::user()->role_id) {
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+        switch ($auth->role_id) {
             case 4:
-                $clients = Client::where('id', Auth::user()->created_by)->get();
+                $clients = Client::where('id', $auth->created_by)->get();
                 break;
             case 5:
-                $clients = Client::where('id', Auth::user()->created_by)->get();
+                $clients = Client::where('id', $auth->created_by)->get();
                 break;
             default:
                 $clients = Client::withTrashed()->get();
@@ -57,12 +60,14 @@ class ClientController extends Controller
     public function active_clients()
     {
         $clients = null;
-        switch (Auth::user()->role_id) {
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+        switch ($auth->role_id) {
             case 4:
-                $clients = Client::where('id', Auth::user()->created_by)->get();
+                $clients = Client::where('id', $auth->created_by)->get();
                 break;
             case 5:
-                $clients = Client::where('id', Auth::user()->created_by)->get();
+                $clients = Client::where('id', $auth->created_by)->get();
                 break;
             default:
                 $clients = Client::all();
@@ -218,10 +223,16 @@ class ClientController extends Controller
             );
             $client->photo = $path;
             $client->save();
+            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
         } else {
             $client->photo = "clients/placeholder.jpg";
             $client->save();
+            copy('/home/marocnst/public_html/storage/app/public/clients/placeholder.jpg', '/home/marocnst/public_html/public/storage/clients/placeholder.jpg');
+
         }
+
+        
 
         $done = true;
 
@@ -293,9 +304,13 @@ class ClientController extends Controller
             );
             $client->photo = $path;
             $client->save();
+            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+
         } else {
             $client->photo = "clients/placeholder.jpg";
             $client->save();
+            copy('/home/marocnst/public_html/storage/app/public/clients/placeholder.jpg', '/home/marocnst/public_html/public/storage/clients/placeholder.jpg');
+
         }
 
         $check;
@@ -320,13 +335,15 @@ class ClientController extends Controller
     public function all_departements($id_c)
     {
         $departements = null;
-        switch (Auth::user()->role_id) {
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+        switch ($auth->role_id) {
             case 5:
                 $departements = DB::table('departements')
                     ->leftJoin('agences', 'agences.departement_id', '=', 'departements.id')
                     ->select('departements.*')->where([
-                        ['departements.deleted_at', '<>', null],
-                        ['agences.id', '=', Auth::user()->clientable_id]
+                        ['departements.deleted_at', '=', null],
+                        ['agences.id', '=', $auth->clientable_id]
                     ])->get();
                 break;
 
@@ -588,10 +605,12 @@ class ClientController extends Controller
 
     public function all_agences($id_c, $id_d)
     {
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         $agences = null;
-        switch (Auth::user()->role_id) {
+        switch ($auth->role_id) {
             case 5:
-                $agences = Agence::where('id', '=', Auth::user()->clientable_id)
+                $agences = Agence::where('id', '=', $auth->clientable_id)
                     ->get();
                 break;
 

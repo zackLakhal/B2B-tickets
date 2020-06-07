@@ -261,7 +261,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        // console.log(jsonData)
+        // // console.log(jsonData)
         $('#bodytab').html("");
         var role_id = $('#logged_info').attr('value');
 
@@ -310,7 +310,7 @@
                     data: inputs
                 }).responseText;
                 jsonData1 = JSON.parse(StringData1);
-                //console.log(jsonData1)
+                //// console.log(jsonData1)
                 for (let k = 0; k < jsonData1.equipements.length; k++) {
                     refs = "";
 
@@ -497,7 +497,7 @@
             }).responseText;
             jsonData = JSON.parse(StringData);
             var role_id = $('#logged_info').attr('value');
-            // console.log(jsonData)
+            // // console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -609,7 +609,7 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        // console.log(jsonData)
+        // // console.log(jsonData)
         var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
@@ -654,7 +654,7 @@
                     data: inputs
                 }).responseText;
                 jsonData1 = JSON.parse(StringData1);
-                //console.log(jsonData1)
+                //// console.log(jsonData1)
                 for (let k = 0; k < jsonData1.equipements.length; k++) {
                     refs = "";
 
@@ -793,7 +793,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
         message("agence", "supprimé", jsonData.check);
         var role_id = $('#logged_info').attr('value');
         produit = "";
@@ -1630,7 +1630,7 @@
                 data: inputs
             }).responseText;
             jsonData = JSON.parse(StringData);
-            console.log(jsonData)
+            // console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -1816,7 +1816,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+        // console.log(jsonData)
         if ($.isEmptyObject(jsonData.error)) {
 
             clearInputsRef(jsonData.inputs, id.split("f")[1]);

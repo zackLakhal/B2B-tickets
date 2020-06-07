@@ -126,7 +126,7 @@
         }).responseText;
         jsonData = JSON.parse(StringData);
         var role_id = $('#logged_info').attr('value');
-        console.log(jsonData);
+        // console.log(jsonData);
         $('#bodytab').html("");
         for (let ind = 0; ind < jsonData.length; ind++) {
 
@@ -162,12 +162,12 @@
                     acceptation = "";
                     break;
 
-                case 0:
+                case '0':
                     affect = " non "
                     acceptation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-success\"  onclick=\"accepter('" + jsonData[ind].reclamation_ref + "'," + ind + ")\">accepter</button>";
                     break;
 
-                case 1:
+                case '1':
                     affect = " oui "
                     acceptation = "<a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>accepté</a>"
                     break;
@@ -175,10 +175,10 @@
             }
 
             switch (jsonData[ind].etat_id) {
-                case 1:
+                case '1':
                     ref_color = "danger";
                     det_color = "color:#761b18;background-color:#f4b0af"
-                    if (jsonData[ind].accepted) {
+                    if (jsonData[ind].accepted == '1') {
                         traitement = "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\"  onclick=\"traiter(2,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">mettre en traitement</button>" +
                             "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\"  onclick=\"traiter(3,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">clôturer</button>";
 
@@ -188,14 +188,14 @@
                     download_pdf = "";
                     break;
 
-                case 2:
+                case '2':
                     ref_color = "warning";
                     det_color = "color:#857b26;background-color:#fff8b3"
                     traitement = "<button type=\"button\" class=\"btn waves-effect waves-light btn-info\"  onclick=\"edit(2,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">rapport en traitement</button>" +
                         "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\"  onclick=\"traiter(3,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">clôturer</button>";
                     download_pdf = "";
                     break;
-                case 3:
+                case '3':
                     ref_color = "info";
                     det_color = "color:#385d7a;background-color:#d6eeff"
 
@@ -213,20 +213,20 @@
             if (jsonData[ind].affectation_id == null) {
                 affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">affecter</button>"
             } else {
-                if (jsonData[ind].etat_id != 3) {
+                if (jsonData[ind].etat_id != '3') {
                     affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData[ind].tech_id + " ,'" + jsonData[ind].reclamation_ref + "'," + ind + ")\">changer</a>"
                 } else {
                     affectation = ""
                 }
             }
 
-            if (jsonData[ind].pending_with_pv) {
+            if (jsonData[ind].pending_with_pv == '1') {
                 pending_with_pv = "<h4 id=\"pend_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData[ind].pending_pv_image + "\" target=\"_blank\"> en traitement </a></h4>";
             } else {
                 pending_with_pv = "";
             }
 
-            if (jsonData[ind].closed_with_pv) {
+            if (jsonData[ind].closed_with_pv == '1') {
                 closed_with_pv = "<h4 id=\"clo_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData[ind].closed_pv_image + "\" target=\"_blank\"> clôturé </a></h4>";
             } else {
                 closed_with_pv = "";
@@ -317,20 +317,20 @@
         }).responseText;
         jsonData = JSON.parse(StringData);
 
-        console.log(jsonData)
+        // console.log(jsonData)
         $('#created_by').html("");
         for (let ind = 0; ind < jsonData.length; ind++) {
             var affect = ""
 
             switch (jsonData[ind].nb_affect.length) {
-                case 0:
+                case '0':
                     affect = "0 en cours et 0 en traitement ";
                     break;
-                case 1:
-                    jsonData[ind].nb_affect[0].etat_id == 1 ? affect = jsonData[ind].nb_affect[0].nb + " en cours et 0 en traitement " : affect = " 0  en cours  et " + jsonData[ind].nb_affect[0].nb + "  en traitement"
+                case '1':
+                    jsonData[ind].nb_affect[0].etat_id == '1' ? affect = jsonData[ind].nb_affect[0].nb + " en cours et 0 en traitement " : affect = " 0  en cours  et " + jsonData[ind].nb_affect[0].nb + "  en traitement"
 
                     break;
-                case 2:
+                case '2':
                     affect = jsonData[ind].nb_affect[0].nb + " en cours  et " + jsonData[ind].nb_affect[1].nb + " en traitement"
                     break;
             }
@@ -376,7 +376,7 @@
 
         jsonData = JSON.parse(StringData);
         var role_id = $('#logged_info').attr('value');
-        console.log(jsonData)
+        // console.log(jsonData)
         $('#affectation').modal('hide');
 
         if (jsonData.tech_nom == null) {
@@ -413,12 +413,12 @@
                 acceptation = "";
                 break;
 
-            case 0:
+            case '0':
                 affect = " non "
                 acceptation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-success\"  onclick=\"accepter('" + jsonData.reclamation_ref + "'," + ind + ")\">accepter</button>";
                 break;
 
-            case 1:
+            case '1':
                 affect = " oui "
                 acceptation = "<a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>accepté</a>"
                 break;
@@ -426,10 +426,10 @@
         }
 
         switch (jsonData.etat_id) {
-            case 1:
+            case '1':
                 ref_color = "danger";
                 det_color = "color:#761b18;background-color:#f4b0af"
-                if (jsonData.accepted) {
+                if (jsonData.accepted == '1') {
                     traitement = "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\"  onclick=\"traiter(2,'" + jsonData.reclamation_ref + "'," + ind + ")\">mettre en traitement</button>" +
                         "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\"  onclick=\"traiter(3,'" + jsonData.reclamation_ref + "'," + ind + ")\">clôturer</button>";
 
@@ -439,14 +439,14 @@
                 download_pdf = "";
                 break;
 
-            case 2:
+            case '2':
                 ref_color = "warning";
                 det_color = "color:#857b26;background-color:#fff8b3"
                 traitement = "<button type=\"button\" class=\"btn waves-effect waves-light btn-info\"  onclick=\"edit(2,'" + jsonData.reclamation_ref + "'," + ind + ")\">rapport en traitement</button>" +
                     "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\"  onclick=\"traiter(3,'" + jsonData.reclamation_ref + "'," + ind + ")\">clôturer</button>";
                 download_pdf = "";
                 break;
-            case 3:
+            case '3':
                 ref_color = "info";
                 det_color = "color:#385d7a;background-color:#d6eeff"
                 if (jsonData.pending_at == null) {
@@ -464,18 +464,18 @@
         if (jsonData.affectation_id == null) {
             affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
         } else {
-            if (jsonData.etat_id != 3) {
+            if (jsonData.etat_id != '3') {
                 affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
             } else {
                 affectation = ""
             }
         }
-        if (jsonData.pending_with_pv) {
+        if (jsonData.pending_with_pv == '1') {
             pending_with_pv = "<h4 id=\"pend_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.pending_pv_image + "\" target=\"_blank\"> en traitement</a></h4>";
         } else {
             pending_with_pv = "";
         }
-        if (jsonData.closed_with_pv) {
+        if (jsonData.closed_with_pv == '1') {
             closed_with_pv = "<h4 id=\"clo_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.closed_pv_image + "\" target=\"_blank\"> clôturé</a></h4>";
         } else {
             closed_with_pv = "";
@@ -604,12 +604,12 @@
                 acceptation = "";
                 break;
 
-            case 0:
+            case '0':
                 affect = " non "
                 acceptation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-success\"  onclick=\"accepter('" + jsonData.reclamation_ref + "'," + ind + ")\">accepter</button>";
                 break;
 
-            case 1:
+            case '1':
                 affect = " oui "
                 acceptation = "<a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>accepté</a>"
                 break;
@@ -617,10 +617,10 @@
         }
 
         switch (jsonData.etat_id) {
-            case 1:
+            case '1':
                 ref_color = "danger";
                 det_color = "color:#761b18;background-color:#f4b0af"
-                if (jsonData.accepted) {
+                if (jsonData.accepted == '1') {
                     traitement = "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\"  onclick=\"traiter(2,'" + jsonData.reclamation_ref + "'," + ind + ")\">mettre en traitement</button>" +
                         "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\"  onclick=\"traiter(3,'" + jsonData.reclamation_ref + "'," + ind + ")\">clôturer</button>";
 
@@ -630,14 +630,14 @@
                 download_pdf = "";
                 break;
 
-            case 2:
+            case '2':
                 ref_color = "warning";
                 det_color = "color:#857b26;background-color:#fff8b3"
                 traitement = "<button type=\"button\" class=\"btn waves-effect waves-light btn-info\"  onclick=\"edit(2,'" + jsonData.reclamation_ref + "'," + ind + ")\">rapport en traitement</button>" +
                     "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\"  onclick=\"traiter(3,'" + jsonData.reclamation_ref + "'," + ind + ")\">clôturer</button>";
                 download_pdf = "";
                 break;
-            case 3:
+            case '3':
                 ref_color = "info";
                 det_color = "color:#385d7a;background-color:#d6eeff"
                 if (jsonData.pending_at == null) {
@@ -657,7 +657,7 @@
         if (jsonData.affectation_id == null) {
             affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
         } else {
-            if (jsonData.etat_id != 3) {
+            if (jsonData.etat_id != '3') {
                 affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
             } else {
                 affectation = ""
@@ -665,12 +665,12 @@
         }
 
 
-        if (jsonData.pending_with_pv) {
+        if (jsonData.pending_with_pv == '1') {
             pending_with_pv = "<h4 id=\"pend_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.pending_pv_image + "\" target=\"_blank\"> en traitement</a></h4>";
         } else {
             pending_with_pv = "";
         }
-        if (jsonData.closed_with_pv) {
+        if (jsonData.closed_with_pv == '1') {
             closed_with_pv = "<h4 id=\"clo_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.closed_pv_image + "\" target=\"_blank\"> clôturé</a></h4>";
         } else {
             closed_with_pv = "";
@@ -859,12 +859,12 @@
                     acceptation = "";
                     break;
 
-                case 0:
+                case '0':
                     affect = " non "
                     acceptation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-success\"  onclick=\"accepter('" + jsonData.reclamation_ref + "'," + ind + ")\">accepter</button>";
                     break;
 
-                case 1:
+                case '1':
                     affect = " oui "
                     acceptation = "<a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>accepté</a>"
                     break;
@@ -872,10 +872,10 @@
             }
 
             switch (jsonData.etat_id) {
-                case 1:
+                case '1':
                     ref_color = "danger";
                     det_color = "color:#761b18;background-color:#f4b0af"
-                    if (jsonData.accepted) {
+                    if (jsonData.accepted == '1') {
                         traitement = "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\"  onclick=\"traiter(2,'" + jsonData.reclamation_ref + "'," + ind + ")\">mettre en traitement</button>" +
                             "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\"  onclick=\"traiter(3,'" + jsonData.reclamation_ref + "'," + ind + ")\">clôturer</button>";
 
@@ -885,14 +885,14 @@
                     download_pdf = "";
                     break;
 
-                case 2:
+                case '2':
                     ref_color = "warning";
                     det_color = "color:#857b26;background-color:#fff8b3"
                     traitement = "<button type=\"button\" class=\"btn waves-effect waves-light btn-info\"  onclick=\"edit(2,'" + jsonData.reclamation_ref + "'," + ind + ")\">rapport en traitement</button>" +
                         "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\"  onclick=\"traiter(3,'" + jsonData.reclamation_ref + "'," + ind + ")\">clôturer</button>";
                     download_pdf = "";
                     break;
-                case 3:
+                case '3':
                     ref_color = "info";
                     det_color = "color:#385d7a;background-color:#d6eeff"
                     if (jsonData.pending_at == null) {
@@ -909,20 +909,20 @@
             if (jsonData.affectation_id == null) {
                 affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
             } else {
-                if (jsonData.etat_id != 3) {
+                if (jsonData.etat_id != '3') {
                     affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
                 } else {
                     affectation = ""
                 }
             }
 
-            if (jsonData.pending_with_pv) {
+            if (jsonData.pending_with_pv == '1') {
                 pending_with_pv = "<h4 id=\"pend_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.pending_pv_image + "\" target=\"_blank\"> en traitement </a></h4>";
             } else {
                 pending_with_pv = "";
             }
 
-            if (jsonData.closed_with_pv) {
+            if (jsonData.closed_with_pv == '1') {
                 closed_with_pv = "<h4 id=\"clo_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.closed_pv_image + "\" target=\"_blank\"> clôturé</a></h4>";
             } else {
                 closed_with_pv = "";
@@ -1031,9 +1031,9 @@
 
         jsonData = JSON.parse(StringData);
         var role_id = $('#logged_info').attr('value');
-        console.log(jsonData.id)
+         console.log(jsonData)
 
-        if (jsonData.with_pv) {
+        if (jsonData.with_pv == '1') {
             $('#pv_id').show()
             $('#with_pv').val('true');
 
@@ -1096,7 +1096,7 @@
             jsonData = JSON.parse(StringData);
 
             $('#exampleModal').modal('hide');
-            console.log(jsonData)
+            // console.log(jsonData)
             var tech;
             var affect;
 
@@ -1131,12 +1131,12 @@
                     acceptation = "";
                     break;
 
-                case 0:
+                case '0':
                     affect = " non "
                     acceptation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-success\"  onclick=\"accepter('" + jsonData.reclamation_ref + "'," + ind + ")\">accepter</button>";
                     break;
 
-                case 1:
+                case '1':
                     affect = " oui "
                     acceptation = "<a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\"><span class=\"btn-label\" ><i class=\"fa fa-check\"></i></span>accepté</a>"
                     break;
@@ -1144,10 +1144,10 @@
             }
 
             switch (jsonData.etat_id) {
-                case 1:
+                case '1':
                     ref_color = "danger";
                     det_color = "color:#761b18;background-color:#f4b0af"
-                    if (jsonData.accepted) {
+                    if (jsonData.accepted == '1') {
                         traitement = "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\"  onclick=\"traiter(2,'" + jsonData.reclamation_ref + "'," + ind + ")\">mettre en traitement</button>" +
                             "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\"  onclick=\"traiter(3,'" + jsonData.reclamation_ref + "'," + ind + ")\">clôturer</button>";
 
@@ -1157,14 +1157,14 @@
                     download_pdf = "";
                     break;
 
-                case 2:
+                case '2':
                     ref_color = "warning";
                     det_color = "color:#857b26;background-color:#fff8b3"
                     traitement = "<button type=\"button\" class=\"btn waves-effect waves-light btn-info\"  onclick=\"edit(2,'" + jsonData.reclamation_ref + "'," + ind + ")\">rapport en traitement</button>" +
                         "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\"  onclick=\"traiter(3,'" + jsonData.reclamation_ref + "'," + ind + ")\">clôturer</button>";
                     download_pdf = "";
                     break;
-                case 3:
+                case '3':
                     ref_color = "info";
                     det_color = "color:#385d7a;background-color:#d6eeff"
                     if (jsonData.pending_at == null) {
@@ -1181,20 +1181,20 @@
             if (jsonData.affectation_id == null) {
                 affectation = "<button type=\"button\" class=\"btn waves-effect waves-light btn-inverse\"  onclick=\"affecter(-1 ,'" + jsonData.reclamation_ref + "'," + ind + ")\">affecter</button>"
             } else {
-                if (jsonData.etat_id != 3) {
+                if (jsonData.etat_id != '3') {
                     affectation = " <a class=\"btn btn-secondary \" style=\"color:green\" type=\"button\" onclick=\"affecter(" + jsonData.tech_id + " ,'" + jsonData.reclamation_ref + "'," + ind + ")\">changer</a>"
                 } else {
                     affectation = ""
                 }
             }
 
-            if (jsonData.pending_with_pv) {
+            if (jsonData.pending_with_pv == '1') {
                 pending_with_pv = "<h4 id=\"pend_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.pending_pv_image + "\" target=\"_blank\"> en traitement </a></h4>";
             } else {
                 pending_with_pv = "";
             }
 
-            if (jsonData.closed_with_pv) {
+            if (jsonData.closed_with_pv == '1') {
                 closed_with_pv = "<h4 id=\"clo_pv" + ind + "\" class=\"card-title\"> <strong> lien pv </strong>:<a href=\"{{ asset('storage') }}/" + jsonData.closed_pv_image + "\" target=\"_blank\"> clôturé</a></h4>";
             } else {
                 closed_with_pv = "";
