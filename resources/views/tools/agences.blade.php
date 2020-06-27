@@ -125,7 +125,7 @@
                     <small class="form-control-feedback"> </small>
                 </div>
                 <div class="form-group" id="err-email">
-                    <label for="email" class="control-label"><b>email:</b></label>
+                    <label for="email" class="control-label"><b>Login:</b></label>
                     <input type="text" class="form-control" id="email" name="email">
                     <small class="form-control-feedback"> </small>
                 </div>
@@ -396,7 +396,7 @@
                 "<h2  class=\"card-title text-center\" > informations</h2>" +
                 "<hr>" +
                 "<div class=\"card-body\">" +
-                "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.agences[ind].email + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b> Login : </b><spane id=\"email" + ind + "\">" + (jsonData.agences[ind].email).split('@')[0] + "</spane></h4>" +
                 "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.agences[ind].tel + "</spane></h4>" +
                 "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.villes[ind].id + "\" id=\"ville" + ind + "\">" + jsonData.villes[ind].nom + "</spane></h4>" +
                 "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + ind + "\">" + jsonData.agences[ind].adress + "</spane></h4>" +
@@ -538,7 +538,7 @@
                     "<h2  class=\"card-title text-center\" > informations</h2>" +
                     "<hr>" +
                     "<div class=\"card-body\">" +
-                    "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + jsonData.count + "\">" + jsonData.agence.email + "</spane></h4>" +
+                    "<h4  class=\"card-title\"><b> Login : </b><spane id=\"email" + jsonData.count + "\">" + (jsonData.agence.email).split('@')[0] + "</spane></h4>" +
                     "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + jsonData.count + "\">" + jsonData.agence.tel + "</spane></h4>" +
                     "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.ville.id + "\" id=\"ville" + jsonData.count + "\">" + jsonData.ville.nom + "</spane></h4>" +
                     "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + jsonData.count + "\">" + jsonData.agence.adress + "</spane></h4>" +
@@ -740,7 +740,7 @@
                 "<h2  class=\"card-title text-center\" > informations</h2>" +
                 "<hr>" +
                 "<div class=\"card-body\">" +
-                "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.agences[ind].email + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b> Login : </b><spane id=\"email" + ind + "\">" + (jsonData.agences[ind].email).split('@')[0] + "</spane></h4>" +
                 "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.agences[ind].tel + "</spane></h4>" +
                 "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.villes[ind].id + "\" id=\"ville" + ind + "\">" + jsonData.villes[ind].nom + "</spane></h4>" +
                 "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + ind + "\">" + jsonData.agences[ind].adress + "</spane></h4>" +
@@ -919,7 +919,7 @@
             "<h2  class=\"card-title text-center\" > informations</h2>" +
             "<hr>" +
             "<div class=\"card-body\">" +
-            "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.agence.email + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Login : </b><spane id=\"email" + ind + "\">" + (jsonData.agence.email).split('@')[0] + "</spane></h4>" +
             "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.agence.tel + "</spane></h4>" +
             "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.ville.id + "\" id=\"ville" + ind + "\">" + jsonData.ville.nom + "</spane></h4>" +
             "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + ind + "\">" + jsonData.agence.adress + "</spane></h4>" +
@@ -1093,7 +1093,7 @@
             "<h2  class=\"card-title text-center\" > informations</h2>" +
             "<hr>" +
             "<div class=\"card-body\">" +
-            "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.agence.email + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Login : </b><spane id=\"email" + ind + "\">" + (jsonData.agence.email).split('@')[0] + "</spane></h4>" +
             "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.agence.tel + "</spane></h4>" +
             "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.ville.id + "\" id=\"ville" + ind + "\">" + jsonData.ville.nom + "</spane></h4>" +
             "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + ind + "\">" + jsonData.agence.adress + "</spane></h4>" +
@@ -1290,7 +1290,7 @@
                     "<h2  class=\"card-title text-center\" > informations</h2>" +
                     "<hr>" +
                     "<div class=\"card-body\">" +
-                    "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.agence.email + "</spane></h4>" +
+                    "<h4  class=\"card-title\"><b> Login : </b><spane id=\"email" + ind + "\">" + (jsonData.agence.email).split('@')[0] + "</spane></h4>" +
                     "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.agence.tel + "</spane></h4>" +
                     "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.ville.id + "\" id=\"ville" + ind + "\">" + jsonData.ville.nom + "</spane></h4>" +
                     "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + ind + "\">" + jsonData.agence.adress + "</spane></h4>" +
@@ -1509,7 +1509,7 @@
     //         "<h2  class=\"card-title text-center\" > informations</h2>" +
     //         "<hr>" +
     //         "<div class=\"card-body\">" +
-    //         "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + ind + "\">" + jsonData.agence.email + "</spane></h4>" +
+    //         "<h4  class=\"card-title\"><b> Login : </b><spane id=\"email" + ind + "\">" + jsonData.agence.email + "</spane></h4>" +
     //         "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.agence.tel + "</spane></h4>" +
     //         "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.ville.id + "\" id=\"ville" + ind + "\">" + jsonData.ville.nom + "</spane></h4>" +
     //         "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + ind + "\">" + jsonData.agence.adress + "</spane></h4>" +
@@ -1761,7 +1761,7 @@
                     "<h2  class=\"card-title text-center\" > informations</h2>" +
                     "<hr>" +
                     "<div class=\"card-body\">" +
-                    "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + place + "\">" + jsonData.agence.email + "</spane></h4>" +
+                    "<h4  class=\"card-title\"><b> Login : </b><spane id=\"email" + place + "\">" + (jsonData.agence.email).split('@')[0] + "</spane></h4>" +
                     "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + place + "\">" + jsonData.agence.tel + "</spane></h4>" +
                     "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.ville.id + "\" id=\"ville" + place + "\">" + jsonData.ville.nom + "</spane></h4>" +
                     "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + place + "\">" + jsonData.agence.adress + "</spane></h4>" +
@@ -1968,7 +1968,7 @@
             "<h2  class=\"card-title text-center\" > informations</h2>" +
             "<hr>" +
             "<div class=\"card-body\">" +
-            "<h4  class=\"card-title\"><b> Email : </b><spane id=\"email" + place + "\">" + jsonData.agence.email + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Login : </b><spane id=\"email" + place + "\">" + (jsonData.agence.email).split('@')[0] + "</spane></h4>" +
             "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + place + "\">" + jsonData.agence.tel + "</spane></h4>" +
             "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.ville.id + "\" id=\"ville" + place + "\">" + jsonData.ville.nom + "</spane></h4>" +
             "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + place + "\">" + jsonData.agence.adress + "</spane></h4>" +

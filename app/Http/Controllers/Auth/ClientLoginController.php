@@ -37,9 +37,13 @@ class ClientLoginController extends Controller
     
     public function login(Request $request)
     {
-       
-        $this->validateReqeust($request);
+        if(count(explode('@',$request->email))<2)
+            {
+                $request->email = $request->email.'@gmail.com';
+            }
+//        $this->validateReqeust($request);
 
+           
         
             if(Auth::guard('client')->attempt([ 'email' => $request->email,'password' => $request->password], $request->filled('remember')))
             {   

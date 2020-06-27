@@ -819,7 +819,10 @@ class ClientController extends Controller
             ->first();
 
         $validator;
-
+        if(count(explode('@',$request->email))<2)
+        {
+            $request->email = $request->email.'@gmail.com';
+        }
         if ($request->filled('email') &&  $request->email == $agence->email) {
             $validator = Validator::make($request->all(), [
 
@@ -900,6 +903,10 @@ class ClientController extends Controller
 
     public function store_agence(Request $request, $id_c, $id_d)
     {
+        if(count(explode('@',$request->email))<2)
+        {
+            $request->email = $request->email.'@gmail.com';
+        }
 
         $validator = Validator::make($request->all(), [
 

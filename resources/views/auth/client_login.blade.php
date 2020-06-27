@@ -11,7 +11,7 @@
     <!-- Main wrapper - style you can find in pages.scss -->
     <!-- ============================================================== -->
     <section id="wrapper">
-        <div class="login-register" style="background-image:url({{ asset('images/background/login-register.jpg') }});">        
+        <div class="login-register" style="background-image:url({{ asset('images/background/login-image.jpg') }});">        
             <div class="login-box card">
             <div class="card-body">
             <form class="form-horizontal form-material" id="loginform" method="POST" action="{{ route('client.login') }}">
@@ -22,7 +22,7 @@
                         <div class="col-xs-12">
                             
                            
-                            <input id="email" type="email" placeholder="Email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                            <input id="email" type="text" placeholder="Loging" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
                             @error('email')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
