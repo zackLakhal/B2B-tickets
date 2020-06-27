@@ -223,12 +223,12 @@ class ClientController extends Controller
             );
             $client->photo = $path;
             $client->save();
-            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
 
         } else {
             $client->photo = "clients/placeholder.jpg";
             $client->save();
-            copy('/home/marocnst/public_html/storage/app/public/clients/placeholder.jpg', '/home/marocnst/public_html/public/storage/clients/placeholder.jpg');
+            // copy('/home/marocnst/public_html/storage/app/public/clients/placeholder.jpg', '/home/marocnst/public_html/public/storage/clients/placeholder.jpg');
 
         }
 
@@ -304,12 +304,12 @@ class ClientController extends Controller
             );
             $client->photo = $path;
             $client->save();
-            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
 
         } else {
             $client->photo = "clients/placeholder.jpg";
             $client->save();
-            copy('/home/marocnst/public_html/storage/app/public/clients/placeholder.jpg', '/home/marocnst/public_html/public/storage/clients/placeholder.jpg');
+            // copy('/home/marocnst/public_html/storage/app/public/clients/placeholder.jpg', '/home/marocnst/public_html/public/storage/clients/placeholder.jpg');
 
         }
 

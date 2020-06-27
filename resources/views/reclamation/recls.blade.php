@@ -8,6 +8,7 @@
             <li class="breadcrumb-item text-themecolor"><a href="javascript:void(0)">Home</a></li>
             <li class="breadcrumb-item text-themecolor">Reclamations</li>
             <li class="breadcrumb-item active">Gérer les réclamations</li>
+            
         </ol>
     </div>
     <div class="col-md-7 col-4 align-self-center">
@@ -362,7 +363,7 @@
                 </div>
 
                 <div class="form-group" id="assitance_type">
-                    <label class="control-label">type de d'assisstance</label>
+                    <label class="control-label">type de d'assistance</label>
                     <select class="form-control custom-select selectpicker  has-success" data-live-search="false" name="type" id="type">
                         <option value="à distance" selected>à distance </option>
                         <option value="deplacement">deplacement</option>
@@ -1592,7 +1593,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        // console.log(jsonData.id)
+         console.log(jsonData.id)
         var role_id = $('#logged_info').attr('value');
         if (jsonData.with_pv == '1') {
             $('#pv_id').show()
@@ -1656,7 +1657,7 @@
 
             jsonData = JSON.parse(StringData);
             $('#exampleModal').modal('hide');
-            // console.log(jsonData)
+             console.log(jsonData)
             var tech;
             var affect;
 

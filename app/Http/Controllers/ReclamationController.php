@@ -9,9 +9,11 @@ use App\Reclamation;
 use App\Client;
 use App\Departement;
 use App\Equipement;
+use App\Exports\PvsExport;
 use App\Produit;
 use App\Souscription;
-
+use Maatwebsite\Excel\Facades\Excel;
+use mikehaertl\wkhtmlto\Pdf;
 use App\Nstuser;
 use App\Affectation;
 use App\Clientuser;
@@ -20,13 +22,13 @@ use App\Pending;
 use Illuminate\Support\Facades\DB;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
-
+use Zipper;
 class ReclamationController extends Controller
 {
     public function index()
     {
         $where = null;
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         switch ($auth->role_id) {
             case 3:
@@ -98,11 +100,11 @@ class ReclamationController extends Controller
 
         $clienttemps = null;
         $clientwhere = array();
-        $agencewhere = [['etats.id', '<>', 3]];
-        
-       $user = intval($request->role_id) == 4 || intval($request->role_id) == 5 ? Clientuser::find(intval($request->id)) : Nstuser::find(intval($request->id));
-       // return response()->json($request->all());
 
+
+        $user = intval($request->role_id) == 4 || intval($request->role_id) == 5 ? Clientuser::find(intval($request->id)) : Nstuser::find(intval($request->id));
+        // return response()->json($request->all());
+        $agencewhere = [['etats.id', '<>', intval($request->is_agence)]];
         switch ($user->role_id) {
             case 3:
                 $clientwhere[1] = ['affectations.nstuser_id', '=', $user->id];
@@ -110,10 +112,10 @@ class ReclamationController extends Controller
                 $clienttemps = Client::all();
                 break;
             case 4:
-                $clienttemps = Client::where('id',$user->created_by)->get();
+                $clienttemps = Client::where('id', $user->created_by)->get();
                 break;
             case 5:
-                $clienttemps = Client::where('id',$user->created_by)->get();
+                $clienttemps = Client::where('id', $user->created_by)->get();
                 $clientwhere[1] = ['agences.id', '=', $user->clientable_id];
                 $agencewhere[2] = ['agences.id', '=', $user->clientable_id];
                 break;
@@ -147,7 +149,9 @@ class ReclamationController extends Controller
                     'agence' => $temp,
                     'reclamations' => DB::table('reclamations')
                         ->leftJoin('etats', 'reclamations.etat_id', '=', 'etats.id')
+                        ->leftJoin('anomalies', 'reclamations.anomalie_id', '=', 'anomalies.id')
                         ->leftJoin('souscriptions', 'reclamations.souscription_id', '=', 'souscriptions.id')
+                        ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
                         ->leftJoin('affectations', 'reclamations.id', '=', 'affectations.reclamation_id')
                         ->leftJoin('agences', 'souscriptions.agence_id', '=', 'agences.id')
                         ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
@@ -157,6 +161,8 @@ class ReclamationController extends Controller
                             'reclamations.created_at',
                             'etats.id as etat_id',
                             'etats.value as etat',
+                            'anomalies.value as anomalie',
+                            'produits.nom as prod_nom',
                             'agences.nom as agence_nom',
                             'agences.id as agence_id',
                             'departements.client_id as client_id',
@@ -172,6 +178,8 @@ class ReclamationController extends Controller
 
         return response()->json($clients);
     }
+
+
     public function get_techniciens($us_id)
     {
 
@@ -202,6 +210,8 @@ class ReclamationController extends Controller
         }
         return response()->json($techniciens);
     }
+
+
 
     public function set_techniciens(Request $request)
     {
@@ -361,15 +371,15 @@ class ReclamationController extends Controller
 
         if ($request->with_pv == 'true' && $request->file('pv_image')) {
             $file = $request->file('pv_image');
-            $image = time() . '.' . $file->getClientOriginalExtension();
+            $image = $rec->ref . '.' . $file->getClientOriginalExtension();
             $path = $request->file('pv_image')->storeAs(
                 $folder,
                 $rec->id . "_" . $image
             );
             $rapport->pv = $path;
-            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
 
-            
+
         }
         $rapport->save();
 
@@ -518,13 +528,13 @@ class ReclamationController extends Controller
 
         if ($request->with_pv == 'true' && $request->file('pv_image')) {
             $file = $request->file('pv_image');
-            $image = time() . '.' . $file->getClientOriginalExtension();
+            $image = $rec->ref . '.' . $file->getClientOriginalExtension();
             $path = $request->file('pv_image')->storeAs(
                 $folder,
                 $rec->id . "_" . $image
             );
             $rapport->pv = $path;
-            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
 
         }
         $rapport->save();
@@ -657,7 +667,7 @@ class ReclamationController extends Controller
         // );
 
         // return response()->json($data);
-       // $auth = Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id);
+        // $auth = Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id);
 
 
         $ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip'];
@@ -665,7 +675,7 @@ class ReclamationController extends Controller
 
 
 
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         foreach ($ids as $id) {
             $input_values[$id] = 0;
@@ -1194,5 +1204,39 @@ class ReclamationController extends Controller
             ->havingRaw($havingQuery)->get();
 
         return response()->json($reclamations);
+    }
+
+    public function print()
+    {
+        // ['date' => $date,'iffac' => $iffac,'purcent'=>$purcent,'partner'=>$partner, 'details'=>$details , 'comission_partner'=>$comission_partner, 'prix_total'=>$prix_total, 'comission_demander'=>$comission_demander , 'quantitys'=>$quantitys]
+        // return Excel::download(new PvsExport(), 'pvs.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+        // return (new PvsExport)->download('invoices.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+        // $path = 'http://127.0.0.1:8000/storage/pending_pvs/3_1592164489.jpg';
+        // $type = pathinfo($path, PATHINFO_EXTENSION);
+        // $data = file_get_contents($path);
+        // $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        // $pdf = PDF::loadView('exports.pdf_pv', ['data' => $base64]);
+
+        //  $pdf->save(storage_path().'_pvs.pdf');
+        // return $pdf->download('pvs.pdf');
+
+        // $pdf = new Pdf;
+
+        // $pdf->addPage('<html><h2> Reclamation Ref : ilhbflhkcbdjhbf</h2>
+        // <br><br>
+        // <img src="'.$base64.'" alt="" width="100%" height="100%"></html>');
+
+        // On some systems you may have to set the path to the wkhtmltopdf executable
+        // $pdf->binary = 'C:\...';
+
+        $headers = ["Content-Type"=>"application/zip"];
+        $files = glob(public_path('storage\pending_pvs\*'));
+        //dd($files);
+        Zipper::make('storage\documents\mytest3.zip')->add($files)->close();
+        return response()->download(public_path('storage\documents\mytest3.zip'),'mytest3.zip',$headers);
+
+
+       
+        
     }
 }

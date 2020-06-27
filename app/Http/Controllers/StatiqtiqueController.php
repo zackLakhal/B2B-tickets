@@ -17,6 +17,7 @@ use App\Souscription;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use Zipper;
 
 class StatiqtiqueController extends Controller
 {
@@ -618,5 +619,136 @@ class StatiqtiqueController extends Controller
         //  return response()->json(Excel::download(new StatistiqueExport($data), 'clients_stat.xlsx'));
         Excel::store(new StatistiqueExport($data), 'excel_stats/' . $request->stat_by . 's/' . $request->stat_by . '_' . $auth->id . '_stat.xlsx');
         return response()->json($auth->id);
+    }
+
+    public function print(Request $request)
+    {
+          $where = array();
+        $having = array();
+
+        $auth = null; 
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+
+
+        $request->fv_client == null ?:  array_push($having, "( client_id IN (" . $request->fv_client . ") )");
+        $request->fv_departement == null ?:  array_push($having, "( depart_id IN (" . $request->fv_departement . ") )");
+        $request->fv_agence == null ?:  array_push($having, "( agence_id IN (" . $request->fv_agence . ") )");
+        $request->fv_produit == null ?:  array_push($having, "( prod_id IN (" . $request->fv_produit . ") )");
+        $request->fv_equipement == null ?:  array_push($having, "( equip_id IN (" . $request->fv_equipement . ") )");
+        $request->fv_ref_equip == null ?:  array_push($having, "( equip_ref_id IN (" . $request->fv_ref_equip . ") )");
+
+
+
+
+        $time_mois_from = $request->input('time_mois_from');
+        $time_mois_to = $request->input('time_mois_to');
+
+        $time_year_from = $request->input('time_year_from');
+        $time_year_to = $request->input('time_year_to');
+
+        $time_day_from = $request->input('time_day_from');
+        $time_day_to = $request->input('time_day_to');
+
+        if ($time_year_from != $time_year_to) {
+            array_push($where, " (YEAR( created_at ) BETWEEN '" . $time_year_from . "' AND '" . $time_year_to . "')  ");
+        } else {
+            array_push($where, " (YEAR( created_at ) = '" . $time_year_from . "')  ");
+        }
+        if ($time_mois_from != $time_mois_to) {
+            array_push($where, " (MONTH( created_at ) BETWEEN '" . $time_mois_from . "' AND '" . $time_mois_to . "')  ");
+        } else {
+            array_push($where, " (MONTH( created_at ) = '" . $time_mois_from . "')  ");
+        }
+        if ($time_day_from != $time_day_to) {
+            array_push($where, " (DAY( created_at ) BETWEEN '" . $time_day_from . "' AND '" . $time_day_to . "')  ");
+        } else {
+            array_push($where, " (DAY( created_at ) = '" . $time_day_from . "')  ");
+        }
+
+
+
+        $filtredQuery =   "select reclamation_id from ( select * from views_statistique ";
+
+        $totalQuery = "";
+
+        $WhereQuery = "";
+
+        if (count($where) != 0) {
+            foreach ($where as $filter) {
+                $WhereQuery = $WhereQuery  . $filter . " And ";
+            }
+            $WhereQuery = substr($WhereQuery, 0, -4);
+        }
+
+        $havingQuery = "";
+        $having_string = "";
+
+        $totalQuery = $filtredQuery . " where " . $WhereQuery . " and ";
+
+        if (count($having) == 0) {
+            $totalQuery = substr($totalQuery, 0, -4);
+        } else {
+            $having_string = " having ";
+            foreach ($having as $filter) {
+                $havingQuery = $havingQuery  . $filter . " And ";
+            }
+            $havingQuery = substr($havingQuery, 0, -4);
+        }
+
+        $totalQuery = $totalQuery . " " . $havingQuery;
+
+        $filtredQuery = $filtredQuery . " where " . $WhereQuery . " group by reclamation_id";
+
+    
+
+        $filtredQuery = $filtredQuery .  (count($having) == 0 ? " " : $having_string) . " " . $havingQuery . " order by reclamation_id ) as sub_table" ;
+       $data = DB::select($filtredQuery);
+       $in = "";
+        for ($i = 0; $i < count($data); $i++) {
+            $i == count($data) - 1 ?  $in = $in . " " . $data[$i]->reclamation_id : $in = $in . " " . $data[$i]->reclamation_id . " , ";
+        }
+
+        $affectfilter = array();
+
+        array_push($affectfilter, " affectations.reclamation_id IN ( ".$in." ) ");
+        array_push($affectfilter, " ( closeds.with_pv = '1' OR pendings.with_pv = '1' ) ");
+        
+       
+
+        $WhereQuery = "  ";
+
+        if (count($affectfilter) != 0) {
+            foreach ($affectfilter as $filter) {
+                $WhereQuery = $WhereQuery  . $filter . " And ";
+            }
+            $WhereQuery = substr($WhereQuery, 0, -4);
+        }
+
+
+        $affects =  DB::table('affectations')
+        ->leftJoin('closeds', 'affectations.id', '=', 'closeds.affectation_id')
+        ->leftJoin('pendings', 'affectations.id', '=', 'pendings.affectation_id')
+        ->select('affectations.id as affec_id',
+        'affectations.reclamation_id as reclamation_id',
+        'pendings.with_pv as pend_with_pv',
+        'pendings.pv as pend_pv',
+        'closeds.with_pv as close_with_pv',
+        'closeds.pv as close_pv')
+        ->whereRaw($WhereQuery)->get();
+
+        
+        
+        $zip = Zipper::make('public\storage\documents\\'.$auth->id.'pvs.zip');
+        foreach ($affects as $value) {
+            $value->pend_pv != null ? $zip->add(glob(public_path('storage\\'.explode('/',$value->pend_pv)[0].'\\'.explode('/',$value->pend_pv)[1].'')))  : null;
+            $value->close_pv != null ? $zip->add(glob(public_path('storage\\'.explode('/',$value->close_pv)[0].'\\'.explode('/',$value->close_pv)[1].'')))  : null;
+        }
+      
+      //  $headers = ["Content-Type"=>"application/zip"];
+    
+      $zip->close();
+       return response()->json(['file' => $auth->id.'pvs.zip']);
+      //  return response()->download(public_path('storage\documents\pvs.zip'),'pvs.zip',$headers);
+
     }
 }

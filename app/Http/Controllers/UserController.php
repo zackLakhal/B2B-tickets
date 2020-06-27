@@ -168,12 +168,12 @@ class UserController extends Controller
                 );
                 $user->photo = $path;
                 $user->save();
-                copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+                // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
 
             } else {
                 $user->photo = "avatars/placeholder.jpg";
                 $user->save();
-                copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
+                // copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
 
             }
 
@@ -250,12 +250,12 @@ class UserController extends Controller
             );
             $user->photo = $path;
             $user->save();
-            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
 
         } else {
             $user->photo = "avatars/placeholder.jpg";
             $user->save();
-            copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
+            // copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
 
         }
 
@@ -477,12 +477,12 @@ class UserController extends Controller
                 );
                 $user->photo = $path;
                 $user->save();
-                copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+                // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
 
             } else {
                 $user->photo = "avatars/placeholder.jpg";
                 $user->save();
-                copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
+                // copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
 
             }
             $done = true;
@@ -558,12 +558,12 @@ class UserController extends Controller
             );
             $user->photo = $path;
             $user->save();
-            copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
+            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
 
         } else {
             $user->photo = "avatars/placeholder.jpg";
             $user->save();
-            copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
+            // copy('/home/marocnst/public_html/storage/app/public/avatars/placeholder.jpg', '/home/marocnst/public_html/public/storage/avatars/placeholder.jpg');
 
         }
 

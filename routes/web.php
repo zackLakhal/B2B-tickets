@@ -18,6 +18,7 @@ Route::get('/', function () {
     Artisan::call('config:cache');
     return view('old_nst.index');
 });
+
 Route::get('/about', function () {
     return view('old_nst.about');
 });
@@ -38,6 +39,7 @@ Route::get('/services', function () {
 Route::prefix('/statistiques')->group(function () {
     Route::get('/index', 'StatiqtiqueController@index');
     Route::get('/export_stat', 'StatiqtiqueController@export_stat');
+    Route::get('/print_pv', 'StatiqtiqueController@print');
     Route::post('/filter_index', 'StatiqtiqueController@filter_index');
     Route::get('/fill_list', 'StatiqtiqueController@fill_list');
     Route::post('/filter_data', 'StatiqtiqueController@filter_data');
@@ -47,7 +49,18 @@ Route::prefix('/statistiques')->group(function () {
 });
 
 Route::get('/dashboard', function () {
+    $auth = null; 
+    //Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+
     return view('statistique.dashboard');
+})->middleware('auth:nst,client');
+
+
+Route::get('/dashboard_agence', function () {
+    $auth = null; 
+    //Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+
+    return view('statistique.dashboard_agence');
 })->middleware('auth:nst,client');
 
 Route::get('/dashboard/reclamations/detail/{type}/{value}', function ($type, $value) {
@@ -134,6 +147,7 @@ Route::prefix('/reclamation')->group(function () {
     Route::prefix('/anomalie')->group(function () {
 
         Route::get('/index', 'AnomalieController@index');
+        Route::get('/active_index', 'AnomalieController@non_deleted');
         Route::post('/{edit}/{id}', 'AnomalieController@edit');
         Route::post('/create', 'AnomalieController@store');
         Route::get('/', function () {
@@ -155,6 +169,7 @@ Route::prefix('/reclamation')->group(function () {
         Route::post('/edit_raport', 'ReclamationController@edit_raport');
         Route::get('/{edit}/{id}', 'ReclamationController@edit');
         Route::get('/create', 'ReclamationController@store');
+        // Route::get('/print', 'ReclamationController@print');
         Route::get('/', function () {
             return view('reclamation.recls');
         })->middleware('auth:nst,client');

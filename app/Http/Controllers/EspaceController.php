@@ -60,6 +60,7 @@ class EspaceController extends Controller
     }
     public function detail_agence($id)
     {
+       
         $agence = Agence::find($id);
         $departement = $agence->departement;
         $client = $departement->client;
@@ -83,7 +84,6 @@ class EspaceController extends Controller
 
         $objet =  [
             'agence' => $agence,
-            //'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville,
             'departement' => $departement,
@@ -121,7 +121,7 @@ class EspaceController extends Controller
                     ['views_detail_souscription.prod_id',   $request->id_p],
                     ['views_detail_souscription.equip_id',   $request->id_e],
                     ['views_detail_souscription.ref', '<>',  NULL]
-                ])->groupBy('views_detail_souscription.equip_id', 'views_detail_souscription.ref', 'views_detail_souscription.ref_id')
+                ])->groupBy('views_detail_souscription.equip_id', 'views_detail_souscription.ref', 'views_detail_souscription.ref_id','reclamations.etat_id')
                 ->get(),
             'anomalies' => Anomalie::all(),
             'equipement' => Equipement::find($request->id_e)

@@ -238,7 +238,7 @@
                     <div class="form-group" >
                         <span style="float:left; margin-bottom: 22px;"><button id="export_client" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
                         <span style="float:right;">
-                            <a id="client_link" class="btn btn-secondary"  href=""><span class="btn-label" id="client_is_prep" ><i class="fa fa-check"></i></span>fichier excel</a>
+                            <button id="client_link" class="btn btn-danger" onclick="print(this)">telecharger les PV</buttonutton>
                         </span>
                     </div>
 
@@ -314,7 +314,7 @@
                     <div class="form-group" >
                         <span style="float:left; margin-bottom: 22px;"><button id="export_departement" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
                         <span style="float:right;">
-                            <a id="departement_link" class="btn btn-secondary" href=""><span class="btn-label"  ><i class="fa fa-check"></i></span>fichier excel</a>
+                            <buttpn id="departement_link" class="btn btn-danger" onclick="print(this)">telecharger les PV</button>
                         </span>
                     </div>
                     <tbody id="body_departement">
@@ -390,7 +390,7 @@
                     <div class="form-group" >
                         <span style="float:left; margin-bottom: 22px;"><button id="export_agence" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
                         <span style="float:right;">
-                            <a id="agence_link" class="btn btn-secondary" href=""><span class="btn-label"  ><i class="fa fa-check"></i></span>fichier excel</a>
+                            <button id="agence_link" class="btn btn-danger" onclick="print(this)">telecharger les PV</button>
                         </span>
                     </div>
                     <tbody id="body_agence">
@@ -495,7 +495,7 @@
                     <div class="form-group" >
                         <span style="float:left; margin-bottom: 22px;"><button id="export_produit" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
                         <span style="float:right;">
-                            <a id="produit_link" class="btn btn-secondary" href=""><span class="btn-label"  ><i class="fa fa-check"></i></span>fichier excel</a>
+                            <button id="produit_link" class="btn btn-danger" onclick="print(this)">telecharger les PV</button>
                         </span>
                     </div>
                     <tbody id="body_produit">
@@ -599,7 +599,7 @@
                     <div class="form-group" >
                         <span style="float:left; margin-bottom: 22px;"><button id="export_equipement" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
                         <span style="float:right;">
-                            <a id="equipement_link" class="btn btn-secondary" href=""><span class="btn-label"  ><i class="fa fa-check"></i></span>fichier excel</a>
+                            <button id="equipement_link" class="btn btn-danger" onclick="print(this)">telecharger les PV</button>
                         </span>
                     </div>
                     <tbody id="body_equipement">
@@ -677,7 +677,7 @@
                     <div class="form-group" >
                         <span style="float:left; margin-bottom: 22px;"><button id="export_reference" class="btn btn-primary" style="font-size : 18px" onclick="exporter(this)">generer les statistiques EXCEL</button></span>
                         <span style="float:right;">
-                            <a id="reference_link" class="btn btn-secondary" href=""><span class="btn-label"  ><i class="fa fa-check"></i></span>fichier excel</a>
+                            <button id="reference_link" class="btn btn-danger" onclick="print(this)">telecharger les PV</button>
                         </span>
                     </div>
                     <tbody id="body_reference">
@@ -798,7 +798,7 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        // console.log(jsonData)
+         console.log(jsonData)
         $('#body_' + jsonData.stat_by).html("");
         $('#bodytab_' + jsonData.stat_by).html("");
         $('#bodytab_' + jsonData.stat_by + '_semi').html("");
@@ -995,7 +995,7 @@
     }
 
     function exporter(input) {
-        console.log("here")
+      //  console.log("here")
         form_data = {};
 
 
@@ -1037,9 +1037,61 @@
         }).responseText;
          jsonData = JSON.parse(StringData);
          //console.log(jsonData)
+         var url = "{{ asset('storage')}}/excel_stats/"+form_data['stat_by']+"s/"+form_data['stat_by']+"_"+jsonData+"_stat.xlsx";
+         window.open(url);
+     //   $('#'+form_data['stat_by']+'_link').attr('href', "{{ asset('storage')}}/excel_stats/"+form_data['stat_by']+"s/"+form_data['stat_by']+"_"+jsonData+"_stat.xlsx")
+     //   $('#'+form_data['stat_by']+'_link').css('color','green');
 
-        $('#'+form_data['stat_by']+'_link').attr('href', "{{ asset('storage')}}/excel_stats/"+form_data['stat_by']+"s/"+form_data['stat_by']+"_"+jsonData+"_stat.xlsx")
-        $('#'+form_data['stat_by']+'_link').css('color','green');
+    }
+
+    function print(input) {
+     
+        form_data = {};
+
+
+        var ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip']
+        var date_types = ['time_year', 'time_mois', 'time_day']
+
+        var stat_ids = ['client', 'departement', 'agence', 'produit', 'equipement', 'reference']
+        for (var val in stat_ids) {
+
+            if (input.id == 'export_' + stat_ids[val]) {
+                    
+                form_data['stat_by'] = stat_ids[val];
+                break;
+            }
+        }
+
+        for (var val in ids) {
+            var string = ""
+            if($('#' + ids[val]).val() != null){
+                for(var temp in $('#' + ids[val]).val()){
+                    string = string + ($('#' + ids[val]).val())[temp]+","
+                }
+                string=  string.slice(0,string.length - 1)
+            }
+            form_data[ids[val]] = string;
+        }
+
+        for (var j in date_types) {
+            form_data[date_types[j] + "_from"] = $('#' + date_types[j]).data().from;
+            form_data[date_types[j] + "_to"] = $('#' + date_types[j]).data().to;
+        }
+
+        var StringData = $.ajax({
+            url: 'http://127.0.0.1:8000/statistiques/print_pv',
+            dataType: "json",
+            type: "GET",
+            async: false,
+            data: form_data
+        }).responseText;
+         jsonData = JSON.parse(StringData);
+        
+         var url = "{{ asset('storage/documents')}}/"+jsonData.file;
+         console.log(url)
+         window.open(url);
+     //   $('#'+form_data['stat_by']+'_link').attr('href', "{{ asset('storage')}}/excel_stats/"+form_data['stat_by']+"s/"+form_data['stat_by']+"_"+jsonData+"_stat.xlsx")
+     //   $('#'+form_data['stat_by']+'_link').css('color','green');
 
     }
 
@@ -1052,6 +1104,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
+        //console.log(jsonData)
         for (var data in jsonData.client) {
             $('#body_client').append("<tr>" +
                 "<td>" + jsonData.client[data].client_nom + "</td>" +
