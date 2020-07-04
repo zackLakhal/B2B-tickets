@@ -36,7 +36,7 @@
         </div>
     </div>
 </div>
-@if(auth::user()->role_id != 5 && auth::user()->role_id != 4  && auth::user()->role_id != 6 )
+@if(auth::user()->role_id != 5 && auth::user()->role_id != 4 && auth::user()->role_id != 6 )
 <div class="">
     <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
 </div>
@@ -73,7 +73,7 @@
 </div>
 @endif
 
-@if(auth::user()->role_id == 5 || auth::user()->role_id == 4 || auth::user()->role_id == 6 )
+@if( auth::user()->role_id == 4 )
 <div class="">
     <button class="right-side-toggle waves-effect waves-light btn-success btn btn-circle btn-sm pull-right m-l-10"><i class="ti-filter  text-white"></i></button>
 </div>
@@ -88,7 +88,7 @@
                 </select>
             </div>
             <div class="button-group text-center">
-                <button class="btn waves-effect waves-light btn-inverse"  onclick="filter2()"> changer </button>
+                <button class="btn waves-effect waves-light btn-inverse" onclick="filter2()"> changer </button>
             </div>
         </div>
     </div>
@@ -181,7 +181,7 @@
 <script>
     $(document).ready(function() {
 
-        '{{ auth::user()->role_id }}' == '3' || '{{ auth::user()->role_id }}' == '5' ? init2() : init();
+        '{{ auth::user()->role_id }}' == '4' || '{{ auth::user()->role_id }}' == '5' ? init2(): init();
 
     });
 
@@ -316,9 +316,6 @@
 
         // console.log(jsonData)
 
-
-
-
         form_data = new FormData();
         var id;
 
@@ -326,6 +323,9 @@
 
 
         form_data.append("id", id);
+        form_data.append("role_id",  $('#logged_info').attr('value'));
+        form_data.append("is_agence",  3);
+
 
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/dashboard/filter_agence_dash",

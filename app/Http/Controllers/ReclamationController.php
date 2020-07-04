@@ -593,37 +593,61 @@ class ReclamationController extends Controller
 
     public function filter_agence_dash(Request $request)
     {
-        // return response()->json($request->all());
+
+        $clienttemps = null;
+        $clientwhere = array();
+
+        $user = Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+      
+        $agencewhere = [['etats.id', '<>', intval($request->is_agence)]];
+        switch ($user->role_id) {
+            case 3:
+                $clientwhere[1] = ['affectations.nstuser_id', '=', $user->id];
+                $agencewhere[2] = ['affectations.nstuser_id', '=', $user->id];
+                $request->id == "0" ? $clienttemps =  Client::all() : $clienttemps =  Client::where('id', $request->id)->get();
+                break;
+            case 4:
+                $clienttemps = Client::where('id', $user->created_by)->get();
+                break;
+            case 5:
+                $clienttemps = Client::where('id', $user->created_by)->get();
+                $clientwhere[1] = ['agences.id', '=', $user->clientable_id];
+                $agencewhere[2] = ['agences.id', '=', $user->clientable_id];
+                break;
+            default:
+                $request->id == "0" ? $clienttemps =  Client::all() : $clienttemps =  Client::where('id', $request->id)->get();
+                break;
+        }
 
         $clients = array();
-        $clienttemps = null;
-        $request->id == "0" ? $clienttemps =  Client::all() : $clienttemps =  Client::where('id', $request->id)->get();
-
-
-
 
         foreach ($clienttemps as $key => $clienttemp) {
             $agences = array();
-
+            $clientwhere[0] = ['departements.client_id', '=', $clienttemp->id];
             $temps = DB::table('agences')
                 ->leftJoin('souscriptions', 'agences.id', '=', 'souscriptions.agence_id')
                 ->leftJoin('reclamations', 'souscriptions.id', '=', 'reclamations.souscription_id')
+                ->leftJoin('affectations', 'reclamations.id', '=', 'affectations.reclamation_id')
                 ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
                 ->select(
                     'reclamations.ref as reclamation_ref',
                     'agences.nom as agence_nom',
                     'agences.id as agence_id',
                     'departements.client_id as client_id',
-                )->where('departements.client_id', '=', $clienttemp->id)
+                )->where($clientwhere)
                 ->groupBy('agences.id')
                 ->orderBy('reclamation_ref', 'desc')->get();
 
             foreach ($temps as $key => $temp) {
+                $agencewhere[1] = ['agences.id', '=', $temp->agence_id];
                 $agences[] = [
                     'agence' => $temp,
                     'reclamations' => DB::table('reclamations')
                         ->leftJoin('etats', 'reclamations.etat_id', '=', 'etats.id')
+                        ->leftJoin('anomalies', 'reclamations.anomalie_id', '=', 'anomalies.id')
                         ->leftJoin('souscriptions', 'reclamations.souscription_id', '=', 'souscriptions.id')
+                        ->leftJoin('produits', 'souscriptions.produit_id', '=', 'produits.id')
+                        ->leftJoin('affectations', 'reclamations.id', '=', 'affectations.reclamation_id')
                         ->leftJoin('agences', 'souscriptions.agence_id', '=', 'agences.id')
                         ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
                         ->select(
@@ -632,22 +656,77 @@ class ReclamationController extends Controller
                             'reclamations.created_at',
                             'etats.id as etat_id',
                             'etats.value as etat',
+                            'anomalies.value as anomalie',
+                            'produits.nom as prod_nom',
                             'agences.nom as agence_nom',
                             'agences.id as agence_id',
                             'departements.client_id as client_id',
-                        )->where([
-                            ['agences.id', '=', $temp->agence_id],
-                            ['etats.id', '<>', 3],
-                        ])->groupBy('reclamations.id')
+                        )->where($agencewhere)->groupBy('reclamations.id')
                         ->orderBy('reclamation_ref', 'desc')->get()
                 ];
             }
-
             $clients[] = [
                 'client' => $clienttemp,
                 'agences' => $agences
             ];
         }
+
+        //////////////////
+
+        // $clients = array();
+
+        // $clienttemps = null;
+        // $request->id == "0" ? $clienttemps =  Client::all() : $clienttemps =  Client::where('id', $request->id)->get();
+
+
+
+
+        // foreach ($clienttemps as $key => $clienttemp) {
+        //     $agences = array();
+
+        //     $temps = DB::table('agences')
+        //         ->leftJoin('souscriptions', 'agences.id', '=', 'souscriptions.agence_id')
+        //         ->leftJoin('reclamations', 'souscriptions.id', '=', 'reclamations.souscription_id')
+        //         ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
+        //         ->select(
+        //             'reclamations.ref as reclamation_ref',
+        //             'agences.nom as agence_nom',
+        //             'agences.id as agence_id',
+        //             'departements.client_id as client_id',
+        //         )->where('departements.client_id', '=', $clienttemp->id)
+        //         ->groupBy('agences.id')
+        //         ->orderBy('reclamation_ref', 'desc')->get();
+
+        //     foreach ($temps as $key => $temp) {
+        //         $agences[] = [
+        //             'agence' => $temp,
+        //             'reclamations' => DB::table('reclamations')
+        //                 ->leftJoin('etats', 'reclamations.etat_id', '=', 'etats.id')
+        //                 ->leftJoin('souscriptions', 'reclamations.souscription_id', '=', 'souscriptions.id')
+        //                 ->leftJoin('agences', 'souscriptions.agence_id', '=', 'agences.id')
+        //                 ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
+        //                 ->select(
+
+        //                     'reclamations.ref as reclamation_ref',
+        //                     'reclamations.created_at',
+        //                     'etats.id as etat_id',
+        //                     'etats.value as etat',
+        //                     'agences.nom as agence_nom',
+        //                     'agences.id as agence_id',
+        //                     'departements.client_id as client_id',
+        //                 )->where([
+        //                     ['agences.id', '=', $temp->agence_id],
+        //                     ['etats.id', '<>', 3],
+        //                 ])->groupBy('reclamations.id')
+        //                 ->orderBy('reclamation_ref', 'desc')->get()
+        //         ];
+        //     }
+
+        //     $clients[] = [
+        //         'client' => $clienttemp,
+        //         'agences' => $agences
+        //     ];
+        // }
 
         return response()->json($clients);
     }

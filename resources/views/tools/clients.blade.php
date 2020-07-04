@@ -204,36 +204,36 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        // console.log(jsonData)
+         console.log(jsonData)
         $('#bodytab').html("");
 
         $('#fv_nom').html(" <option  value=\"0\"selected  >tout les clients </option>")
         $('#fv_email').html(" <option  value=\"0\"selected  >tout les clients </option>")
         var role_id = $('#logged_info').attr('value');
-        for (let ind = 0; ind < jsonData.length; ind++) {
+        for (let ind = 0; ind < jsonData.clients.length; ind++) {
 
-            $('#fv_nom').append("<option value=\"" + jsonData[ind].id + "\">" + jsonData[ind].nom + "</option>");
-            $('#fv_email').append("<option value=\"" + jsonData[ind].id + "\">" + jsonData[ind].email + "</option>");
+            $('#fv_nom').append("<option value=\"" + jsonData.clients[ind].id + "\">" + jsonData.clients[ind].nom + "</option>");
+            $('#fv_email').append("<option value=\"" + jsonData.clients[ind].id + "\">" + jsonData.clients[ind].email + "</option>");
 
 
-            if (jsonData[ind].deleted_at == null) {
-                butttondetail = "<a href=\"/outils/clients/" + jsonData[ind].id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
-                buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData[ind].id + "," + ind + ")\">supprimer</button>"
+            if (jsonData.clients[ind].deleted_at == null) {
+                butttondetail = "<a href=\"/outils/clients/" + jsonData.clients[ind].id + "/departements/"+jsonData.departements[ind].id+"/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+                buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.clients[ind].id + "," + ind + ")\">supprimer</button>"
             } else {
-                buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData[ind].id + "," + ind + ")\">restorer</button>"
+                buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.clients[ind].id + "," + ind + ")\">restorer</button>"
                 butttondetail = ""
             }
             $('#bodytab').append("<div class=\"col-md-4 m-t-30\" id=\"card" + ind + "\">" +
                 "<div class=\"card \">" +
-                "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData[ind].photo + "\" alt=\"Card image cap\">" +
+                "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.clients[ind].photo + "\" alt=\"Card image cap\">" +
                 "<div class=\"card-body\">" +
-                "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData[ind].nom + "</h2>" +
-                "<h4  class=\"card-title\"><b>Email :</b><spane id=\"email" + ind + "\">" + jsonData[ind].email + "</spane></h4>" +
-                "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData[ind].tel + "</spane></h4>" +
-                "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData[ind].adress + "</spane></p>" +
+                "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData.clients[ind].nom + "</h2>" +
+                "<h4  class=\"card-title\"><b>Email :</b><spane id=\"email" + ind + "\">" + jsonData.clients[ind].email + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.clients[ind].tel + "</spane></h4>" +
+                "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData.clients[ind].adress + "</spane></p>" +
                 "<div class=\"button-group text-center\">" +
                 butttondetail +
-                (role_id != '2' && role_id != '3' && role_id != '5' ? "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData[ind].id + "," + ind + ")\">modifier</button>" : "") +
+                (role_id != '2' && role_id != '3' && role_id != '5' ? "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.clients[ind].id + "," + ind + ")\">modifier</button>" : "") +
                 (role_id == '6' || role_id == '1' ? buttonacive : "") +
                 "</div>" +
                 "</div>" +
@@ -304,7 +304,7 @@
                 message("client", "ajouté", jsonData.check);
 
                 if (jsonData.client.deleted_at == null) {
-                    butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+                    butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements/"+jsonData.departement.id+"/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
                     buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + jsonData.count + ")\">supprimer</button>"
 
                 } else {
@@ -364,34 +364,34 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        // console.log(jsonData)
+         console.log(jsonData)
 
         $('#bodytab').html("");
 
-        for (let ind = 0; ind < jsonData.length; ind++) {
+        for (let ind = 0; ind < jsonData.clients.length; ind++) {
 
-            $('#fv_nom').append("<option value=\"" + jsonData[ind].id + "\">" + jsonData[ind].nom + "</option>");
-            $('#fv_email').append("<option value=\"" + jsonData[ind].id + "\">" + jsonData[ind].email + "</option>");
+            $('#fv_nom').append("<option value=\"" + jsonData.clients[ind].id + "\">" + jsonData.clients[ind].nom + "</option>");
+            $('#fv_email').append("<option value=\"" + jsonData.clients[ind].id + "\">" + jsonData.clients[ind].email + "</option>");
 
 
-            if (jsonData[ind].deleted_at == null) {
-                butttondetail = "<a href=\"/outils/clients/" + jsonData[ind].id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
-                buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData[ind].id + "," + ind + ")\">supprimer</button>"
+            if (jsonData.clients[ind].deleted_at == null) {
+                butttondetail = "<a href=\"/outils/clients/" + jsonData.clients[ind].id + "/departements/"+jsonData.departements[ind].id+"/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+                buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.clients[ind].id + "," + ind + ")\">supprimer</button>"
             } else {
-                buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData[ind].id + "," + ind + ")\">restorer</button>"
+                buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.clients[ind].id + "," + ind + ")\">restorer</button>"
                 butttondetail = ""
             }
             $('#bodytab').append("<div class=\"col-md-4 m-t-30\" id=\"card" + ind + "\">" +
                 "<div class=\"card \">" +
-                "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData[ind].photo + "\" alt=\"Card image cap\">" +
+                "<img class=\"card-img-top img-responsive\" id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.clients[ind].photo + "\" alt=\"Card image cap\">" +
                 "<div class=\"card-body\">" +
-                "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData[ind].nom + "</h2>" +
-                "<h4  class=\"card-title\"><b>Email :</b><spane id=\"email" + ind + "\">" + jsonData[ind].email + "</spane></h4>" +
-                "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData[ind].tel + "</spane></h4>" +
-                "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData[ind].adress + "</spane></p>" +
+                "<h2 id=\"nom" + ind + "\" class=\"card-title text-center\">" + jsonData.clients[ind].nom + "</h2>" +
+                "<h4  class=\"card-title\"><b>Email :</b><spane id=\"email" + ind + "\">" + jsonData.clients[ind].email + "</spane></h4>" +
+                "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + ind + "\">" + jsonData.clients[ind].tel + "</spane></h4>" +
+                "<p  class=\"card-text\"><spane style=\"font-weight: bold; color : #455a64;\"> Adresse :</spane> <br><spane id=\"adress" + ind + "\">" + jsonData.clients[ind].adress + "</spane></p>" +
                 "<div class=\"button-group text-center\">" +
                 butttondetail +
-                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData[ind].id + "," + ind + ")\">modifier</button>" +
+                "<button  class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.clients[ind].id + "," + ind + ")\">modifier</button>" +
                 buttonacive +
                 "</div>" +
                 "</div>" +
@@ -415,10 +415,10 @@
 
         jsonData = JSON.parse(StringData);
         message("client", "supprimé", jsonData.check);
-
+        console.log(jsonData)
         if (jsonData.client.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
-            butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+            butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements/"+jsonData.departement.id+"/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
 
         } else {
             buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.client.id + "," + ind + ")\">restorer</button>"
@@ -458,7 +458,7 @@
 
         if (jsonData.client.deleted_at == null) {
             buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
-            butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+            butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements/"+jsonData.departement.id+"/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
 
         } else {
             buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.client.id + "," + ind + ")\">restorer</button>"
@@ -533,7 +533,7 @@
 
                 if (jsonData.client.deleted_at == null) {
                     buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.client.id + "," + ind + ")\">supprimer</button>"
-                    butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
+                    butttondetail = "<a href=\"/outils/clients/" + jsonData.client.id + "/departements/"+jsonData.departement.id+"/agences\" class=\"btn waves-effect waves-light btn-success \" color: white; style=\"margin-right: 10px\" >détails</a>";
 
                 } else {
                     buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.client.id + "," + ind + ")\">restorer</button>"

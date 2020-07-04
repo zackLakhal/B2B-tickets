@@ -21,7 +21,7 @@ class ClientController extends Controller
     public function all_clients()
     {
         $clients = null;
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         switch ($auth->role_id) {
             case 4:
@@ -34,9 +34,18 @@ class ClientController extends Controller
                 $clients = Client::withTrashed()->get();
                 break;
         }
+        $departements = array();
+        foreach ($clients as  $client) {
+            $departements[] = Departement::where('client_id', $client->id)->first();
+        }
+
+        $obj = [
+            'clients' => $clients,
+            'departements' => $departements
+        ];
 
 
-        return response()->json($clients);
+        return response()->json($obj);
     }
 
     public function filter_all_clients(Request $request)
@@ -54,13 +63,24 @@ class ClientController extends Controller
         }
         //return response()->json($request->all());
         //return response()->json($filters);
-        return response()->json($clients);
+        $departements = array();
+        foreach ($clients as  $client) {
+            $departements[] = Departement::where('client_id', $client->id)->first();
+        }
+
+        $obj = [
+            'clients' => $clients,
+            'departements' => $departements
+        ];
+
+
+        return response()->json($obj);
     }
 
     public function active_clients()
     {
         $clients = null;
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         switch ($auth->role_id) {
             case 4:
@@ -85,7 +105,9 @@ class ClientController extends Controller
 
         $temp = Client::find($id);
         $userclient = Clientuser::where('email', '=', $temp->email)->first();
+        $departement = Departement::where('client_id', $id)->first();
         $temp->delete();
+        $departement->delete();
         $userclient->delete();
         $done = true;
 
@@ -107,7 +129,8 @@ class ClientController extends Controller
 
         $objet =  [
             'check' => $check,
-            'client' => $client
+            'client' => $client,
+            'departement' => $departement
         ];
         return response()->json($objet);
     }
@@ -119,10 +142,14 @@ class ClientController extends Controller
         $temp = Client::withTrashed()
             ->where('id', $id)
             ->first();
+        $departement = Departement::withTrashed()
+            ->where('client_id', $id)
+            ->first();
 
         $userclient = Clientuser::withTrashed()
             ->where('email', '=', $temp->email)->first();
         $temp->restore();
+        $departement->restore();
         $userclient->restore();
         $done = true;
 
@@ -140,7 +167,8 @@ class ClientController extends Controller
 
         $objet =  [
             'check' => $check,
-            'client' => $client
+            'client' => $client,
+            'departement' => $departement
         ];
         return response()->json($objet);
     }
@@ -201,8 +229,7 @@ class ClientController extends Controller
             return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
-        $client->nom = $request->nom;
-        $client->email = $request->email;
+
 
         $userclient = Clientuser::withTrashed()
             ->where('email', '=', $request->email)->first();
@@ -211,8 +238,16 @@ class ClientController extends Controller
         $userclient->email = $request->email;
         $userclient->save();
 
+        $client->nom = $request->nom;
+        $client->email = $request->email;
         $client->tel = $request->tel;
         $client->adress = $request->adress;
+
+        $departement = Client::withTrashed()
+            ->where('client_id', '=', $client->id)->first();
+        $departement->email = "dep_" . $request->email;
+        $departement->tel = $request->tel;
+        $departement->save();
 
         if ($request->file('avatar')) {
             $file = $request->file('avatar');
@@ -232,7 +267,7 @@ class ClientController extends Controller
 
         }
 
-        
+
 
         $done = true;
 
@@ -293,6 +328,13 @@ class ClientController extends Controller
         $user->clientable_type = "client";
         $user->save();
 
+        $departement = new Departement();
+        $departement->nom = "Departement global";
+        $departement->email = "dep_" . $request->email;
+        $departement->tel = $request->tel;
+        $departement->client_id = $client->id;
+        $departement->save();
+
 
 
         if ($request->file('avatar')) {
@@ -325,7 +367,8 @@ class ClientController extends Controller
             'check' => $check,
             'count' => $count - 1,
             'client' => $client,
-            'inputs' => $request->all()
+            'inputs' => $request->all(),
+            'departement' => $departement
         ];
         return response()->json($objet);
     }
@@ -335,7 +378,7 @@ class ClientController extends Controller
     public function all_departements($id_c)
     {
         $departements = null;
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         switch ($auth->role_id) {
             case 5:
@@ -605,7 +648,7 @@ class ClientController extends Controller
 
     public function all_agences($id_c, $id_d)
     {
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         $agences = null;
         switch ($auth->role_id) {
@@ -623,15 +666,14 @@ class ClientController extends Controller
 
 
 
-        //   $chefs = array();
+           $chefs = array();
         $villes = array();
         $souscriptions = array();
         foreach ($agences as $agence) {
-            // $chefs[] = Clientuser::where([
-            //     ['clientable_id', '=', $agence->id],
-            //     ['clientable_type', "=", "agence"],
-            // ])
-            //     ->first();
+            $chefs[] = Clientuser::where([
+                ['clientable_id', '=', $agence->id],
+                ['clientable_type', "=", "agence"],
+            ])->first();
             $villes[] = $agence->ville;
 
             $souscriptions[] = [
@@ -648,7 +690,7 @@ class ClientController extends Controller
 
         $objet =  [
             'agences' => $agences,
-            //'chefs' => $chefs,
+            'chefs' => $chefs,
             'villes' => $villes,
             'souscriptions' => $souscriptions
 
@@ -675,15 +717,15 @@ class ClientController extends Controller
             $request->is_deleted == 'true' ?  $agences = Agence::onlyTrashed()->where($filters)->get() : $agences = Agence::where($filters)->get();
         }
 
-        //   $chefs = array();
+          $chefs = array();
         $villes = array();
         $souscriptions = array();
         foreach ($agences as $agence) {
-            // $chefs[] = Clientuser::where([
-            //     ['clientable_id', '=', $agence->id],
-            //     ['clientable_type', "=", "agence"],
-            // ])
-            //     ->first();
+            $chefs[] = Clientuser::where([
+                ['clientable_id', '=', $agence->id],
+                ['clientable_type', "=", "agence"],
+            ])
+                ->first();
             $villes[] = $agence->ville;
 
             $souscriptions[] = [
@@ -700,7 +742,7 @@ class ClientController extends Controller
 
         $objet =  [
             'agences' => $agences,
-            //'chefs' => $chefs,
+            'chefs' => $chefs,
             'villes' => $villes,
             'souscriptions' => $souscriptions
 
@@ -718,9 +760,9 @@ class ClientController extends Controller
 
         $temp = Agence::find($id);
         $userclient = Clientuser::where('email', '=', $temp->email)->first();
+        // return response()->json($userclient);
         $temp->delete();
         $userclient->delete();
-        $temp->delete();
         $done = true;
 
 
@@ -728,10 +770,10 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        // $chef = Clientuser::where([
-        //     ['clientable_id', '=', $agence->id],
-        //     ['clientable_type', "=", "agence"],
-        // ])->first();
+        $chef = Clientuser::where([
+            ['clientable_id', '=', $agence->id],
+            ['clientable_type', "=", "agence"],
+        ])->first();
         $souscription = [
             'id' => $agence->id,
             'produits'  => DB::table('views_detail_souscription')
@@ -752,7 +794,7 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'agence' => $agence,
-            // 'chef' => $chef,
+            'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville
         ];
@@ -770,7 +812,6 @@ class ClientController extends Controller
             ->where('email', '=', $temp->email)->first();
         $temp->restore();
         $userclient->restore();
-        $temp->restore();
         $done = true;
 
 
@@ -778,10 +819,10 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        // $chef = Clientuser::where([
-        //     ['clientable_id', '=', $agence->id],
-        //     ['clientable_type', "=", "agence"],
-        // ])->first();
+        $chef = Clientuser::where([
+            ['clientable_id', '=', $agence->id],
+            ['clientable_type', "=", "agence"],
+        ])->first();
 
         $souscription = [
             'id' => $agence->id,
@@ -803,7 +844,7 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'agence' => $agence,
-            // 'chef' => $chef,
+            'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville
         ];
@@ -819,9 +860,8 @@ class ClientController extends Controller
             ->first();
 
         $validator;
-        if(count(explode('@',$request->email))<2)
-        {
-            $request->email = $request->email.'@gmail.com';
+        if (count(explode('@', $request->email)) < 2) {
+            $request->email = $request->email . '@gmail.com';
         }
         if ($request->filled('email') &&  $request->email == $agence->email) {
             $validator = Validator::make($request->all(), [
@@ -868,10 +908,10 @@ class ClientController extends Controller
         $agence->save();
         $done = true;
 
-        // $chef = Clientuser::where([
-        //     ['clientable_id', '=', $agence->id],
-        //     ['clientable_type', "=", "agence"],
-        // ])->first();
+        $chef = Clientuser::where([
+            ['clientable_id', '=', $agence->id],
+            ['clientable_type', "=", "agence"],
+        ])->first();
 
         $souscription = [
             'id' => $agence->id,
@@ -893,7 +933,7 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'agence' => $agence,
-            // 'chef' => $chef,
+            'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville,
             'inputs' => $request->all()
@@ -903,15 +943,15 @@ class ClientController extends Controller
 
     public function store_agence(Request $request, $id_c, $id_d)
     {
-        if(count(explode('@',$request->email))<2)
-        {
-            $request->email = $request->email.'@gmail.com';
+        if (count(explode('@', $request->email)) < 2) {
+            $request->email = $request->email . '@gmail.com';
         }
 
         $validator = Validator::make($request->all(), [
 
+            'client' => 'required|gt:0',
             'nom' => 'required',
-            'email' => 'required|unique:clientusers',
+            'email' => 'required|unique:clientusers|regex:/^\S*$/u',
             'tel' => 'required',
             'adress' => 'required',
             'ville' => 'required|gt:0',
@@ -958,6 +998,7 @@ class ClientController extends Controller
             'check' => $check,
             'count' => $count - 1,
             'agence' => $agence,
+            'chef' => $user,
             'ville' => $agence->ville,
             'inputs' => $request->all()
         ];

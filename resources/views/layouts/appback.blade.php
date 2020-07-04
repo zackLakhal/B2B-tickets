@@ -226,11 +226,14 @@
                     <!-- User profile text-->
                     <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true" id="logged_info" value="{{auth::user()->role_id}}">{{auth::user()->name}}</a>
                         <div class="dropdown-menu animated flipInY">
-                            <a href="#" class="dropdown-item"><i class="ti-user"></i> My Profile</a>
+                            @if(auth::user()->role_id != 5 )
+                            <a href="/utilisateur/profile" class="dropdown-item"><i class="ti-user"></i> My Profile</a>
+
                             <!-- <a href="#" class="dropdown-item"><i class="ti-wallet"></i> My Balance</a>
                             <a href="#" class="dropdown-item"><i class="ti-email"></i> Inbox</a>
                             <div class="dropdown-divider"></div> <a href="#" class="dropdown-item"><i class="ti-settings"></i> Account Setting</a> -->
                             <div class="dropdown-divider"></div>
+                            @endif
                             <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                 <i class="fa fa-power-off"></i>
@@ -264,32 +267,44 @@
                             </ul>
                         </li>
                         @endif
-
+                        @if(auth::user()->role_id != 4 && auth::user()->role_id != 5 && auth::user()->role_id != 3)
                         <li>
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="fa fa-user"></i><span class="hide-menu">Utilisateurs </span></a>
                             <ul aria-expanded="false" class="collapse">
-                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 2 || auth::user()->role_id == 3)
+                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 2 )
                                 <li><a href="/utilisateur/staff-nst">Gérer Staff-nst</a></li>
                                 @endif
-                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 4 || auth::user()->role_id == 5)
-                                <li><a href="/utilisateur/staff-client">Gérer Staff-client</a></li>
-                                @endif
-                            </ul>
-                        </li>
-
-                        @if(auth::user()->role_id != 2 && auth::user()->role_id != 3)
-                        <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-cellphone-link"></i><span class="hide-menu">Outils Client</span></a>
-                            <ul aria-expanded="false" class="collapse">
-                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 4 )
-                                <li><a href="/outils/espace-client">Espace client</a></li>
+                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 )
+                                <!-- <li><a href="/utilisateur/staff-client">Gérer Staff-client</a></li> -->
                                 <li><a href="/outils/clients">Gérer les clients</a></li>
-                                @endif
-                                @if(auth::user()->role_id == 6 || auth::user()->role_id == 1)
-                                <li><a href="/outils/produits">Gérer les produits</a></li>
                                 @endif
                             </ul>
                         </li>
                         @endif
+                        @if(auth::user()->role_id == 6 || auth::user()->role_id == 1)
+                        <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-cellphone-link"></i><span class="hide-menu">Outils</span></a>
+                            <ul aria-expanded="false" class="collapse">
+
+                                <!-- <li><a href="/outils/espace-client">Espace client</a></li> -->
+                                @if(auth::user()->role_id != 2 && auth::user()->role_id != 3)
+
+                                <li><a href="/outils/espace-agence">Espace agences</a></li>
+
+                                @endif
+                                
+
+                                <li><a href="/outils/produits">Gérer les produits</a></li>
+
+                            </ul>
+                        </li>
+                        @endif
+                        <!-- @if(auth::user()->role_id != 2 && auth::user()->role_id != 3)
+                        <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-cellphone-link"></i><span class="hide-menu">Espace agences</span></a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="/outils/espace-agence">liste agences</a></li>
+                            </ul>
+                        </li>
+                        @endif -->
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-email-alert"></i><span class="hide-menu"> Réclamations</span></a>
                             <ul aria-expanded="false" class="collapse">
                                 <li><a href="/reclamation/recls">Gérer les réclamations</a></li>

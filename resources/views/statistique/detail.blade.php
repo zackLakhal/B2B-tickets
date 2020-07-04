@@ -232,6 +232,29 @@
                 closed_with_pv = "";
             }
 
+            var card = "<div id=\"tach_button" + ind + "\" role=\"tablist\" aria-multiselectable=\"false\">" +
+                "<div class=\"card m-b-0\">" +
+                "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
+                "<h5 class=\"mb-0\">" +
+                "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
+                "Effectuer un traitement" +
+                "</a>" +
+                "</h5>" +
+                "</div>" +
+                "<div id=\"tach_coll" + ind + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
+                "<div class=\"card-body\">" +
+                "<div class=\"button-group text-center\">" +
+                (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
+                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
+                // download_pdf +
+
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" 
+
             $('#bodytab').append("<div class=\"col-12 \" >" +
                 "<div id=\"card" + ind + "\"  class=\"ribbon-wrapper-reverse card\">" +
                 "<div id=\"ref" + ind + "\" class=\"ribbon ribbon-bookmark ribbon-left ribbon-" + ref_color + "\" style=\"font-weight: bold; font-size : 25px\">Ref : " + jsonData[ind].reclamation_ref + "</div>" +
@@ -271,30 +294,7 @@
                 "</div>" +
                 "</div>" +
                 "</div>" +
-
-                "<div id=\"tach_button" + ind + "\" role=\"tablist\" aria-multiselectable=\"false\">" +
-                "<div class=\"card m-b-0\">" +
-                "<div style=\"text-align: center\" class=\"card-header\" role=\"tab\" id=\"tacheOne" + ind + "\">" +
-                "<h5 class=\"mb-0\">" +
-                "<a style=\"color:#2db567;font-size:25px;font-weight : bold; \"  data-toggle=\"collapse\" data-parent=\"#tach_button" + ind + "\" href=\"#tach_coll" + ind + "\" aria-expanded=\"true\" aria-controls=\"tach_coll" + ind + "\">" +
-                "Effectuer un traitement" +
-                "</a>" +
-                "</h5>" +
-                "</div>" +
-                "<div id=\"tach_coll" + ind + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"tacheOne" + ind + "\">" +
-                "<div class=\"card-body\">" +
-                "<div class=\"button-group text-center\">" +
-                (role_id == '1' || role_id == '6' || role_id == '2' ? affectation : "") +
-                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? acceptation : "") +
-                (role_id == '1' || role_id == '6' || role_id == '2' || role_id == '3' ? traitement : "") +
-                // download_pdf +
-
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-
+                (role_id == '5' || role_id == '4' ? "" : card) +
                 "</div>" +
                 "</div>");
         }

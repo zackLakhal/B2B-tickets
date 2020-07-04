@@ -49,7 +49,7 @@ Route::prefix('/statistiques')->group(function () {
 });
 
 Route::get('/dashboard', function () {
-    $auth = null; 
+    $auth = null;
     //Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
 
     return view('statistique.dashboard');
@@ -57,7 +57,7 @@ Route::get('/dashboard', function () {
 
 
 Route::get('/dashboard_agence', function () {
-    $auth = null; 
+    $auth = null;
     //Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
 
     return view('statistique.dashboard_agence');
@@ -177,6 +177,12 @@ Route::prefix('/reclamation')->group(function () {
 });
 
 Route::prefix('/utilisateur')->group(function () {
+    Route::prefix('/profile')->group(function () {
+        Route::get('/', function () {
+            return view('utilisateurs.profiles.nst_profile');
+        })->middleware('auth:nst,client');
+        Route::get('/index', 'UserController@profile_index');
+    });
     Route::prefix('/staff-client')->group(function () {
 
         Route::get('/index', 'UserController@client_index');
@@ -288,5 +294,10 @@ Route::prefix('/outils')->group(function () {
         Route::get('/agence/{id_a}/get_equipements/{id_p}', 'EspaceController@get_equipements');
         Route::get('/agence/{id_a}/get_refs', 'EspaceController@get_refs');
         Route::post('/agence/{id_a}/reclamer', 'EspaceController@add_reclamation');
+    });
+    Route::prefix('espace-agence')->group(function () {
+        Route::get('/', function () {
+            return view('tools.espace.new_espace');
+        })->middleware('auth:nst,client');
     });
 });

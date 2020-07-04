@@ -89,7 +89,7 @@
                     <textarea class="form-control" id="commentaire" name="commentaire" rows="5"></textarea>
                 </div>
 
-                
+
             </div>
             <div class="modal-footer" id="modalfooter">
                 <button type="button" class="btn btn-info" id="save">Enregistrer</button>
@@ -101,6 +101,50 @@
 
 </div>
 
+<div class="modal fade" id="editModal" tabindex="-1" rqt="dialog" aria-labelledby="editModalLabel1">
+    <div class="modal-dialog" rqt="document">
+        <div class="modal-content">
+            <div class="modal-header" id="edithead">
+
+            </div>
+            <div class="modal-body" id="editbody">
+
+                <div class="form-group" id="err-nom">
+                    <label for="nom" class="control-label"><b>nom:</b></label>
+                    <input type="text" class="form-control" id="nom" name="nom">
+                    <small class="form-control-feedback"> </small>
+                </div>
+                <div class="form-group" id="err-email">
+                    <label for="email" class="control-label"><b>Login:</b></label>
+                    <input type="text" class="form-control" id="email" name="email">
+                    <small class="form-control-feedback"> </small>
+                </div>
+
+                <div class="form-group" id="err-tel">
+                    <label for="tel" class="control-label"><b>tel:</b></label>
+                    <input type="text" class="form-control" id="tel" name="tel">
+                    <small class="form-control-feedback"> </small>
+                </div>
+                <div class="form-group" id="err-ville">
+                    <label class="control-label">ville</label>
+                    <select class="form-control custom-select selectpicker  has-success" data-live-search="true" name="ville" id="ville">
+
+                    </select>
+                    <small class="form-control-feedback"> </small>
+                </div>
+                <div class="form-group" id="err-adress">
+                    <label for="adress" class="control-label"><b>adress:</b></label>
+                    <input type="text" class="form-control" id="adress" name="adress">
+                    <small class="form-control-feedback"> </small>
+                </div>
+
+            </div>
+            <div class="modal-footer" id="editfooter">
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- /.modal 2-->
 <div class="modal fade bs-example-modal-sm" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-sm">
@@ -109,9 +153,12 @@
                 <h4 class="modal-title" id="mySmallModalLabel">Message</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
-            <div class="modal-body" id="content"> </div>
+            <div class="modal-body text-center" id="content"> content will be here </div>
+            <div class="modal-footer" id="messagefooter">
+            </div>
         </div>
         <!-- /.modal-content -->
+
     </div>
     <!-- /.modal-dialog -->
 </div>
@@ -145,6 +192,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
+        console.log(jsonData)
         $('#bodytab').html("");
         produit = "";
         if (jsonData.chef == null) {
@@ -194,6 +242,8 @@
                 "</div>";
 
         }
+        var buttonpass =             "<button class=\"btn waves-effect waves-light btn-inverse\" style=\"margin-right: 10px\" onclick=\"pass_change(" + jsonData.chef.id + ")\">Générer mot de passe</button>" 
+
         $('#bodytab').append("<div class=\"col-12 \" id=\"card" + $('#id_a').val() + "\">" +
             "<div class=\"card\">" +
             "<div class=\"card-body\">" +
@@ -205,13 +255,18 @@
             "<h2  class=\"card-title text-center\" > informations</h2>" +
             "<hr>" +
             "<div class=\"card-body\">" +
-            "<h4 id=\"departement" + $('#id_a').val() + "\" class=\"card-title\"><b> Departement : </b>" + jsonData.departement.nom + "</h4>" +
-            "<h4 id=\"client" + $('#id_a').val() + "\" class=\"card-title\"><b> Client : </b>" + jsonData.client.nom + "</h4>" +
-            "<h4 id=\"email" + $('#id_a').val() + "\" class=\"card-title\"><b> Email : </b>" + jsonData.agence.email + "</h4>" +
-            "<h4 id=\"tel" + $('#id_a').val() + "\" class=\"card-title\"><b> Tel : </b>" + jsonData.agence.tel + "</h4>" +
-            "<h4 id=\"adress" + $('#id_a').val() + "\" class=\"card-title\"><b> Adresse : </b>" + jsonData.agence.adress + "</h4>" +
-            "<h4 value=\"" + jsonData.ville.id + "\" id=\"ville" + $('#id_a').val() + "\" class=\"card-title\"><b> ville : </b>" + jsonData.ville.nom + "</h4>" +
-            "<h4> <b>Chef d'agence : </b>" + chef + " </h4>" +
+            "<h4  class=\"card-title\"><b> Login : </b> <spane id=\"email" + $('#id_a').val() + "\">" + (jsonData.agence.email).split('@')[0] + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Departement : </b> <spane id=\"departement" + $('#id_a').val() + "\">" + jsonData.departement.nom + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Client : </b> <spane id=\"client" + $('#id_a').val() + "\">" + jsonData.client.nom + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Tel : </b> <spane id=\"tel" + $('#id_a').val() + "\">" + jsonData.agence.tel + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> Adresse : </b> <spane id=\"adress" + $('#id_a').val() + "\">" + jsonData.agence.adress + "</spane></h4>" +
+            "<h4  class=\"card-title\"><b> ville : </b> <spane value=\"" + jsonData.ville.id + "\" id=\"ville" + $('#id_a').val() + "\">" + jsonData.ville.nom + "</spane></h4>" +
+            // "<h4> <b>Chef d'agence : </b>" + chef + " </h4>" +
+            
+            "<div class=\"button-group text-center\">" +
+            "<button class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.agence.id + "," + $('#id_a').val() + ")\">modifier</button>" +
+            ( $('#logged_info').attr('value') == '5' ? "" : buttonpass) +
+            "</div>" +
             "</div>" +
             "</div>" +
             "</div>" +
@@ -231,6 +286,21 @@
             "</div>" +
             "</div>" +
             "</div>");
+
+            $('#ville').html(" <option  value=\"0\"selected disabled >selectioner une ville </option>")
+
+        var StringData1 = $.ajax({
+            url: "http://127.0.0.1:8000/system/ville/active_index",
+            dataType: "json",
+            type: "GET",
+            async: false,
+        }).responseText;
+        jsonData1 = JSON.parse(StringData1);
+
+        for (let ind = 0; ind < jsonData1.length; ind++) {
+            $('#ville').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].nom + "</option>");
+
+        }
 
     }
 
@@ -266,7 +336,7 @@
                 jsonData.equipements[j].info +
                 "</p>" +
                 "<div class=\"button-group text-center\">" +
-                (role_id != '2' && role_id != '3'  ? "<button  class=\"btn btn-warning\" \" onclick=\"reclamer(" + produit + "," + jsonData.equipements[j].equip_id + ")\">réclamer sur l'équipement</button>" : "") +
+                (role_id != '2' && role_id != '3' ? "<button  class=\"btn btn-warning\" \" onclick=\"reclamer(" + produit + "," + jsonData.equipements[j].equip_id + ")\">réclamer sur l'équipement</button>" : "") +
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -277,7 +347,7 @@
     }
 
     function reclamer(produit, equip) {
-        
+
         $('#ref').html("<option value=\"0\"selected disabled >selectioner une référance </option>")
         $('#anomalie').html(" <option  value=\"0\"selected disabled >selectioner une anomalie </option>")
         var inputs = {
@@ -292,15 +362,15 @@
             async: false
         }).responseText;
         jsonData = JSON.parse(StringData);
-       
+
         $('#pending_refs').html("");
 
         $('#equip_nom').html(jsonData.equipement.nom);
         for (let ind = 0; ind < jsonData.refs.length; ind++) {
-            if(jsonData.refs[ind].etat_id != 1 && jsonData.refs[ind].etat_id != 2){
+            if (jsonData.refs[ind].etat_id != 1 && jsonData.refs[ind].etat_id != 2) {
                 $('#ref').append("<option value=\"" + jsonData.refs[ind].ref_id + "\">" + jsonData.refs[ind].ref + "</option>");
-            }else{
-                $('#pending_refs').append("<small style=\"color : #fb052c\"><b>"+jsonData.refs[ind].ref+" :</b> sous réclamation </small> <br>")
+            } else {
+                $('#pending_refs').append("<small style=\"color : #fb052c\"><b>" + jsonData.refs[ind].ref + " :</b> sous réclamation </small> <br>")
             }
         }
         $('#ref').selectpicker('refresh');
@@ -343,6 +413,111 @@
             }
         });
     }
+
+    function modifier(id, ind) {
+        var buttonacive;
+        var butttondetail;
+        //var buttonaffect;
+        var chef;
+        $('#edithead').html("<h4 class=\"modal-title\" >Modifier agence</h4>" +
+            "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
+        $('#editfooter').html("<button type=\"button\" class=\"btn btn-info\" id=\"edit\">Enregistrer</button>");
+        $('#nom').val($('#nom' + ind).html());
+        $('#email').val($('#email' + ind).html());
+        $('#password').val("");
+        $('#err-password').hide();
+        $('#tel').val($('#tel' + ind).html());
+        $('#adress').val($('#adress' + ind).html());
+        $('#ville').val($('#ville' + ind).attr('value'));
+        $('#ville').selectpicker('refresh');
+        $('#editModal').modal('show');
+        $('#edit').click(function() {
+            var inputs = {
+                "nom": $('#nom').val(),
+                "email": $('#email').val(),
+                "tel": $('#tel').val(),
+                "adress": $('#adress').val(),
+                "ville": $('#ville').val(),
+            };
+            var StringData = $.ajax({
+                url: "http://127.0.0.1:8000/outils/clients/" + $('#id_c').val() + "/departements/" + $('#id_d').val() + "/agences/edit/" + id,
+                type: "POST",
+                async: false,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: inputs
+            }).responseText;
+            jsonData = JSON.parse(StringData);
+            console.log(jsonData)
+            if ($.isEmptyObject(jsonData.error)) {
+
+                clearInputs(jsonData.inputs);
+                $('#editModal').modal('hide');
+                message("agence", "modifié", jsonData.check);
+                location.reload();
+               
+
+            } else {
+                clearInputs(jsonData.inputs);
+                printErrorMsg(jsonData.error);
+            }
+        });
+    }
+
+    function pass_change(id) {
+        var pass = generatePassword("AG-")
+        $('#messagefooter').html("<button type=\"button\" class=\"btn btn-inverse\" id=\"pass_edit\">Enregistrer</button>");
+        $('#content').html("mot de pass généré est : <br><br><h2> " + pass + "</h2>");
+        $('#messagebox').modal('show');
+
+        $('#pass_edit').click(function() {
+
+            var inputs = {
+                "type": "client",
+                "id": id,
+                "password": pass
+            };
+
+
+            var StringData = $.ajax({
+                url: "http://127.0.0.1:8000/utilisateur/staff-client/save_pass",
+                dataType: "json",
+                type: "POST",
+                async: false,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: inputs,
+            }).responseText;
+            jsonData = JSON.parse(StringData);
+
+            $('#messagefooter').html("")
+             console.log(jsonData)
+            var message = "";
+            if (jsonData.check == "done") {
+                message = "votre mot de passe est changé avec succès";
+            } else {
+                message = "votre mot de passe n'est pas changé";
+            }
+            $('#content').html(message);
+
+
+        });
+
+
+    }
+
+    function generatePassword(type) {
+        var length = 5,
+            charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+            retVal = type + "";
+        for (var i = 0, n = charset.length; i < length; ++i) {
+            retVal += charset.charAt(Math.floor(Math.random() * n));
+        }
+        return retVal;
+    }
+
 
     function printErrorMsg(msg) {
 

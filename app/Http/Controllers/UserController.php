@@ -25,10 +25,10 @@ class UserController extends Controller
                 break;
             case 2:
                 $users = Nstuser::where('role_id', 3)->get();
-                $users[] = Nstuser::where('id', '=', $auth->id)->first();
+               // $users[] = Nstuser::where('id', '=', $auth->id)->first();
                 break;
             case 1:
-                $users = Nstuser::where('role_id','<>', 6)->get();
+                $users = Nstuser::where([['role_id','<>', 6],['role_id','<>', 1]])->get();
                 
                 break;
             default:
@@ -61,7 +61,21 @@ class UserController extends Controller
     {
         $filters = array();
         $users = null;
-        $request->role_id == "0" ? $filters[] = ['role_id', '<>', 6] :  $filters[] = ['role_id', '=', $request->role_id];
+        $auth=null;
+        //return response()->json($request->all());
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+        if ($request->role_id == "0" || $request->role_id == "undefined"  ) {
+            if ($auth->role_id == 2) {
+                $filters[] = ['role_id','=', 3];
+            } else {
+                $filters[] = ['role_id','<>', 6];
+                $filters[] = ['role_id','<>', $auth->role_id];
+            }
+            
+           
+        } else {
+            $filters[] = ['role_id', '=', $request->role_id];
+        }
 
         if ($request->user_id != "0") {
             $filters[] = ['id', '=', $request->user_id];
@@ -70,9 +84,9 @@ class UserController extends Controller
             $users = Nstuser::where($filters)->withTrashed()->get();
         } else {
 
-            $request->is_deleted == 'true' ?  $users = Nstuser::onlyTrashed()->where($filters)->get() : $users = Nstuser::where($filters)->get();
+            $request->is_deleted == 'false' || $request->is_deleted == 'undefined'  ?  $users = Nstuser::where($filters)->get() : $users = Nstuser::onlyTrashed()->where($filters)->get();
         }
-        // return response()->json($filters);
+         //return response()->json($filters);
 
         $roles = array();
         $affectations = array();
@@ -96,7 +110,7 @@ class UserController extends Controller
 
     public function nst_edit(Request $request, $edit, $id)
     {
-
+        
         $done = false;
         if ($edit == "delete") {
             $user = Nstuser::find($id);
@@ -623,6 +637,44 @@ class UserController extends Controller
             'role' => $user->role,
             'client' => $client,
             'inputs' => $request->all()
+        ];
+        return response()->json($objet);
+    }
+
+    public function profile_index()
+    {
+
+        $users = array();
+        $auth = null;
+        Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+        $users[] = $auth;
+
+        $roles = array();
+        $affectations = array();
+        foreach ($users as $user) {
+            $roles[] = $user->role;
+            $affectations[] = DB::table('affectations')
+                ->leftJoin('reclamations', 'reclamations.id', '=', 'affectations.reclamation_id')
+                ->leftJoin('etats', 'etats.id', '=', 'reclamations.etat_id')
+                ->select('reclamations.etat_id', DB::raw('count(reclamations.id) as nb'))->where([
+                    ['etats.id', '<>', null],
+                    ['affectations.nstuser_id', '=', $user->id]
+                ])->groupBy('reclamations.etat_id')->get();
+        }
+
+        $clients = array();
+        if($auth->role_id == 4)
+        foreach ($users as $user) {
+            $clients[] = Client::withTrashed()
+                ->where('id', $user->created_by)
+                ->first();
+        }
+        $objet =  [
+            'users' => $users,
+            'roles' => $roles,
+            'clients' => $clients,
+            'affectations' => $affectations
+
         ];
         return response()->json($objet);
     }

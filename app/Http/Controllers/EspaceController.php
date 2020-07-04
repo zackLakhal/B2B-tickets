@@ -12,6 +12,8 @@ use DB;
 use App\Clientuser;
 use App\Souscription;
 use App\Anomalie;
+use App\Client;
+use App\Departement;
 use App\Nstuser;
 use App\Reclamation;
 use App\Ville;
@@ -29,10 +31,7 @@ class EspaceController extends Controller
             case 4:
                 $agences = DB::table('agences')
                     ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
-                    ->select('agences.*')->where([
-                        ['agences.deleted_at', '=', null],
-                        ['departements.client_id', '=', $auth->clientable_id]
-                    ])->get();
+                    ->select('agences.*',"departements.client_id")->where('departements.client_id', '=', $auth->clientable_id)->get();
                 break;
             case 5:
                 $agences = Agence::where('id', '=', $auth->clientable_id)->get();
@@ -50,11 +49,18 @@ class EspaceController extends Controller
             $villes[] = Ville::find($agence->ville_id);
         }
 
+        $clients = array();
+        foreach ($agences as $agence) {
+            $dep = Departement::find($agence->departement_id);
+            $clients[$dep->id] = Client::find($dep->client_id);
+        }
+
 
         $objet =  [
             'agences' => $agences,
-            'villes' => $villes
-
+            'villes' => $villes,
+            'clients' => $clients,
+            'all_villes' => Ville::all()
         ];
         return response()->json($objet);
     }
@@ -65,10 +71,10 @@ class EspaceController extends Controller
         $departement = $agence->departement;
         $client = $departement->client;
 
-        // $chef = Clientuser::where([
-        //     ['clientable_id', '=', $agence->id],
-        //     ['clientable_type', "=", "agence"],
-        // ])->first();
+        $chef = Clientuser::where([
+            ['clientable_id', '=', $agence->id],
+            ['clientable_type', "=", "agence"],
+        ])->first();
 
         $souscription = [
             'id' => $agence->id,
@@ -86,6 +92,7 @@ class EspaceController extends Controller
             'agence' => $agence,
             'souscription' => $souscription,
             'ville' => $agence->ville,
+            'chef' => $chef,
             'departement' => $departement,
             'client' => $client
         ];
@@ -153,7 +160,7 @@ class EspaceController extends Controller
         $reclamation->souscription_id = $request->ref;
         $reclamation->anomalie_id = $request->anomalie;
 
-        if ($request->filled('info_p')) {
+        if ($request->filled('commentaire')) {
             $reclamation->commentaire = $request->commentaire;
         }
 

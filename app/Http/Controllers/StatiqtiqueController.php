@@ -738,7 +738,7 @@ class StatiqtiqueController extends Controller
 
         
         
-        $zip = Zipper::make('public\storage\documents\\'.$auth->id.'pvs.zip');
+        $zip = Zipper::make(public_path('storage\documents\\'.$auth->id.'pvs.zip'));
         foreach ($affects as $value) {
             $value->pend_pv != null ? $zip->add(glob(public_path('storage\\'.explode('/',$value->pend_pv)[0].'\\'.explode('/',$value->pend_pv)[1].'')))  : null;
             $value->close_pv != null ? $zip->add(glob(public_path('storage\\'.explode('/',$value->close_pv)[0].'\\'.explode('/',$value->close_pv)[1].'')))  : null;
@@ -747,6 +747,8 @@ class StatiqtiqueController extends Controller
       //  $headers = ["Content-Type"=>"application/zip"];
     
       $zip->close();
+      // copy('/home/marocnst/public_html/storage/app/public/storage/documents/'.$auth->id.'pvs.zip', '/home/marocnst/public_html/public/storage/documents/'.$auth->id.'pvs.zip');
+
        return response()->json(['file' => $auth->id.'pvs.zip']);
       //  return response()->download(public_path('storage\documents\pvs.zip'),'pvs.zip',$headers);
 
