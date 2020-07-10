@@ -454,6 +454,7 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
+        console.log(jsonData)
         message("client", "restoré", jsonData.check);
 
         if (jsonData.client.deleted_at == null) {
@@ -521,6 +522,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
+            console.log(jsonData)
             var role_id = $('#logged_info').attr('value');
             if ($.isEmptyObject(jsonData.error)) {
 

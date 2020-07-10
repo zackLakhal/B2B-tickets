@@ -36,7 +36,7 @@ class ClientController extends Controller
         }
         $departements = array();
         foreach ($clients as  $client) {
-            $departements[] = Departement::where('client_id', $client->id)->first();
+            $departements[] = Departement::withTrashed()->where('client_id', $client->id)->first();
         }
 
         $obj = [
@@ -65,7 +65,7 @@ class ClientController extends Controller
         //return response()->json($filters);
         $departements = array();
         foreach ($clients as  $client) {
-            $departements[] = Departement::where('client_id', $client->id)->first();
+            $departements[] = Departement::withTrashed()->where('client_id', $client->id)->first();
         }
 
         $obj = [
@@ -102,9 +102,9 @@ class ClientController extends Controller
     {
 
         $done = false;
-
+        
         $temp = Client::find($id);
-        $userclient = Clientuser::where('email', '=', $temp->email)->first();
+        $userclient = Clientuser::where('created_by', '=', $temp->id)->first();
         $departement = Departement::where('client_id', $id)->first();
         $temp->delete();
         $departement->delete();
@@ -147,7 +147,7 @@ class ClientController extends Controller
             ->first();
 
         $userclient = Clientuser::withTrashed()
-            ->where('email', '=', $temp->email)->first();
+            ->where('created_by', '=', $temp->id)->first();
         $temp->restore();
         $departement->restore();
         $userclient->restore();
@@ -232,7 +232,7 @@ class ClientController extends Controller
 
 
         $userclient = Clientuser::withTrashed()
-            ->where('email', '=', $request->email)->first();
+            ->where('created_by', '=', $client->id)->first();
         $temp = explode("@", $request->email);
         $userclient->name = $temp[0];
         $userclient->email = $request->email;
@@ -243,7 +243,7 @@ class ClientController extends Controller
         $client->tel = $request->tel;
         $client->adress = $request->adress;
 
-        $departement = Client::withTrashed()
+        $departement = Departement::withTrashed()
             ->where('client_id', '=', $client->id)->first();
         $departement->email = "dep_" . $request->email;
         $departement->tel = $request->tel;
@@ -670,7 +670,8 @@ class ClientController extends Controller
         $villes = array();
         $souscriptions = array();
         foreach ($agences as $agence) {
-            $chefs[] = Clientuser::where([
+            $chefs[] = Clientuser::withTrashed()
+            ->where([
                 ['clientable_id', '=', $agence->id],
                 ['clientable_type', "=", "agence"],
             ])->first();
@@ -721,7 +722,8 @@ class ClientController extends Controller
         $villes = array();
         $souscriptions = array();
         foreach ($agences as $agence) {
-            $chefs[] = Clientuser::where([
+            $chefs[] = Clientuser::withTrashed()
+            ->where([
                 ['clientable_id', '=', $agence->id],
                 ['clientable_type', "=", "agence"],
             ])
@@ -770,7 +772,8 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        $chef = Clientuser::where([
+        $chef = Clientuser::withTrashed()
+        ->where([
             ['clientable_id', '=', $agence->id],
             ['clientable_type', "=", "agence"],
         ])->first();
@@ -819,7 +822,8 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        $chef = Clientuser::where([
+        $chef = Clientuser::withTrashed()
+        ->where([
             ['clientable_id', '=', $agence->id],
             ['clientable_type', "=", "agence"],
         ])->first();
@@ -891,16 +895,18 @@ class ClientController extends Controller
             return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
-        $agence->nom = $request->nom;
-        $agence->email = $request->email;
+       
 
         $userclient = Clientuser::withTrashed()
-            ->where('email', '=', $request->email)->first();
+            ->where('email', '=',  $agence->email)->first();
         $temp = explode("@", $request->email);
+       // return response()->json($userclient);
         $userclient->name = $temp[0];
         $userclient->email = $request->email;
         $userclient->save();
 
+        $agence->nom = $request->nom;
+        $agence->email = $request->email;
         $agence->tel = $request->tel;
         $agence->adress = $request->adress;
         $agence->ville_id = $request->ville;
@@ -908,7 +914,8 @@ class ClientController extends Controller
         $agence->save();
         $done = true;
 
-        $chef = Clientuser::where([
+        $chef = Clientuser::withTrashed()
+        ->where([
             ['clientable_id', '=', $agence->id],
             ['clientable_type', "=", "agence"],
         ])->first();

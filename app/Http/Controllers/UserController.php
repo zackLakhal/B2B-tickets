@@ -465,6 +465,9 @@ class UserController extends Controller
                 return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
             }
 
+            $client = Client::withTrashed()->where('id',$user->created_by)->first();
+            $client->email = $request->email;
+            $client->save();
 
             $temp = explode("@", $request->email);
             $user->name = $temp[0];

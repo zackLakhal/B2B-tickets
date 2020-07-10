@@ -114,7 +114,7 @@
 
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-4" style="display: none;">
                                             <!-- <div class="form-group">
                                                 <input type="checkbox" id="departement_check" class="filled-in chk-col-orange" onclick="$(this).is(':checked') ? $('#fl_departement').show() :  $('#fl_departement').hide()" />
                                                 <label for="departement_check">filter par département</label>

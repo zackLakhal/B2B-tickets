@@ -254,7 +254,7 @@
         }
         $('#card' + ind).html("<div class=\"card text-center\">" +
             "<div class=\"card-body\">" +
-            "<h3 class=\"card-title\"> Ref : <b> " + jsonData.ref + "</b></h3> <hr>" +
+            "<h3 class=\"card-title\"> Ref : <b> " + jsonData.rqt.ref + "</b></h3> <hr>" +
             "<h2 class=\"card-title\">" + jsonData.rqt.nom + "</h2>" +
             "<h4 class=\"card-title\">" + jsonData.rqt.email + "</h4>" +
             "<h4 class=\"card-title\">" + jsonData.rqt.tel + "</h4>" +

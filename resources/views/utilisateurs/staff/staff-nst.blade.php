@@ -217,7 +217,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-         console.log(jsonData)
+        console.log(jsonData)
         $('#bodytab').html("");
         var role_id = $('#logged_info').attr('value');
         $('#fv_nom').html(" <option  value=\"0\"selected  >tout les staff </option>")
@@ -227,7 +227,7 @@
             $('#fv_nom').append("<option value=\"" + jsonData.users[ind].id + "\">" + jsonData.users[ind].nom + " " + jsonData.users[ind].prénom + "</option>");
             $('#fv_email').append("<option value=\"" + jsonData.users[ind].id + "\">" + jsonData.users[ind].email + "</option>");
 
-              var ref_links = "";
+            var ref_links = "";
             if (jsonData.users[ind].deleted_at == null) {
                 buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
             } else {
@@ -279,7 +279,7 @@
                 "<div class=\"el-overlay scrl-up\">" +
                 "<ul class=\"el-info\">" +
                 "<li><a class=\"btn default btn-warning\" onclick=\"modifier(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                 (role_id == '1' || role_id == '6' ? buttonacive : "") +
+                (role_id == '1' || role_id == '6' ? buttonacive : "") +
                 "</ul>" +
                 "</div>" +
                 "</div>" +
@@ -326,8 +326,10 @@
         jsonData1 = JSON.parse(StringData1);
         console.log(jsonData1)
         for (let ind = 0; ind < jsonData1.length; ind++) {
-            $('#role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
-            $('#fv_role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
+            if (jsonData1[ind].id != 4 && jsonData1[ind].id != 5) {
+                $('#role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
+                $('#fv_role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
+            }
         }
         $('#role').selectpicker('refresh');
         $('#fv_role').selectpicker('refresh');
@@ -373,14 +375,14 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-         console.log(jsonData)
+        console.log(jsonData)
         var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
         for (let ind = 0; ind < jsonData.users.length; ind++) {
 
 
-              var ref_links = "";
+            var ref_links = "";
             if (jsonData.users[ind].deleted_at == null) {
                 buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
             } else {
@@ -432,7 +434,7 @@
                 "<div class=\"el-overlay scrl-up\">" +
                 "<ul class=\"el-info\">" +
                 "<li><a class=\"btn default btn-warning\" onclick=\"modifier(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                 (role_id == '1' || role_id == '6' ? buttonacive : "") +
+                (role_id == '1' || role_id == '6' ? buttonacive : "") +
                 "</ul>" +
                 "</div>" +
                 "</div>" +
@@ -517,7 +519,7 @@
                 processData: false,
                 contentType: false,
             }).responseText;
-             var ref_links = "";
+            var ref_links = "";
             jsonData = JSON.parse(StringData);
             // console.log(jsonData);
             if ($.isEmptyObject(jsonData.error)) {
@@ -617,7 +619,7 @@
     });
 
     function supprimer(id, ind) {
-         var ref_links = "";
+        var ref_links = "";
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/utilisateur/staff-nst/delete/" + id,
             dataType: "json",
@@ -675,7 +677,7 @@
                 "<a href=\"/dashboard/reclamations/detail/3/" + jsonData.user.id + "\" class=\"list-group-item " + (et_3 == "0" ? " disabled " : "") + " list-group-item-info\"><b> " + et_3 + " </b>réclamation clôturé</a>" +
                 "</div>";
         }
-       
+
         $('#card' + ind).html("<div class=\"card\" >" +
             "<div class=\"el-card-item\">" +
             "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
@@ -718,7 +720,7 @@
     }
 
     function restorer(id, ind) {
-         var ref_links = "";
+        var ref_links = "";
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/utilisateur/staff-nst/restore/" + id,
             dataType: "json",
@@ -869,7 +871,7 @@
             jsonData = JSON.parse(StringData);
             // console.log(jsonData)
             var role_id = $('#logged_info').attr('value');
-             var ref_links = "";
+            var ref_links = "";
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);

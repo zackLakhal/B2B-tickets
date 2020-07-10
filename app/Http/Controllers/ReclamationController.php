@@ -344,17 +344,20 @@ class ReclamationController extends Controller
 
         $rec = Reclamation::where('ref', $request->ref)->first();
         $affect = Affectation::where('reclamation_id', $rec->id)->first();
-
+        $agence = $rec->souscription->agence;
         $rapport = null;
         $folder = "";
+        $type = "";
         if ($request->etat_id == 2) {
             $rapport =  new Pending();
             $folder = "pending_pvs";
+            $type = "pending";
             $rec->etat_id = 2;
             $rec->checked_at = date('Y-m-d H:i:s');
         } else {
             $rapport = new Closed();
             $folder = "closed_pvs";
+            $type = "closed";
             $rec->etat_id = 3;
             $rec->finished_at = date('Y-m-d H:i:s');
         }
@@ -371,7 +374,7 @@ class ReclamationController extends Controller
 
         if ($request->with_pv == 'true' && $request->file('pv_image')) {
             $file = $request->file('pv_image');
-            $image = $rec->ref . '.' . $file->getClientOriginalExtension();
+            $image = $agence->nom.'_'.$rec->ref."_".$type.'.' . $file->getClientOriginalExtension();
             $path = $request->file('pv_image')->storeAs(
                 $folder,
                 $rec->id . "_" . $image
@@ -510,14 +513,19 @@ class ReclamationController extends Controller
     {
         $rec = Reclamation::where('ref', $request->ref)->first();
 
+        $agence = $rec->souscription->agence;
         $rapport = null;
         $folder = "";
+        $type = "";
         if ($request->etat_id == 2) {
             $rapport =   Pending::find($request->rapport_id);
             $folder = "pending_pvs";
+            $type = "pending";
+
         } else {
             $rapport =  Closed::find($request->rapport_id);
             $folder = "closed_pvs";
+            $type = "closed";
         }
 
         if ($request->etat_id == 3) {
@@ -528,7 +536,7 @@ class ReclamationController extends Controller
 
         if ($request->with_pv == 'true' && $request->file('pv_image')) {
             $file = $request->file('pv_image');
-            $image = $rec->ref . '.' . $file->getClientOriginalExtension();
+            $image = $agence->nom.'_'.$rec->ref."_".$type.'.' . $file->getClientOriginalExtension();
             $path = $request->file('pv_image')->storeAs(
                 $folder,
                 $rec->id . "_" . $image

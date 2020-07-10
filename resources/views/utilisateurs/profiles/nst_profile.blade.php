@@ -619,7 +619,7 @@
                     "<a class=\"list-group-item\" id=\"tel" + ind + "\">" + jsonData.user.tel + "</a>" +
                     "<a class=\"list-group-item\" id=\"adress" + ind + "\">" + jsonData.user.adress + "</a>" +
                     "<a class=\"list-group-item\" id=\"role" + ind + "\" value=\"" + jsonData.role.id + "\">" + jsonData.role.value + "</a>" +
-                    "<a class=\"list-group-item\"  value=\"" + jsonData.client.id + "\"><b> travail chez : </b><spane id=\"created_by" + ind + "\">" + jsonData.clients[ind].nom + "</spane></a>" +
+                    "<a class=\"list-group-item\"  value=\"" + jsonData.client.id + "\"><b> travail chez : </b><spane id=\"created_by" + ind + "\">" + jsonData.client.nom + "</spane></a>" +
 
                     ref_links +
                     "</div>" +

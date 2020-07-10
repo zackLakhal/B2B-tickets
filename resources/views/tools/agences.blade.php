@@ -500,6 +500,7 @@
             $('#exampleModal').modal('show');
             $('#save').click(function() {
                 var inputs = {
+                    "client": $('#id_c').val(),
                     "nom": $('#nom').val(),
                     "email": $('#email').val(),
                     "tel": $('#tel').val(),
@@ -518,7 +519,7 @@
                 }).responseText;
                 jsonData = JSON.parse(StringData);
                 var role_id = $('#logged_info').attr('value');
-                // // console.log(jsonData)
+                 console.log(jsonData)
                 if ($.isEmptyObject(jsonData.error)) {
 
                     clearInputs(jsonData.inputs);
@@ -631,7 +632,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            // // console.log(jsonData)
+             console.log(jsonData)
             var role_id = $('#logged_info').attr('value');
             $('#bodytab').html("");
 
@@ -806,7 +807,7 @@
             var buttonacive;
             var butttondetail;
             //var buttonaffect;
-            var chef;
+            //var chef;
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/clients/" + $('#id_c').val() + "/departements/" + $('#id_d').val() + "/agences/delete/" + id,
                 type: "POST",
@@ -817,7 +818,7 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
-            // console.log(jsonData)
+             console.log(jsonData)
             message("agence", "supprimé", jsonData.check);
             var role_id = $('#logged_info').attr('value');
             produit = "";
@@ -1187,6 +1188,7 @@
                     data: inputs
                 }).responseText;
                 jsonData = JSON.parse(StringData);
+                console.log(jsonData)
                 var role_id = $('#logged_info').attr('value');
                 if ($.isEmptyObject(jsonData.error)) {
 
