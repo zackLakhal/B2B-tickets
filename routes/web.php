@@ -35,6 +35,9 @@ Route::get('/services', function () {
     return view('old_nst.services');
 });
 
+Route::get('/send', 'RequestController@sendmail');
+
+
 
 Route::prefix('/statistiques')->group(function () {
     Route::get('/index', 'StatiqtiqueController@index');

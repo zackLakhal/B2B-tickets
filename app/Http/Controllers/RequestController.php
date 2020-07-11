@@ -1,11 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Mail\closeRec;
+use App\Mail\CreatedRec;
 use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 use App\Newrqst;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class RequestController extends Controller
 {
@@ -152,6 +156,15 @@ class RequestController extends Controller
         ];
         return response()->json($objet);
 
+    }
+
+    public function sendmail(){
+        
+        $to_email = "jiikasse1994@gmail.com";
+        Mail::to($to_email)->send(new closeRec());
+        
+        
+    
     }
     
 }

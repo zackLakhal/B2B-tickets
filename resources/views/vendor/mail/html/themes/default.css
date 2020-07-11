@@ -107,11 +107,14 @@ img {
 .header {
     padding: 25px 0;
     text-align: center;
+    background-color: #3490dc;
+
 }
 
 .header a {
-    color: #bbbfc3;
-    font-size: 19px;
+    color: white;
+    font-size: 30px;
+    font-family: 'Poppins', sans-serif;
     font-weight: bold;
     text-decoration: none;
     text-shadow: 0 1px 0 white;
@@ -159,15 +162,16 @@ img {
     margin: 0 auto;
     padding: 0;
     text-align: center;
-    width: 570px;
+    width: 100%;
+    
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
-    -premailer-width: 570px;
+    -premailer-width: 100%;
 }
 
 .footer p {
-    color: #aeaeae;
-    font-size: 12px;
+    color: #3490dc;
+    font-size: 14px;
     text-align: center;
 }
 
@@ -182,6 +186,7 @@ img {
 }
 
 .table th {
+    text-align: left;
     border-bottom: 1px solid #edeff2;
     padding-bottom: 8px;
     margin: 0;
@@ -245,8 +250,18 @@ img {
     border-right: 18px solid #e3342f;
     border-bottom: 10px solid #e3342f;
     border-left: 18px solid #e3342f;
+
 }
 
+.button-yellow,
+.button-warning {
+    background-color: #ffb22b;
+    border-top: 10px solid #ffb22b;
+    border-right: 18px solid #ffb22b;
+    border-bottom: 10px solid #ffb22b;
+    border-left: 18px solid #ffb22b;
+    
+}
 /* Panels */
 
 .panel {
