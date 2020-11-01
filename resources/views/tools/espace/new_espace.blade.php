@@ -50,8 +50,8 @@
                         <thead>
                             <tr>
                                 <th>Agence</th>
+                                <th>Client</th>
                                 <th>Ville</th>
-                                <th>Adresse</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -61,8 +61,8 @@
                         <tfoot>
                             <tr>
                                 <th>Agence</th>
+                                <th>Client</th>
                                 <th>Ville</th>
-                                <th>Adresse</th>
                                 <th>Actions</th>
                             </tr>
                         </tfoot>
@@ -160,7 +160,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        //console.log(jsonData);
+        console.log(jsonData);
         $('#bodytab').html("");
         $('#client').html(" <option  value=\"0_0\" disabled selected  >selectioner un client </option>")
         $('#ville').html(" <option  value=\"0\" disabled selected  >selectioner une ville </option>")
@@ -178,8 +178,8 @@
 
             $('#bodytab').append("<tr id=\"row" + ind + "\">" +
                 "<th >" + jsonData.agences[ind].nom + "</th>" +
+                "<th id=\"value" + ind + "\">" + jsonData.agence_clients[ind].nom + "</th>" +
                 "<th >" + jsonData.villes[ind].nom + "</th>" +
-                " <th id=\"value" + ind + "\">" + jsonData.agences[ind].adress + "</th>" +
                 "<td>" +
                 ( $('#logged_info').attr('value') == '5' ? "" : buttonacive) +
                 "<a href=\"/outils/espace-client/agence/" + jsonData.agences[ind].id + "\" class=\"btn btn-success\" >Details</a>" +
@@ -225,8 +225,8 @@
 
 
         $('#row' + ind).html("<th >" + jsonData.agence.nom + "</th>" +
+            " <th id=\"value" + ind + "\">" + jsonData.agence_client.nom + "</th>" +
             "<th >" + jsonData.ville.nom + "</th>" +
-            " <th id=\"value" + ind + "\">" + jsonData.agence.adress + "</th>" +
             "<td>" +
             buttonacive +
             "<a href=\"/outils/espace-client/agence/" + jsonData.agence.id + "\" class=\"btn btn-success\" >Details</a>" +
@@ -261,8 +261,8 @@
 
 
         $('#row' + ind).html("<th >" + jsonData.agence.nom + "</th>" +
+            " <th id=\"value" + ind + "\">" + jsonData.agence_client.nom + "</th>" +
             "<th >" + jsonData.ville.nom + "</th>" +
-            " <th id=\"value" + ind + "\">" + jsonData.agence.adress + "</th>" +
             "<td>" +
             ( $('#logged_info').attr('value') == '5' ? "" : buttonacive) +
             "<a href=\"/outils/espace-client/agence/" + jsonData.agence.id + "\" class=\"btn btn-success\" >Details</a>" +

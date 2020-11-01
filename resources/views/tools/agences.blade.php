@@ -41,11 +41,22 @@
         <div class="card">
             <div class="card-body">
 
-                <div class="button-group text-center">
-                    <button type="button" id="newmodal" class="btn btn-lg btn-primary ">
-                        <i class="fa fa-plus"></i> ajouter une nouvelle agence
-                    </button>
+
+                <div class="form-group">
+                    <span style="float:left;"><button type="button" id="newmodal" class="btn btn-lg btn-inverse ">
+                            <i class="fa fa-plus"></i> ajouter une nouvelle agence
+                        </button>
+                    </span>
+                    <span style="float:right;">
+                        <button type="button" class="btn btn-lg btn-secondary " onclick="save_all_refs()">
+                            Enregister les références
+                        </button>
+                    </span>
                 </div>
+                <!-- <button type="button"  class="btn btn-lg btn-primary " onclick="save_all_refs()">
+                        <i class="fa fa-plus"></i> ajouter une nouvelle agence
+                    </button> -->
+
             </div>
         </div>
     </div>
@@ -214,6 +225,56 @@
     </div>
 </div>
 <!-- /.modal 2-->
+
+
+<!-- edit prod -->
+
+<div class="modal fade" id="edit_prod" tabindex="-1" data-backdrop="static" rqt="dialog" aria-labelledby="edit_prodlabel">
+    <div class="modal-dialog" rqt="document">
+        <div class="modal-content">
+            <div class="modal-header" id="edit_prodhead">
+
+            </div>
+            <div class="modal-body " id="edit_prodbody">
+
+                <div class="col-md-12">
+
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item"> <a class="nav-link active" id="home-tab" data-toggle="tab" href="#edit_current_equip" role="tab" aria-controls="edit_current_equip" aria-expanded="true"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Modifier Réféerence</span></a> </li>
+                        <li class="nav-item"> <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile5" role="tab" aria-controls="profile"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Ajouter réferences</span></a></li>
+
+                    </ul>
+                    <div class="tab-content tabcontent-border p-20" id="myTabContent">
+                        <div role="tabpanel" class="tab-pane fade show active" id="edit_current_equip" aria-labelledby="home-tab">
+
+                        </div>
+                        <div class="tab-pane fade" id="profile5" role="tabpanel" aria-labelledby="profile-tab">
+
+
+                            <div class="list-group" id="edit_equip_inputs">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer" id="edit_prodfooter">
+                    </div>
+
+
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- end edit prod -->
+
+
+
 <div class="modal fade bs-example-modal-sm" id="messagebox" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -265,6 +326,7 @@
                 message = "votre " + objet + " n'est pas " + action;
             }
             $('#content').html(message);
+            $('#messagefooter').html("");
             $('#messagebox').modal('show');
 
         }
@@ -298,7 +360,7 @@
                 // } else {
                 //     chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chefs[ind].id + "\">" +
                 //         "<span class=\"tooltip-item\">" + jsonData.chefs[ind].nom + " " + jsonData.chefs[ind].prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                //         "<img src=\"{{ asset('storage') }}/" + jsonData.chefs[ind].photo + "\" width=\"180\" /><br />" +
+                //         "<img src=\"{{ asset('public/storage') }}/" + jsonData.chefs[ind].photo + "\" width=\"180\" /><br />" +
                 //         "<span class=\"tooltip-text p-t-10\">" +
                 //         "<p class=\"card-text text-center\">" + jsonData.chefs[ind].nom + " " + jsonData.chefs[ind].prénom + "</p>" +
                 //         "<p class=\"card-text text-center\">" + jsonData.chefs[ind].email + "</p>" +
@@ -341,7 +403,7 @@
                                     val = jsonData1.refs[f].ref
                                 }
                                 refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                                    "<input type=\"text\" " + (role_id == '1' || role_id == '6' ? "" : " disabled ") + " class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                    "<input type=\"text\" " + (role_id == '1' || role_id == '6' ? "" : " disabled ") + " class=\"form-control refs\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                                     "<span class=\"input-group-btn\">" +
                                     "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                     "</span>" +
@@ -400,6 +462,7 @@
                         "</div>" +
                         "<div class=\"button-group text-center\">" +
                         (role_id == '1' || role_id == '6' ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + jsonData.agences[ind].id + "," + jsonData.souscriptions[ind].produits[j].prod_id + "," + ind + ")\">supprimer</button>" : "") +
+                        (role_id == '1' || role_id == '6' ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\" onclick=\"edit_prod(" + jsonData.agences[ind].id + "," + jsonData.souscriptions[ind].produits[j].prod_id + "," + ind + ")\">modifier</button>" : "") +
                         "</div>" +
                         "</div>" +
                         "</div>";
@@ -519,7 +582,7 @@
                 }).responseText;
                 jsonData = JSON.parse(StringData);
                 var role_id = $('#logged_info').attr('value');
-                 console.log(jsonData)
+                console.log(jsonData)
                 if ($.isEmptyObject(jsonData.error)) {
 
                     clearInputs(jsonData.inputs);
@@ -533,7 +596,7 @@
                     // } else {
                     //     chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + jsonData.count + "\" value=\"" + jsonData.chef.id + "\">" +
                     //         "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                    //         "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+                    //         "<img src=\"{{ asset('public/storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
                     //         "<span class=\"tooltip-text p-t-10\">" +
                     //         "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
                     //         "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
@@ -632,7 +695,7 @@
                 contentType: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-             console.log(jsonData)
+            // // console.log(jsonData)
             var role_id = $('#logged_info').attr('value');
             $('#bodytab').html("");
 
@@ -645,7 +708,7 @@
                 // } else {
                 //     chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chefs[ind].id + "\">" +
                 //         "<span class=\"tooltip-item\">" + jsonData.chefs[ind].nom + " " + jsonData.chefs[ind].prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                //         "<img src=\"{{ asset('storage') }}/" + jsonData.chefs[ind].photo + "\" width=\"180\" /><br />" +
+                //         "<img src=\"{{ asset('public/storage') }}/" + jsonData.chefs[ind].photo + "\" width=\"180\" /><br />" +
                 //         "<span class=\"tooltip-text p-t-10\">" +
                 //         "<p class=\"card-text text-center\">" + jsonData.chefs[ind].nom + " " + jsonData.chefs[ind].prénom + "</p>" +
                 //         "<p class=\"card-text text-center\">" + jsonData.chefs[ind].email + "</p>" +
@@ -688,7 +751,7 @@
                                     val = jsonData1.refs[f].ref
                                 }
                                 refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                                    "<input type=\"text\" " + (role_id == '1' || role_id == '6' ? "" : " disabled ") + " class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                    "<input type=\"text\" " + (role_id == '1' || role_id == '6' ? "" : " disabled ") + " class=\"form-control refs refs\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                                     "<span class=\"input-group-btn\">" +
                                     "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                     "</span>" +
@@ -747,6 +810,8 @@
                         "</div>" +
                         "<div class=\"button-group text-center\">" +
                         (role_id == '1' || role_id == '6' ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + jsonData.agences[ind].id + "," + jsonData.souscriptions[ind].produits[j].prod_id + "," + ind + ")\">supprimer</button>" : "") +
+                        (role_id == '1' || role_id == '6' ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\" onclick=\"edit_prod(" + jsonData.agences[ind].id + "," + jsonData.souscriptions[ind].produits[j].prod_id + "," + ind + ")\">modifier</button>" : "") +
+
                         "</div>" +
                         "</div>" +
                         "</div>";
@@ -818,7 +883,7 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
-             console.log(jsonData)
+            // console.log(jsonData)
             message("agence", "supprimé", jsonData.check);
             var role_id = $('#logged_info').attr('value');
             produit = "";
@@ -828,7 +893,7 @@
             // } else {
             //     chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
             //         "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-            //         "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+            //         "<img src=\"{{ asset('public/storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
             //         "<span class=\"tooltip-text p-t-10\">" +
             //         "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
             //         "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
@@ -871,7 +936,7 @@
                                 val = jsonData1.refs[f].ref
                             }
                             refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                                "<input type=\"text\" " + (role_id == '1' || role_id == '6' ? "" : " disabled ") + " class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                "<input type=\"text\" " + (role_id == '1' || role_id == '6' ? "" : " disabled ") + " class=\"form-control refs refs\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                                 "<span class=\"input-group-btn\">" +
                                 "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                 "</span>" +
@@ -928,6 +993,7 @@
                     "</div>" +
                     "<div class=\"button-group text-center\">" +
                     (role_id == '1' || role_id == '6' ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">supprimer</button>" : "") +
+                    (role_id == '1' || role_id == '6' ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\" onclick=\"edit_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">modifier</button>" : "") +
                     "</div>" +
                     "</div>" +
                     "</div>";
@@ -1002,7 +1068,7 @@
             // } else {
             //     chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
             //         "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-            //         "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+            //         "<img src=\"{{ asset('public/storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
             //         "<span class=\"tooltip-text p-t-10\">" +
             //         "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
             //         "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
@@ -1045,7 +1111,7 @@
                                 val = jsonData1.refs[f].ref
                             }
                             refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                                "<input type=\"text\" " + (role_id == '1' || role_id == '6' ? "" : " disabled ") + " class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                "<input type=\"text\" " + (role_id == '1' || role_id == '6' ? "" : " disabled ") + " class=\"form-control refs refs\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                                 "<span class=\"input-group-btn\">" +
                                 "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                 "</span>" +
@@ -1104,6 +1170,8 @@
                     "</div>" +
                     "<div class=\"button-group text-center\">" +
                     (role_id == '1' || role_id == '6' ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">supprimer</button>" : "") +
+                    (role_id == '1' || role_id == '6' ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\" onclick=\"edit_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">modifier</button>" : "") +
+
                     "</div>" +
                     "</div>" +
                     "</div>";
@@ -1188,7 +1256,6 @@
                     data: inputs
                 }).responseText;
                 jsonData = JSON.parse(StringData);
-                console.log(jsonData)
                 var role_id = $('#logged_info').attr('value');
                 if ($.isEmptyObject(jsonData.error)) {
 
@@ -1203,7 +1270,7 @@
                     // } else {
                     //     chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
                     //         "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                    //         "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+                    //         "<img src=\"{{ asset('public/storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
                     //         "<span class=\"tooltip-text p-t-10\">" +
                     //         "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
                     //         "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
@@ -1246,7 +1313,7 @@
                                         val = jsonData1.refs[f].ref
                                     }
                                     refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                                        "<input type=\"text\" " + (role_id == '1' || role_id == '6' ? "" : " disabled ") + " class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                        "<input type=\"text\" " + (role_id == '1' || role_id == '6' ? "" : " disabled ") + " class=\"form-control refs refs\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                                         "<span class=\"input-group-btn\">" +
                                         "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                         "</span>" +
@@ -1303,6 +1370,8 @@
                             "</div>" +
                             "<div class=\"button-group text-center\">" +
                             (role_id == '1' || role_id == '6' ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">supprimer</button>" : "") +
+                            (role_id == '1' || role_id == '6' ? "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\" onclick=\"edit_prod(" + id + "," + jsonData.souscription.produits[j].prod_id + "," + ind + ")\">modifier</button>" : "") +
+
                             "</div>" +
                             "</div>" +
                             "</div>";
@@ -1376,7 +1445,7 @@
         //     for (let ind = 0; ind < jsonData1.users.length; ind++) {
         //         $('#created_by').append("<a  class=\"list-group-item value=\"" + jsonData1.users[ind].id + "\" onclick=\"select(" + id + "," + jsonData1.users[ind].id + "," + place + ")\"> <span class=\"mytooltip tooltip-effect-5\">" +
         //             "<span class=\"tooltip-item\">" + jsonData1.users[ind].nom + " " + jsonData1.users[ind].prénom + " - " + jsonData1.roles[ind].value + "</span> <span class=\"tooltip-content clearfix\">" +
-        //             "<img src=\"{{ asset('storage') }}/" + jsonData1.users[ind].photo + "\" width=\"180\" /><br />" +
+        //             "<img src=\"{{ asset('public/storage') }}/" + jsonData1.users[ind].photo + "\" width=\"180\" /><br />" +
         //             "<span class=\"tooltip-text p-t-10\">" +
         //             "<p class=\"card-text text-center\">" + jsonData1.users[ind].nom + " " + jsonData1.users[ind].prénom + "</p>" +
         //             "<p  class=\"card-text text-center\">" + jsonData1.users[ind].email + "</p>" +
@@ -1422,7 +1491,7 @@
         //     // } else {
         //     //     chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + ind + "\" value=\"" + jsonData.chef.id + "\">" +
         //     //         "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-        //     //         "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+        //     //         "<img src=\"{{ asset('public/storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
         //     //         "<span class=\"tooltip-text p-t-10\">" +
         //     //         "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
         //     //         "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
@@ -1465,7 +1534,7 @@
         //                         val = jsonData1.refs[f].ref
         //                     }
         //                     refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-        //                         "<input type=\"text\" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+        //                         "<input type=\"text\" class=\"form-control refs refs\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
         //                         "<span class=\"input-group-btn\">" +
         //                         "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
         //                         "</span>" +
@@ -1717,7 +1786,7 @@
                                         val = jsonData1.refs[f].ref
                                     }
                                     refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                                        "<input type=\"text\" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                        "<input type=\"text\" class=\"form-control refs\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                                         "<span class=\"input-group-btn\">" +
                                         "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                         "</span>" +
@@ -1775,6 +1844,293 @@
                             "<div class=\"button-group text-center\">" +
 
                             "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + jsonData.agence.id + "," + jsonData.souscription.produits[j].prod_id + "," + place + ")\">supprimer</button>" +
+                            "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\" onclick=\"edit_prod(" + jsonData.agence.id + "," + jsonData.souscription.produits[j].prod_id + "," + place + ")\">modifier</button>"+
+
+                            "</div>" +
+                            "</div>" +
+                            "</div>";
+
+                    }
+                    $('#prod').modal('hide');
+                    $('#card' + place).html("<div class=\"card\">" +
+                        "<div class=\"card-body\">" +
+                        "<h2 id=\"nom" + place + "\" class=\"card-title text-center \" style=\" font-weight: bold\">" + jsonData.agence.nom + "</h2>" +
+                        "<div id=\"slimtest2\">" +
+                        "<div class=\"row\">" +
+                        "<div class=\"col-md-6 \" id=\"card" + place + "\">" +
+                        "<div class=\"card \">" +
+                        "<h2  class=\"card-title text-center\" > informations</h2>" +
+                        "<hr>" +
+                        "<div class=\"card-body\">" +
+                        "<h4  class=\"card-title\"><b> Login : </b><spane id=\"email" + place + "\">" + (jsonData.agence.email).split('@')[0] + "</spane></h4>" +
+                        "<h4  class=\"card-title\"><b> Tel : </b><spane id=\"tel" + place + "\">" + jsonData.agence.tel + "</spane></h4>" +
+                        "<h4  class=\"card-title\"><b> Ville : </b><spane value=\"" + jsonData.ville.id + "\" id=\"ville" + place + "\">" + jsonData.ville.nom + "</spane></h4>" +
+                        "<h4  class=\"card-title\"><b> Adresse : </b><spane id=\"adress" + place + "\">" + jsonData.agence.adress + "</spane></h4>" +
+                        //"<h4><b> Chef d'agence : </b>" + chef + " </h4>" +
+                        "<br>" +
+                        "<div class=\"button-group text-center\">" +
+                        "<button class=\"btn waves-effect waves-light btn-warning\" style=\"margin-right: 10px\" onclick=\"modifier(" + jsonData.agence.id + "," + place + ")\">modifier</button>" +
+                        buttonacive +
+                        "<button class=\"btn waves-effect waves-light btn-inverse\" style=\"margin-right: 10px\" onclick=\"pass_change(" + jsonData.chef.id + ")\">Générer mot de passe</button>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "<div class=\"col-lg-6 \">" +
+                        "<div class=\"card\" id=\"product\">" +
+                        "<h3 class=\"card-title text-center\">produits</h3>" +
+                        "<hr>" +
+                        "<div class=\"card-body\">" +
+
+                        "<div class=\"button-group text-center\">" +
+                        "<button class=\"btn  btn-primary \" style=\"margin-bottom: 10px\"  onclick=\"add_produit(" + jsonData.agence.id + "," + place + ")\"> attacher produit</button>" +
+                        "</div>" +
+                        "<div id=\"accordionexample\" class=\"accordion\" role=\"tablist\" aria-multiselectable=\"true\">" +
+                        produit +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>");
+                } else {
+                    clearInputs(jsonData.inputs);
+                    printErrorMsg(jsonData.error);
+                }
+            });
+        }
+
+        function edit_prod(id_a, id_p, place) {
+
+
+
+
+            var StringData = $.ajax({
+                url: "http://127.0.0.1:8000/outils/produits/" + id_p + "/equipements/index",
+                dataType: "json",
+                type: "GET",
+                async: false,
+            }).responseText;
+
+            jsonData = JSON.parse(StringData);
+            console.log(jsonData)
+            $('#edit_equip_inputs').html("");
+            for (let inc = 0; inc < jsonData.length; inc++) {
+                $('#edit_equip_inputs').append("<div class=\"form-group col-lg-12\">" +
+                    "<label class=\"control-label\">" + jsonData[inc].nom + " </label>" +
+                    "<input class=\"vertical-spin\" id=\"" + jsonData[inc].id + "\" type=\"text\" value=\"0\" name=\"edit_equip_input[]\" data-bts-button-down-class=\"btn btn-secondary btn-outline\" data-bts-button-up-class=\"btn btn-secondary btn-outline\">" +
+                    "</div>");
+            }
+
+            $(".vertical-spin").TouchSpin({
+                verticalbuttons: true,
+                verticalupclass: 'ti-plus',
+                verticaldownclass: 'ti-minus'
+            });
+            var vspinTrue = $(".vertical-spin").TouchSpin({
+                verticalbuttons: true
+            });
+            if (vspinTrue) {
+                $('.vertical-spin').prev('.bootstrap-touchspin-prefix').remove();
+            }
+
+
+            equipements = "";
+            var inputs = {
+                "id_a": id_a,
+                "id_p": id_p
+            };
+            var StringData1 = $.ajax({
+                url: "http://127.0.0.1:8000/outils/produits/equip_prod",
+                dataType: "json",
+                type: "GET",
+                async: false,
+                data: inputs
+            }).responseText;
+            jsonData1 = JSON.parse(StringData1);
+            console.log(jsonData1)
+            for (let k = 0; k < jsonData1.equipements.length; k++) {
+                refs = "";
+
+                for (let f = 0; f < jsonData1.refs.length; f++) {
+                    if (jsonData1.refs[f].equip_id == jsonData1.equipements[k].equip_id) {
+                        var val = "";
+                        if (jsonData1.refs[f].ref != null) {
+                            val = jsonData1.refs[f].ref
+                        }
+                        refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-edit-value" + jsonData1.refs[f].ref_id + "\">" +
+                            "<input type=\"text\"  class=\"form-control refs\" name=\"edit_name_ref" + jsonData1.refs[f].ref_id + "\" id=\"edit_id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                            "<span class=\"input-group-btn\">" +
+                            "<button class=\"btn btn-danger\" style=\"margin-left: 5px\" type=\"button\" onclick=\"delet_ref('edit_id_ref" + jsonData1.refs[f].ref_id + "')\"><i class=\"fa fa-times\"></i> </button>" +
+                            "</span>" +
+                            "<br>" +
+                            "</div>";
+
+                    }
+                }
+                equipements = equipements +
+                    "<div class=\"ribbon-wrapper card\">" +
+                    "<div class=\"ribbon ribbon-default\"> " + jsonData1.equipements[k].equip_nom + "</div>" +
+                    "<div class=\"ribbon-content\" >" +
+                    refs +
+                    "</div>" +
+                    "</div>";
+
+
+            }
+
+            $('#edit_current_equip').html(equipements);
+
+
+            $('#edit_prodhead').html("<h4 class=\"modal-title\" >modifier produit</h4>");
+            $('#edit_prodfooter').html("<button type=\"button\" class=\"btn btn-info\" id=\"edit_new_p\">Enregistrer</button>");
+
+            $('#edit_prod').modal('show');
+
+            $('#edit_new_p').click(function() {
+
+                var values = [];
+                $("input[name='edit_equip_input[]']").each(function() {
+                    values.push({
+                        prod_id: id_p,
+                        id: $(this).attr('id'),
+                        number: $(this).val()
+                    });
+
+                });
+                var inputs = {
+                    "agence": id_a,
+                    "data": values
+                };
+                var StringData = $.ajax({
+                    url: "http://127.0.0.1:8000/outils/produits/attach_prod",
+                    type: "POST",
+                    async: false,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: inputs
+                }).responseText;
+                jsonData = JSON.parse(StringData);
+                console.log(jsonData)
+                if ($.isEmptyObject(jsonData.error)) {
+
+                    clearInputs(jsonData.inputs);
+                    $('#edit_prod').modal('hide');
+
+
+                    produit = "";
+                    // if (jsonData.chef == null) {
+                    //     chef = " <span id=\"chef" + place + "\" value=\"0\"> pas de chef d'agence</span>"
+                    //     buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.agence.id + "," + place + ")\">affecter un chef</button>"
+                    // } else {
+                    //     chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + place + "\" value=\"" + jsonData.chef.id + "\">" +
+                    //         "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
+                    //         "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+                    //         "<span class=\"tooltip-text p-t-10\">" +
+                    //         "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
+                    //         "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
+                    //         "<p class=\"card-text text-center\">" + jsonData.chef.tel + "</p>" +
+                    //         "<p class=\"card-text text-center\">" + jsonData.chef.adress + "</p>" +
+                    //         "</span> </span>" +
+                    //         "</span>";
+                    //     buttonaffect = "<button  class=\"btn btn-inverse\"  onclick=\"changer(" + jsonData.agence.id + "," + place + ")\">changer chef</button>"
+
+                    // }
+                    if (jsonData.agence.deleted_at == null) {
+                        buttonacive = "<button  class=\"btn btn-danger\"  onclick=\"supprimer(" + jsonData.agence.id + "," + place + ")\">supprimer</button>" //+ buttonaffect;
+                    } else {
+                        buttonacive = "<button  class=\"btn btn-secondary\" \" onclick=\"restorer(" + jsonData.agence.id + "," + place + ")\">restorer</button>"
+                    }
+
+                    for (let j = 0; j < jsonData.souscription.produits.length; j++) {
+                        var qt_ne = 0.00;
+                        equipements = "";
+                        var inputs = {
+                            "id_a": jsonData.souscription.id,
+                            "id_p": jsonData.souscription.produits[j].prod_id
+                        };
+                        var StringData1 = $.ajax({
+                            url: "http://127.0.0.1:8000/outils/produits/equip_prod",
+                            dataType: "json",
+                            type: "GET",
+                            async: false,
+                            data: inputs
+                        }).responseText;
+                        jsonData1 = JSON.parse(StringData1);
+
+                        for (let k = 0; k < jsonData1.equipements.length; k++) {
+                            refs = "";
+
+                            for (let f = 0; f < jsonData1.refs.length; f++) {
+                                if (jsonData1.refs[f].equip_id == jsonData1.equipements[k].equip_id) {
+                                    var val = "";
+                                    if (jsonData1.refs[f].ref != null) {
+                                        val = jsonData1.refs[f].ref
+                                    }
+                                    refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
+                                        "<input type=\"text\" class=\"form-control refs\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                        "<span class=\"input-group-btn\">" +
+                                        "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
+                                        "</span>" +
+                                        "<br>" +
+                                        "</div>" +
+                                        "<small id=\"s-err-value" + jsonData1.refs[f].ref_id + "\" style=\"color : red \" > </small>";
+                                    if (jsonData1.refs[f].ref_ne != 0) {
+                                        qt_ne++;
+                                    }
+                                }
+
+
+                            }
+                            equipements = equipements +
+                                "<div class=\"ribbon-wrapper card\">" +
+                                "<div class=\"ribbon ribbon-default\"> " + jsonData1.equipements[k].equip_nom + "</div>" +
+                                "<div class=\"ribbon-content\" >" +
+                                refs +
+                                "</div>" +
+                                "</div>";
+
+                        }
+                        var color = "";
+                        switch (qt_ne) {
+                            case 0:
+                                color = "red";
+                                break;
+
+                            case jsonData1.refs.length:
+                                color = "green";
+                                break;
+
+                            default:
+                                color = "yellow";
+                                break;
+                        }
+
+                        produit = produit +
+                            "<div class=\"card\">" +
+                            "<div class=\"card-header\" role=\"tab\" id=\"heading" + jsonData.souscription.produits[j].prod_id + "_" + jsonData.souscription.id + "\">" +
+                            "<h5 class=\"mb-0 text-center\">" +
+                            "<a style=\"color : " + color + "\" id=\"nom_p" + jsonData.souscription.produits[j].prod_id + "_" + jsonData.souscription.id + "\" data-toggle=\"collapse\" data-parent=\"#accordionexample" + place + "\" href=\"#collapseex" + jsonData.souscription.produits[j].prod_id + "_" + jsonData.souscription.id + "\" aria-expanded=\"false\" aria-controls=\"collapseex" + jsonData.souscription.produits[j].prod_id + "_" + jsonData.souscription.id + "\">" +
+                            "<span style=\"float:left\">" + jsonData.souscription.produits[j].prod_nom + "</span> <span style=\"float:right\">valide à " + (((qt_ne).toFixed(2) / jsonData1.refs.length) * 100).toFixed(0) + "%</span>" +
+                            "</a>" +
+                            "</h5>" +
+                            "</div>" +
+
+                            "<div id=\"collapseex" + jsonData.souscription.produits[j].prod_id + "_" + jsonData.souscription.id + "\" class=\"collapse\" role=\"tabpanel\" aria-labelledby=\"heading" + jsonData.souscription.produits[j].prod_id + "_" + jsonData.souscription.id + "\">" +
+                            "<div class=\"card-body\">" +
+                            "<div>" +
+                            "<div style=\"margin: 10px 0px\" class=\"col-lg-12 col-md-6 col-xlg-2 col-xs-12\">" +
+                            equipements +
+                            "</div>" +
+                            "</div>" +
+                            "<div class=\"button-group text-center\">" +
+
+                            "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + jsonData.agence.id + "," + jsonData.souscription.produits[j].prod_id + "," + place + ")\">supprimer</button>" +
+                            "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\" onclick=\"edit_prod(" + jsonData.agence.id + "," + jsonData.souscription.produits[j].prod_id + "," + place + ")\">modifier</button>"+
+
                             "</div>" +
                             "</div>" +
                             "</div>";
@@ -1835,27 +2191,112 @@
 
             var inputs = {
                 "id": id.split("f")[1],
-                "value": $('#' + id).val()
+                "value": $('#' + id).val(),
+                "nb": "one"
             };
 
 
+            form_data = new FormData();
+
+
+            form_data.append("id", id.split("f")[1]);
+            form_data.append("value", $('#' + id).val());
+            form_data.append("nb", "one");
+
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/produits/save_ref",
+                dataType: "json",
+                type: "POST",
+                async: false,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: form_data,
+                processData: false,
+                contentType: false,
+            }).responseText;
+            jsonData = JSON.parse(StringData);
+            //  console.log(jsonData)
+            if ($.isEmptyObject(jsonData.error)) {
+
+                clearInputsRef(jsonData.inputs[0]);
+
+                message("référance", "ajouté", jsonData.check);
+                //  location.reload();
+            } else {
+                printErrorMsgRef(jsonData.error, id.split("f")[1]);
+            }
+        }
+
+        function delet_ref(id) {
+
+            var inputs = {
+                "id": id.split("f")[1],
+                "value": $('#' + id).val()
+            };
+
+            var StringData = $.ajax({
+                url: "http://127.0.0.1:8000/outils/produits/delete_ref",
                 dataType: "json",
                 type: "GET",
                 data: inputs,
                 async: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            // console.log(jsonData)
+            console.log(jsonData)
+
+
+            $('#err-edit-value' + id.split("f")[1]).hide();
+            $('#err-value' + id.split("f")[1]).hide();
+
+        }
+
+        function save_all_refs() {
+
+            inputs = $('.refs').toArray();
+            ids = ""
+            values = ""
+            for (val in inputs) {
+                values = values + "|" + inputs[val].value
+                ids = ids + "|" + (inputs[val].id).split("f")[1]
+            }
+
+            var inputs = {
+                "id": ids,
+                "value": values,
+                "nb": "many"
+            };
+
+            form_data = new FormData();
+
+
+            form_data.append("id", ids);
+            form_data.append("value", values);
+            form_data.append("nb", "many");
+
+            var StringData = $.ajax({
+                url: "http://127.0.0.1:8000/outils/produits/save_ref",
+                dataType: "json",
+                type: "POST",
+                async: false,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: form_data,
+                processData: false,
+                contentType: false,
+            }).responseText;
+            jsonData = JSON.parse(StringData);
+            //   console.log(jsonData)
             if ($.isEmptyObject(jsonData.error)) {
 
-                clearInputsRef(jsonData.inputs, id.split("f")[1]);
-
-                message("référance", "ajouté", jsonData.check);
+                for (val in jsonData.inputs) {
+                    clearInputsRef(jsonData.inputs[val]);
+                }
+                message("référances", "ajouté", jsonData.check);
                 location.reload();
             } else {
-                printErrorMsgRef(jsonData.error, id.split("f")[1]);
+                printErrorMsgRef(jsonData.error, jsonData.inputs.id);
             }
         }
 
@@ -1879,6 +2320,8 @@
                     async: false,
                 }).responseText;
                 jsonData = JSON.parse(StringData);
+                //console.log(jsonData)
+                location.reload();
                 message("produit", "détaché", jsonData.check);
                 produit = "";
                 // if (jsonData.chef == null) {
@@ -1887,7 +2330,7 @@
                 // } else {
                 //     chef = "<span class=\"mytooltip tooltip-effect-5\" id=\"chef" + place + "\" value=\"" + jsonData.chef.id + "\">" +
                 //         "<span class=\"tooltip-item\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</span> <span class=\"tooltip-content clearfix\">" +
-                //         "<img src=\"{{ asset('storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
+                //         "<img src=\"{{ asset('public/storage') }}/" + jsonData.chef.photo + "\" width=\"180\" /><br />" +
                 //         "<span class=\"tooltip-text p-t-10\">" +
                 //         "<p class=\"card-text text-center\">" + jsonData.chef.nom + " " + jsonData.chef.prénom + "</p>" +
                 //         "<p class=\"card-text text-center\">" + jsonData.chef.email + "</p>" +
@@ -1930,7 +2373,7 @@
                                     val = jsonData1.refs[f].ref
                                 }
                                 refs = refs + "<div class=\"input-group\" style=\"margin:5px 0px\" id=\"err-value" + jsonData1.refs[f].ref_id + "\">" +
-                                    "<input type=\"text\" class=\"form-control\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
+                                    "<input type=\"text\" class=\"form-control refs refs\" name=\"name_ref" + jsonData1.refs[f].ref_id + "\" id=\"id_ref" + jsonData1.refs[f].ref_id + "\" value=\"" + val + "\">" +
                                     "<span class=\"input-group-btn\">" +
                                     "<button class=\"btn btn-info\" style=\"margin-left: 5px\" type=\"button\" onclick=\"save_ref('id_ref" + jsonData1.refs[f].ref_id + "')\">save </button>" +
                                     "</span>" +
@@ -1988,6 +2431,8 @@
                         "<div class=\"button-group text-center\">" +
 
                         "<button type=\"button\" class=\"btn waves-effect waves-light btn-danger\" onclick=\"delet_prod(" + jsonData.agence.id + "," + jsonData.souscription.produits[j].prod_id + "," + place + ")\">supprimer</button>" +
+                        "<button type=\"button\" class=\"btn waves-effect waves-light btn-warning\" onclick=\"edit_prod(" + jsonData.agence.id + "," + jsonData.souscription.produits[j].prod_id + "," + place + ")\">modifier</button>"+
+
                         "</div>" +
                         "</div>" +
                         "</div>";
@@ -2069,24 +2514,16 @@
         function printErrorMsgRef(msg, id) {
 
 
-            $.each(msg, function(key, value) {
-
-                $("#err-" + key + "" + id).addClass('has-danger');
-                $("#s-err-" + key + "" + id).html(value);
-
-            });
+            console.log(msg)
+            $("#err-value" + id).addClass('has-danger');
+            $("#s-err-value" + id).html(msg.value);
 
         }
 
-        function clearInputsRef(msg, id) {
+        function clearInputsRef(msg) {
 
-
-            $.each(msg, function(key, value) {
-
-                $("#err-" + key + "" + id).removeClass('has-danger');
-                $("#s-err-" + key + "" + id).html("");
-
-            });
+            $("#err-value" + msg.id).removeClass('has-danger');
+            $("#s-err-value" + msg.id).html("");
 
         }
 

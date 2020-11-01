@@ -159,8 +159,7 @@
                     <input type="text" class="form-control" id="adress" name="adress">
                 </div>
                 <div class="form-group" id="pic_id">
-                    <label for="avatar">avatar</label>
-                    <input type="file" id="avatar" name="avatar" class="dropify" data-default-file="{{ asset('storage/clients/placeholder.jpg') }}" />
+                    
                 </div>
             </div>
             <div class="modal-footer" id="modalfooter">
@@ -217,7 +216,7 @@
             async: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         console.log(jsonData)
         $('#bodytab').html("");
         var role_id = $('#logged_info').attr('value');
         $('#fv_nom').html(" <option  value=\"0\"selected  >tout les staff </option>")
@@ -227,7 +226,7 @@
             $('#fv_nom').append("<option value=\"" + jsonData.users[ind].id + "\">" + jsonData.users[ind].nom + " " + jsonData.users[ind].prénom + "</option>");
             $('#fv_email').append("<option value=\"" + jsonData.users[ind].id + "\">" + jsonData.users[ind].email + "</option>");
 
-            var ref_links = "";
+              var ref_links = "";
             if (jsonData.users[ind].deleted_at == null) {
                 buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
             } else {
@@ -279,7 +278,7 @@
                 "<div class=\"el-overlay scrl-up\">" +
                 "<ul class=\"el-info\">" +
                 "<li><a class=\"btn default btn-warning\" onclick=\"modifier(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                (role_id == '1' || role_id == '6' ? buttonacive : "") +
+                 (role_id == '1' || role_id == '6' ? buttonacive : "") +
                 "</ul>" +
                 "</div>" +
                 "</div>" +
@@ -326,7 +325,7 @@
         jsonData1 = JSON.parse(StringData1);
         console.log(jsonData1)
         for (let ind = 0; ind < jsonData1.length; ind++) {
-            if (jsonData1[ind].id != 4 && jsonData1[ind].id != 5) {
+             if (jsonData1[ind].id != 4 && jsonData1[ind].id != 5) {
                 $('#role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
                 $('#fv_role').append("<option value=\"" + jsonData1[ind].id + "\">" + jsonData1[ind].value + "</option>");
             }
@@ -375,14 +374,14 @@
             contentType: false,
         }).responseText;
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
+         console.log(jsonData)
         var role_id = $('#logged_info').attr('value');
         $('#bodytab').html("");
 
         for (let ind = 0; ind < jsonData.users.length; ind++) {
 
 
-            var ref_links = "";
+              var ref_links = "";
             if (jsonData.users[ind].deleted_at == null) {
                 buttonacive = "<li><a class=\"btn default btn-danger\"  onclick=\"supprimer(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-trash\"></i></a></li>";
             } else {
@@ -434,7 +433,7 @@
                 "<div class=\"el-overlay scrl-up\">" +
                 "<ul class=\"el-info\">" +
                 "<li><a class=\"btn default btn-warning\" onclick=\"modifier(" + jsonData.users[ind].id + "," + ind + ")\"><i class=\"icon-wrench\"></i></a></li>" +
-                (role_id == '1' || role_id == '6' ? buttonacive : "") +
+                 (role_id == '1' || role_id == '6' ? buttonacive : "") +
                 "</ul>" +
                 "</div>" +
                 "</div>" +
@@ -475,6 +474,10 @@
         $('#modalhead').html("<h4 class=\"modal-title\" >Nouveau staff-nst</h4>" +
             "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
         $('#modalfooter').html("<button type=\"button\" class=\"btn btn-info\" id=\"save\">Enregistrer</button>");
+        $('.dropify').dropify();
+        
+       $('#pic_id').html("<label for=\"avatar\">avatar</label>" +
+            "<input type=\"file\" id=\"avatar\" name=\"avatar\" class=\"dropify\" data-default-file=\"{{ asset('storage/clients/placeholder.jpg') }}\"  />");
         $('.dropify').dropify();
 
 
@@ -519,9 +522,9 @@
                 processData: false,
                 contentType: false,
             }).responseText;
-            var ref_links = "";
+             var ref_links = "";
             jsonData = JSON.parse(StringData);
-            // console.log(jsonData);
+             console.log(jsonData);
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);
@@ -619,7 +622,7 @@
     });
 
     function supprimer(id, ind) {
-        var ref_links = "";
+         var ref_links = "";
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/utilisateur/staff-nst/delete/" + id,
             dataType: "json",
@@ -677,7 +680,7 @@
                 "<a href=\"/dashboard/reclamations/detail/3/" + jsonData.user.id + "\" class=\"list-group-item " + (et_3 == "0" ? " disabled " : "") + " list-group-item-info\"><b> " + et_3 + " </b>réclamation clôturé</a>" +
                 "</div>";
         }
-
+       
         $('#card' + ind).html("<div class=\"card\" >" +
             "<div class=\"el-card-item\">" +
             "<div class=\"el-card-avatar el-overlay-1\"> <img id=\"avatar" + ind + "\" src=\"{{ asset('storage') }}/" + jsonData.user.photo + "\" alt=\"user\" />" +
@@ -720,7 +723,7 @@
     }
 
     function restorer(id, ind) {
-        var ref_links = "";
+         var ref_links = "";
         var StringData = $.ajax({
             url: "http://127.0.0.1:8000/utilisateur/staff-nst/restore/" + id,
             dataType: "json",
@@ -847,14 +850,15 @@
         $('#edit').click(function() {
 
             form_data = new FormData();
-
+        console.log($('#role' + ind).attr('value'));
             form_data.append("avatar", $('#avatar')[0].files[0]);
-            form_data.append("role", $('#role').val());
+            form_data.append("role",$('#role' + ind).attr('value'));
             form_data.append("nom", $('#nom').val());
             form_data.append("prenom", $('#prenom').val());
             form_data.append("email", $('#email').val());
             form_data.append("tel", $('#tel').val());
             form_data.append("adress", $('#adress').val());
+            form_data.append("img_histo",$('#dropify-preview-id').attr('style'));
 
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/utilisateur/staff-nst/edit/" + id,
@@ -869,9 +873,9 @@
                 contentType: false
             }).responseText;
             jsonData = JSON.parse(StringData);
-            // console.log(jsonData)
+             console.log(jsonData)
             var role_id = $('#logged_info').attr('value');
-            var ref_links = "";
+             var ref_links = "";
             if ($.isEmptyObject(jsonData.error)) {
 
                 clearInputs(jsonData.inputs);

@@ -1,26 +1,32 @@
 @component('mail::message')
-Bonjour <b>User</b> 
+Bonjour <b>{{$user}}</b> 
 
-On vous informe que la réclamation avec les informations si-dessous est <b>en traitement</b>
+On vous informe que la réclamation avec les informations ci-dessous est <b>en traitement</b>
 
 @component('mail::table')
     | Champ       | information         |
     | ------------- |:-------------:| 
-    | <b>réference</b>      | 5346543154654654      | 
-    | <b>agence</b>      | agence lfath | 
-    | <b>Produit</b>       | system de surveillance | 
-    | <b>Anomalie</b>       | anomalie-1 | 
-    | <b>Technicien</b>       | tech hamid | 
-    | <b>en traitement le</b>        |  2020-07-02 19:22:33 | 
+    | <b>réference</b>      | {{$ref}}      | 
+    | <b>agence</b>      | {{$agence}} | 
+    | <b>Produit</b>       | {{$prod}} | 
+    | <b>Anomalie</b>       | {{$anomalie}} |
+    | <b>technicien</b>       | {{$tech}} | 
+    | <b>en traitement le</b>        |  {{$pending_at}} | 
 @endcomponent
 
-
-@component('mail::button', ['url' => 'http://127.0.0.1:8000/dashboard/reclamations/detail/ref/2020-R1593717753-55','color' => 'success','style' => 'width:50%;float:left'])
+@if(!empty($pv))
+@component('mail::button', ['url' => 'http://127.0.0.1:8000/dashboard/reclamations/detail/ref/'.$ref,'color' => 'success','style' => 'width:50%;float:left'])
 voir plus de détails
 @endcomponent
-@component('mail::button', ['url' => 'http://127.0.0.1:8000/dashboard/reclamations/detail/ref/2020-R1593717753-55','color' => 'warning','style' => 'width:50%;float:left'])
+
+@component('mail::button', ['url' => 'http://127.0.0.1:8000/public/storage/'.$pv,'color' => 'warning','style' => 'width:50%;float:left'])
 pv pending
 @endcomponent
+@else
+@component('mail::button', ['url' => 'http://127.0.0.1:8000/dashboard/reclamations/detail/ref/'.$ref,'color' => 'success','style' => 'width:100%'])
+voir plus de détails
+@endcomponent
+@endif
 
 à bientôt <br>
 Assistance {{ config('app.name') }}

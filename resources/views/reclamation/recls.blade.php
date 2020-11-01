@@ -1384,6 +1384,7 @@
             }).responseText;
 
             jsonData = JSON.parse(StringData);
+            console.log(jsonData)
             var role_id = $('#logged_info').attr('value');
             $('#exampleModal').modal('hide');
 

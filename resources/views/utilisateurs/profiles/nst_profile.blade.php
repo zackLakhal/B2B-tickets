@@ -74,8 +74,7 @@
                     <input type="text" class="form-control" id="adress" name="adress">
                 </div>
                 <div class="form-group" id="pic_id">
-                    <label for="avatar">avatar</label>
-                    <input type="file" id="avatar" name="avatar" class="dropify" data-default-file="{{ asset('storage/clients/placeholder.jpg') }}" />
+                    
                 </div>
             </div>
             <div class="modal-footer" id="modalfooter">
@@ -382,6 +381,7 @@
             form_data.append("tel", $('#tel').val());
             form_data.append("adress", $('#adress').val());
             form_data.append("role", $('#logged_info').attr('value'));
+            form_data.append("img_histo",$('#dropify-preview-id').attr('style'));
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/utilisateur/staff-nst/edit/" + id,
                 dataType: "json",
@@ -527,6 +527,7 @@
             form_data.append("tel", $('#tel').val());
             form_data.append("adress", $('#adress').val());
             form_data.append("role", $('#logged_info').attr('value'));
+            form_data.append("img_histo",$('#dropify-preview-id').attr('style'));
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/utilisateur/staff-client/edit/" + id,
                 dataType: "json",

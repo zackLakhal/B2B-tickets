@@ -23,6 +23,7 @@ class CreateEquipementsTable extends Migration
             $table->string('image')->default("");
             $table->boolean('active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
 });
     }
 

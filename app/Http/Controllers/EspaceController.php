@@ -3,17 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
-
 use Illuminate\Http\Request;
 use App\Agence;
-use App\Produit;
 use App\Equipement;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Clientuser;
-use App\Souscription;
 use App\Anomalie;
 use App\Client;
 use App\Departement;
+use App\Mailpend;
 use App\Nstuser;
 use App\Reclamation;
 use App\Ville;
@@ -24,14 +22,14 @@ class EspaceController extends Controller
     public function all_agences()
     {
         $agences = null;
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         switch ($auth->role_id) {
 
             case 4:
                 $agences = DB::table('agences')
                     ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
-                    ->select('agences.*',"departements.client_id")->where('departements.client_id', '=', $auth->clientable_id)->get();
+                    ->select('agences.*', "departements.client_id")->where('departements.client_id', '=', $auth->clientable_id)->get();
                 break;
             case 5:
                 $agences = Agence::where('id', '=', $auth->clientable_id)->get();
@@ -42,8 +40,8 @@ class EspaceController extends Controller
                 break;
         }
 
-
         $villes = array();
+        $agence_clients = array();
         foreach ($agences as $agence) {
 
             $villes[] = Ville::find($agence->ville_id);
@@ -53,12 +51,14 @@ class EspaceController extends Controller
         foreach ($agences as $agence) {
             $dep = Departement::find($agence->departement_id);
             $clients[$dep->id] = Client::find($dep->client_id);
+            $agence_clients[] =  Client::find($dep->client_id);
         }
 
 
         $objet =  [
             'agences' => $agences,
             'villes' => $villes,
+            'agence_clients' => $agence_clients,
             'clients' => $clients,
             'all_villes' => Ville::all()
         ];
@@ -66,7 +66,7 @@ class EspaceController extends Controller
     }
     public function detail_agence($id)
     {
-       
+
         $agence = Agence::find($id);
         $departement = $agence->departement;
         $client = $departement->client;
@@ -128,7 +128,7 @@ class EspaceController extends Controller
                     ['views_detail_souscription.prod_id',   $request->id_p],
                     ['views_detail_souscription.equip_id',   $request->id_e],
                     ['views_detail_souscription.ref', '<>',  NULL]
-                ])->groupBy('views_detail_souscription.equip_id', 'views_detail_souscription.ref', 'views_detail_souscription.ref_id','reclamations.etat_id')
+                ])->groupBy('views_detail_souscription.equip_id', 'views_detail_souscription.ref', 'views_detail_souscription.ref_id', 'reclamations.etat_id')
                 ->get(),
             'anomalies' => Anomalie::all(),
             'equipement' => Equipement::find($request->id_e)
@@ -140,7 +140,7 @@ class EspaceController extends Controller
 
     public function add_reclamation(Request $request, $id_a)
     {
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
         $validator = Validator::make($request->all(), [
 
@@ -154,9 +154,11 @@ class EspaceController extends Controller
             return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
+        $agence = Agence::find($id_a);
+
         $reclamation = new Reclamation();
-        
-        $reclamation->clientuser_id = $auth;
+
+        $reclamation->clientuser_id = $agence->departement->client->id;
         $reclamation->souscription_id = $request->ref;
         $reclamation->anomalie_id = $request->anomalie;
 
@@ -168,12 +170,29 @@ class EspaceController extends Controller
 
         $reclamation->ref = "" . date('Y') . "-R" . time() . "-" . $reclamation->id;
         $reclamation->save();
-        $check;
+        $check="";
         if (is_null($reclamation)) {
             $check = "faile";
         } else {
             $check = "done";
         }
+
+        $staff = "";
+        $userstmp = Nstuser::whereIn('role_id', [1, 2])->get();
+        $clientemp = Clientuser::where('created_by', $agence->departement->client->id)->first();
+
+        foreach ($userstmp as $user) {
+            $staff = $staff . "_" . $user->id;
+        }
+        $staff = "0" . $staff;
+
+
+        $mail = new Mailpend();
+        $mail->client = $clientemp->id;
+        $mail->staff = $staff;
+        $mail->reclamations = $reclamation->id;
+        $mail->action = "created";
+        $mail->save();
 
         $objet =  [
             'check' => $check,

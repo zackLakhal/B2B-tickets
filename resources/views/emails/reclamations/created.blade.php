@@ -1,20 +1,20 @@
 @component('mail::message')
-Bonjour <b>Client</b> 
+Bonjour <b> {{$user}} </b> 
 
-On vous informe qu'une nouvelle réclamation à été créé  par l'agence <b>Agence lfath</b> avec les informations suivantes 
+On vous informe qu'une nouvelle réclamation à été créé  par l'agence <b> {{$agence}} </b> avec les informations suivantes 
 
 @component('mail::table')
     | Champ       | information         |
     | ------------- |:-------------:| 
-    | <b>réference</b>      | 5346543154654654      | 
-    | <b>agence</b>      | agence lfath | 
-    | <b>Produit</b>       | system de surveillance | 
-    | <b>Anomalie</b>       | anomalie-1 | 
-    | <b>Créé le</b>        |  2020-07-02 19:22:33 | 
+    | <b>réference</b>      | {{$ref}}      | 
+    | <b>agence</b>      | {{$agence}} | 
+    | <b>Produit</b>       | {{$prod}} | 
+    | <b>Anomalie</b>       | {{$anomalie}} | 
+    | <b>Créé le</b>        |  {{$created_at}} | 
 @endcomponent
 
 
-@component('mail::button', ['url' => 'http://127.0.0.1:8000/dashboard/reclamations/detail/ref/2020-R1593717753-55'])
+@component('mail::button', ['url' => 'http://127.0.0.1:8000/dashboard/reclamations/detail/ref/'.$ref,'color' => 'success','style' => 'width:100%'])
 Voir plus de détails
 @endcomponent
 

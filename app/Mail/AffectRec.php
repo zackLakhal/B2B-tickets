@@ -16,9 +16,16 @@ class AffectRec extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    protected $reclamation;
+    protected $user;
+  //  protected $affect;
+
+    public function __construct($user,$reclamation)
     {
-        //
+        $this->user = $user;
+      //  $this->affect = $affect;
+        $this->reclamation = $reclamation;
+
     }
 
     /**
@@ -28,6 +35,15 @@ class AffectRec extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.reclamations.affected');
+        return $this->subject('Reclamation affectée')
+        ->markdown('emails.reclamations.affected')->with([
+            'user' => $this->user,
+            'agence' => $this->reclamation->agence_nom,
+            'ref' => $this->reclamation->reclamation_ref,
+            'prod' => $this->reclamation->prod_nom,
+            'anomalie' => $this->reclamation->anomalie,
+            'affected_at' => $this->reclamation->affect_created_at,
+           
+        ]);
     }
 }

@@ -21,6 +21,7 @@ class CreateSouscriptionsTable extends Migration
             $table->string('equip_ref')->nullable();
             $table->boolean('active')->default(false);
             $table->timestamps();
+            $table->softDeletes();
 });
     }
 

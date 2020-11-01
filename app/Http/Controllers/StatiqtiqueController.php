@@ -3,17 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Agence;
-use App\Anomalie;
 use Illuminate\Http\Request;
-use App\Reclamation;
-use App\Client;
+
 use App\Clientuser;
 use App\Departement;
-use App\Equipement;
 use App\Exports\StatistiqueExport;
 use App\Nstuser;
-use App\Produit;
-use App\Souscription;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -53,25 +48,13 @@ class StatiqtiqueController extends Controller
     public function fill_list()
     {
 
-        // $data = array(
-        //     'fv_client' => Client::withTrashed()->get(),
-        //     'fv_departement'  => Departement::withTrashed()->get(),
-        //     'fv_agence'  => Agence::withTrashed()->get(),
-        //     'fv_produit' => Produit::withTrashed()->get(),
-        //     'fv_equipement' => Equipement::all(),
-        //     'fv_ref_equip' => Souscription::where('equip_ref', '<>', null)->get(),
-        // );
-
-        // return response()->json($data);
-
-        // $auth = $auth->role_id == 4 || $auth->role_id == 5 ? Clientuser::find($auth->id) : Nstuser::find($auth->id);
 
 
         $ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip'];
         $input_values = array();
 
 
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
 
         foreach ($ids as $id) {
@@ -80,7 +63,7 @@ class StatiqtiqueController extends Controller
         if ($auth->role_id == 4) {
             $input_values['fv_client'] = $auth->created_by;
         }
-        
+
         if ($auth->role_id == 5) {
             $agence = Agence::find($auth->clientable_id);
             $departement = Departement::find($agence->departement_id);
@@ -215,13 +198,11 @@ class StatiqtiqueController extends Controller
 
     public function filter_data(Request $request)
     {
-        
+
         $ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip'];
         $input_values = array();
 
-        
-        // $auth = $auth->role_id == 4 || $auth->role_id == 5 ? Clientuser::find($auth->id) : Nstuser::find($auth->id);
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
 
         foreach ($ids as $id) {
@@ -235,7 +216,7 @@ class StatiqtiqueController extends Controller
         if ($auth->role_id == 4) {
             $input_values['fv_client'] = $auth->created_by;
         }
-        
+
         if ($auth->role_id == 5) {
             $agence = Agence::find($auth->clientable_id);
             $departement = Departement::find($agence->departement_id);
@@ -493,7 +474,7 @@ class StatiqtiqueController extends Controller
         $where = array();
         $having = array();
 
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
 
 
@@ -606,8 +587,8 @@ class StatiqtiqueController extends Controller
         }
 
         $filtredQuery = $filtredQuery . "" . $stat_by . " " . (count($having) == 0 ? " " : $having_string) . " " . $havingQuery . " order by " . $stat_by;
-        $date = $time_day_from."/".$time_mois_from ."/".$time_year_from." - ".$time_day_to."/".$time_mois_to ."/".$time_year_to;
-    
+        $date = $time_day_from . "/" . $time_mois_from . "/" . $time_year_from . " - " . $time_day_to . "/" . $time_mois_to . "/" . $time_year_to;
+
         $data = [
             '' . $request->stat_by => DB::select($filtredQuery),
             'semi_total_' . $request->stat_by => ($request->stat_by == "produit" || $request->stat_by == "agence") ? DB::select($totalQuery . " group by " . explode(',', $stat_by)[0] . " order by " . $stat_by) : null,
@@ -616,17 +597,17 @@ class StatiqtiqueController extends Controller
             'nb_row' => $nb_row,
             'date' => $date
         ];
-        //  return response()->json(Excel::download(new StatistiqueExport($data), 'clients_stat.xlsx'));
         Excel::store(new StatistiqueExport($data), 'excel_stats/' . $request->stat_by . 's/' . $request->stat_by . '_' . $auth->id . '_stat.xlsx');
+
         return response()->json($auth->id);
     }
 
     public function print(Request $request)
     {
-          $where = array();
+        $where = array();
         $having = array();
 
-        $auth = null; 
+        $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
 
 
@@ -699,21 +680,21 @@ class StatiqtiqueController extends Controller
 
         $filtredQuery = $filtredQuery . " where " . $WhereQuery . " group by reclamation_id";
 
-    
 
-        $filtredQuery = $filtredQuery .  (count($having) == 0 ? " " : $having_string) . " " . $havingQuery . " order by reclamation_id ) as sub_table" ;
-       $data = DB::select($filtredQuery);
-       $in = "";
+
+        $filtredQuery = $filtredQuery .  (count($having) == 0 ? " " : $having_string) . " " . $havingQuery . " order by reclamation_id ) as sub_table";
+        $data = DB::select($filtredQuery);
+        $in = "";
         for ($i = 0; $i < count($data); $i++) {
             $i == count($data) - 1 ?  $in = $in . " " . $data[$i]->reclamation_id : $in = $in . " " . $data[$i]->reclamation_id . " , ";
         }
 
         $affectfilter = array();
 
-        array_push($affectfilter, " affectations.reclamation_id IN ( ".$in." ) ");
+        array_push($affectfilter, " affectations.reclamation_id IN ( " . $in . " ) ");
         array_push($affectfilter, " ( closeds.with_pv = '1' OR pendings.with_pv = '1' ) ");
-        
-       
+
+
 
         $WhereQuery = "  ";
 
@@ -726,31 +707,31 @@ class StatiqtiqueController extends Controller
 
 
         $affects =  DB::table('affectations')
-        ->leftJoin('closeds', 'affectations.id', '=', 'closeds.affectation_id')
-        ->leftJoin('pendings', 'affectations.id', '=', 'pendings.affectation_id')
-        ->select('affectations.id as affec_id',
-        'affectations.reclamation_id as reclamation_id',
-        'pendings.with_pv as pend_with_pv',
-        'pendings.pv as pend_pv',
-        'closeds.with_pv as close_with_pv',
-        'closeds.pv as close_pv')
-        ->whereRaw($WhereQuery)->get();
+            ->leftJoin('closeds', 'affectations.id', '=', 'closeds.affectation_id')
+            ->leftJoin('pendings', 'affectations.id', '=', 'pendings.affectation_id')
+            ->select(
+                'affectations.id as affec_id',
+                'affectations.reclamation_id as reclamation_id',
+                'pendings.with_pv as pend_with_pv',
+                'pendings.pv as pend_pv',
+                'closeds.with_pv as close_with_pv',
+                'closeds.pv as close_pv'
+            )
+            ->whereRaw($WhereQuery)->get();
 
-        
-        
-        $zip = Zipper::make(public_path('storage\documents\\'.$auth->id.'pvs.zip'));
-        foreach ($affects as $value) {
-            $value->pend_pv != null ? $zip->add(glob(public_path('storage\\'.explode('/',$value->pend_pv)[0].'\\'.explode('/',$value->pend_pv)[1].'')))  : null;
-            $value->close_pv != null ? $zip->add(glob(public_path('storage\\'.explode('/',$value->close_pv)[0].'\\'.explode('/',$value->close_pv)[1].'')))  : null;
+        if (file_exists(public_path('storage/documents/' . $auth->id . 'pvs.zip'))) {
+            unlink(public_path('storage/documents/' . $auth->id . 'pvs.zip'));
         }
-      
-      //  $headers = ["Content-Type"=>"application/zip"];
-    
-      $zip->close();
-      // copy('/home/marocnst/public_html/storage/app/public/storage/documents/'.$auth->id.'pvs.zip', '/home/marocnst/public_html/public/storage/documents/'.$auth->id.'pvs.zip');
 
-       return response()->json(['file' => $auth->id.'pvs.zip']);
-      //  return response()->download(public_path('storage\documents\pvs.zip'),'pvs.zip',$headers);
+        $zip = Zipper::make(public_path('storage/documents/' . $auth->id . 'pvs.zip'));
+        foreach ($affects as $value) {
+            $value->pend_pv != null ? $zip->add(glob(public_path('storage/' . explode('/', $value->pend_pv)[0] . '/' . explode('/', $value->pend_pv)[1] . '')))  : null;
+            $value->close_pv != null ? $zip->add(glob(public_path('storage/' . explode('/', $value->close_pv)[0] . '/' . explode('/', $value->close_pv)[1] . '')))  : null;
+        }
+
+        $zip->close();
+
+        return response()->json(['output' => $auth->id . 'pvs.zip']);
 
     }
 }

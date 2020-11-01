@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Produit;
 use App\Equipement;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Agence;
 use App\Clientuser;
 use App\Souscription;
@@ -15,9 +15,11 @@ use App\Souscription;
 class ProduitController extends Controller
 {
     public function index()
-    {
-        $produits = Produit::withTrashed()->get();
+    {   
         $equipements = array();
+
+        $produits = Produit::withTrashed()->get();
+        
         foreach ($produits as $produit) {
             $equipements[$produit->id] = $produit->equipements;
         }
@@ -27,17 +29,18 @@ class ProduitController extends Controller
     public function filter_index(Request $request)
     {
         $filters = array();
+        $equipements = array();
         $produits = null;
-        $request->produit_id == "0" ? $filters[] = ['id','<>',0] :  $filters[] = ['id','=',$request->produit_id];
-        
-        if($request->is_all == "true"){
+        $request->produit_id == "0" ? $filters[] = ['id', '<>', 0] :  $filters[] = ['id', '=', $request->produit_id];
+
+        if ($request->is_all == "true") {
             $produits = Produit::where($filters)->withTrashed()->get();
-        }else{
+        } else {
 
             $request->is_deleted == 'true' ?  $produits = Produit::onlyTrashed()->where($filters)->get() : $produits = Produit::where($filters)->get();
         }
+
         
-        $equipements = array();
         foreach ($produits as $produit) {
             $equipements[$produit->id] = $produit->equipements;
         }
@@ -46,15 +49,18 @@ class ProduitController extends Controller
 
     public function active_produits(Request $request)
     {
+        $affected_ids = array();
+
         $temps = DB::table('souscriptions')
             ->select('produit_id')
             ->groupBy('produit_id')
-            ->where('agence_id', $request->agence)->get();
-        $affected_ids = array();
+            ->where([['agence_id', $request->agence], ['deleted_at', null]])->get();
+        
         foreach ($temps as $temp) {
             $affected_ids[] = $temp->produit_id;
         }
         $produits = Produit::whereNotIn('id', $affected_ids)->get();
+
         return response()->json($produits);
     }
 
@@ -68,7 +74,7 @@ class ProduitController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
         $produit = new Produit();
@@ -92,13 +98,9 @@ class ProduitController extends Controller
             );
             $produit->image = $path;
             $produit->save();
-            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
-
         } else {
             $produit->image = "produits/placeholder.jpg";
             $produit->save();
-            // copy('/home/marocnst/public_html/storage/app/public/produits/placeholder.jpg', '/home/marocnst/public_html/public/storage/produits/placeholder.jpg');
-
         }
 
 
@@ -106,7 +108,7 @@ class ProduitController extends Controller
 
         $equipements[$produit->id] = $produit->equipements;
 
-        $check;
+        $check="";
         $count = Produit::all()->count();
         if (is_null($produit)) {
             $check = "faile";
@@ -127,11 +129,11 @@ class ProduitController extends Controller
     {
         $done = false;
 
-      
+
         $produit = Produit::withTrashed()
             ->where('id', $id)
             ->first();
-            $validator;
+        $validator=null;
         if ($request->filled('nom_p') && $request->nom_p == $produit->nom) {
             $validator = Validator::make($request->all(), [
 
@@ -163,13 +165,11 @@ class ProduitController extends Controller
             );
             $produit->image = $path;
             $produit->save();
-            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
-
         } else {
-            $produit->image = "produits/placeholder.jpg";
-            $produit->save();
-            // copy('/home/marocnst/public_html/storage/app/public/produits/placeholder.jpg', '/home/marocnst/public_html/public/storage/produits/placeholder.jpg');
-
+            if ($request->img_histo == "display: none;") {
+                $produit->image = "produits/placeholder.jpg";
+                $produit->save();
+            }
         }
 
         $equipements = array();
@@ -177,7 +177,7 @@ class ProduitController extends Controller
         $equipements[$produit->id] = $produit->equipements;
         $done = true;
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -194,7 +194,7 @@ class ProduitController extends Controller
 
     public function delete_produit($id)
     {
-        
+
         $done = false;
 
         $temp = Produit::withTrashed()
@@ -211,7 +211,7 @@ class ProduitController extends Controller
 
         $equipements[$produit->id] = $produit->equipements;
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -224,6 +224,7 @@ class ProduitController extends Controller
         ];
         return response()->json($objet);
     }
+
     public function restore_produit($id)
     {
 
@@ -243,7 +244,7 @@ class ProduitController extends Controller
 
         $equipements[$produit->id] = $produit->equipements;
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -274,7 +275,7 @@ class ProduitController extends Controller
 
         $equipements[$produit->id] = $produit->equipements;
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -304,7 +305,7 @@ class ProduitController extends Controller
 
         $equipements[$produit->id] = $produit->equipements;
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -333,7 +334,7 @@ class ProduitController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
         $temp = new Equipement();
@@ -358,13 +359,9 @@ class ProduitController extends Controller
             );
             $temp->image = $path;
             $temp->save();
-            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
-
         } else {
             $temp->image = "produits/placeholder.jpg";
             $temp->save();
-            // copy('/home/marocnst/public_html/storage/app/public/produits/placeholder.jpg', '/home/marocnst/public_html/public/storage/produits/placeholder.jpg');
-
         }
 
         $done = true;
@@ -376,7 +373,7 @@ class ProduitController extends Controller
 
         $equipements[$produit->id] = $produit->equipements;
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -406,7 +403,7 @@ class ProduitController extends Controller
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
         $temp = Equipement::find($e_id);
         $temp->nom = $request->nom_e;
@@ -429,12 +426,11 @@ class ProduitController extends Controller
             );
             $temp->image = $path;
             $temp->save();
-            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
         } else {
-            $temp->image = "produits/placeholder.jpg";
-            $temp->save();
-            // copy('/home/marocnst/public_html/storage/app/public/produits/placeholder.jpg', '/home/marocnst/public_html/public/storage/produits/placeholder.jpg');
-
+            if ($request->img_histo == "display: none;") {
+                $temp->image = "produits/placeholder.jpg";
+                $temp->save();
+            }
         }
 
         $done = true;
@@ -446,7 +442,7 @@ class ProduitController extends Controller
 
         $equipements[$produit->id] = $produit->equipements;
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -467,23 +463,25 @@ class ProduitController extends Controller
 
         $objet =  [
             'equipements' => DB::table('views_detail_souscription')
-                ->select('equip_id', 'equip_nom')
+                ->select('equip_id', 'equip_nom', 'equip_deleted_at', 'souscription_deleted_at')
                 ->groupBy('equip_id')
                 ->where([
                     ['agence_id', $request->id_a],
                     ['prod_id',   $request->id_p],
+                    ['equip_deleted_at', null],
+                    ['souscription_deleted_at', null],
                 ])->get(),
             'refs' => DB::table('views_detail_souscription')
-                ->select('ref_id', 'equip_id', 'ref', DB::raw('count(ref) as ref_ne'))
+                ->select('ref_id', 'equip_id', 'ref', DB::raw('count(ref) as ref_ne'), 'souscription_deleted_at')
                 ->where([
                     ['agence_id', $request->id_a],
                     ['prod_id',   $request->id_p],
+                    ['souscription_deleted_at', null],
                 ])->groupBy('equip_id', 'ref', 'ref_id')
                 ->get()
         ];
         return response()->json($objet);
     }
-
     public function index_equipement($produit_id)
     {
         $produit = Produit::find($produit_id);
@@ -493,18 +491,18 @@ class ProduitController extends Controller
     public function attach_prod(Request $request)
     {
         $done = false;
-       
+
         $validator = Validator::make($request->all(), [
 
             'data' => 'required',
-    
+
 
         ]);
 
 
         if ($validator->fails()) {
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
         foreach ($request->data as $data) {
@@ -522,10 +520,10 @@ class ProduitController extends Controller
             ->where('id', $request->agence)
             ->first();
 
-        // $chef = Clientuser::where([
-        //     ['clientable_id', '=', $agence->id],
-        //     ['clientable_type', "=", "agence"],
-        // ])->first();
+        $chef = Clientuser::where([
+            ['clientable_id', '=', $agence->id],
+            ['clientable_type', "=", "agence"],
+        ])->first();
 
         $souscription = [
             'id' => $agence->id,
@@ -537,7 +535,7 @@ class ProduitController extends Controller
 
         ];
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -547,7 +545,7 @@ class ProduitController extends Controller
         $objet =  [
             'check' => $check,
             'agence' => $agence,
-           // 'chef' => $chef,
+            'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville,
             'inputs' => $request->all()
@@ -559,23 +557,21 @@ class ProduitController extends Controller
     {
         $done = false;
 
-        //    $scrs =
+       
         Souscription::where([
             ['agence_id', '=', $request->agence],
             ['produit_id', "=", $request->produit],
         ])->delete();
-        // foreach ($scrs as $scr) {
-        //     $scr->delete()
-        // }
+      
         $done = true;
         $agence = Agence::withTrashed()
             ->where('id', $request->agence)
             ->first();
 
-        // $chef = Clientuser::where([
-        //     ['clientable_id', '=', $agence->id],
-        //     ['clientable_type', "=", "agence"],
-        // ])->first();
+        $chef = Clientuser::where([
+            ['clientable_id', '=', $agence->id],
+            ['clientable_type', "=", "agence"],
+        ])->first();
 
         $souscription = [
             'id' => $agence->id,
@@ -587,7 +583,7 @@ class ProduitController extends Controller
 
         ];
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -597,7 +593,7 @@ class ProduitController extends Controller
         $objet =  [
             'check' => $check,
             'agence' => $agence,
-          //  'chef' => $chef,
+            'chef' => $chef,
             'souscription' => $souscription,
             'ville' => $agence->ville
         ];
@@ -606,36 +602,99 @@ class ProduitController extends Controller
 
     public function save_ref(Request $request)
     {
-        
-        $scr = Souscription::find($request->id);
 
-        $validator;
-        if ($request->filled('value') && $request->value == $scr->equip_ref) {
-            $validator = Validator::make($request->all(), [
 
-                'value' => 'required',
-            ]);
+
+        $data = array();
+
+        if ($request->nb == "one") {
+            $data[] = ['id' => $request->id, 'value' => $request->value];
         } else {
-            $validator = Validator::make($request->all(), [
+            $ids = explode('|', substr($request->id, 1));
+            $values = explode('|', substr($request->value, 1));
 
-                'value' => 'required|unique:souscriptions,equip_ref',
-
-            ]);
+            foreach ($ids as $key => $value) {
+                $data[] = ['id' => $ids[$key], 'value' => trim($values[$key])];
+            }
         }
 
-        if ($validator->fails()) {
+        foreach ($data as $obj) {
+            $scr = Souscription::find($obj['id']);
 
-            return response()->json(['error' => $validator->errors(),'inputs' => $request->all()]);
+            $validator = null;
+
+            if ($obj['value'] != "") {
+                if ($obj['value'] == $scr->equip_ref) {
+                    $validator = Validator::make($obj, [
+
+                        'value' => 'required',
+                    ]);
+                } else {
+                    $temp = Souscription::where('equip_ref', $obj['value'])->get();
+
+                    if (count($temp) > 0) {
+                        $validator = Validator::make($obj, [
+
+                            'value' => 'required|unique:souscriptions,equip_ref',
+
+                        ]);
+                    } else {
+                        $validator = Validator::make($obj, [
+
+                            'value' => 'required',
+                        ]);
+                    }
+                }
+                if ($validator->fails()) {
+
+                    return response()->json(['error' => $validator->errors(), 'inputs' => $obj]);
+                }
+            }
+
+            $obj['value'] != "" ?  $scr->equip_ref = $obj['value'] : null;
+            $scr->save();
         }
 
-        $scr->equip_ref = $request->value;
-        $scr->save();
+
 
         $objet =  [
             'check' => "done",
             'souscription' => $scr,
-            'inputs' => $request->all()
-         
+            'inputs' => $data
+
+        ];
+
+        return response()->json($objet);
+    }
+
+    public function delete_ref(Request $request)
+    {
+        $scr = Souscription::find($request->id);
+
+        $temp = DB::table('views_detail_souscription')
+            ->select('ref_id', 'equip_id', 'ref', 'souscription_deleted_at')
+            ->where([
+                ['equip_id', $scr->equipement_id],
+                ['agence_id',   $scr->agence_id],
+                ['souscription_deleted_at', null],
+            ])->groupBy('equip_id', 'ref', 'ref_id')
+            ->get();
+
+        if (count($temp) == 1) {
+            Souscription::where([
+                ['equipement_id', $scr->equipement_id],
+                ['agence_id',   $scr->agence_id],
+            ])->delete();
+        }
+
+        $scr->delete();
+
+        $objet =  [
+            'check' => "done",
+            'souscription' => $scr,
+            'inputs' => $request->all(),
+            'count' => count($temp)
+
         ];
 
         return response()->json($objet);

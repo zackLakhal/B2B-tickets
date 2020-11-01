@@ -108,8 +108,6 @@
 
                 <div class="form-group" id="pic_id">
 
-                    <label for="produit">produit</label>
-                    <input type="file" id="produit" name="produit" class="dropify" data-default-file="{{ asset('storage/produits/placeholder.jpg') }}" />
                 </div>
 
             </div>
@@ -150,8 +148,7 @@
 
                 <div class="form-group" id="eic_id">
 
-                    <label for="equip">equipement</label>
-                    <input type="file" id="equip" name="equip" class="dropify" data-default-file="{{ asset('storage/produits/placeholder.jpg') }}" />
+                    
                 </div>
 
 
@@ -305,7 +302,11 @@
         $('#modalhead').html("<h4 class=\"modal-title\" >Nouveau produit</h4>" +
             "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
         $('#modalfooter').html("<button type=\"button\" class=\"btn btn-info\" id=\"save_p\">Enregistrer</button>");
-
+        
+        $('#pic_id').html("<label for=\"produit\">avatar</label>" +
+            "<input type=\"file\" id=\"produit\" name=\"produit\" class=\"dropify\" data-default-file=\"{{ asset('storage/produits/placeholder.jpg') }}\"  />");
+        $('.dropify').dropify();
+        
         $('#nom_p').val("");
         $('#info_p').val("");
         $('#exampleModal').modal('show');
@@ -739,6 +740,7 @@
             form_data.append("produit", $('#produit')[0].files[0]);
             form_data.append("nom_p", $('#nom_p').val());
             form_data.append("info_p", $('#info_p').val());
+            form_data.append("img_histo",$('#dropify-preview-id').attr('style'));
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/produits/edit/" + id,
                 dataType: "json",
@@ -841,6 +843,10 @@
             "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>");
         $('#equipementfooter').html("<button type=\"button\" class=\"btn btn-info\" id=\"save_e\">Enregistrer</button>");
 
+        $('#eic_id').html("<label for=\"equip\">avatar</label>" +
+            "<input type=\"file\" id=\"equip\" name=\"equip\" class=\"dropify\" data-default-file=\"{{ asset('storage/produits/placeholder.jpg') }}\"  />");
+        $('.dropify').dropify();
+        
         $('#equipementmodal').modal('show');
 
         $('#nom_e').val("");
@@ -979,6 +985,7 @@
             form_data.append("info_e", $('#info_e').val());
             form_data.append("modele_e", $('#modele_e').val());
             form_data.append("marque_e", $('#marque_e').val());
+            form_data.append("img_histo",$('#dropify-preview-id').attr('style'));
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/produits/" + id + "/equipements/edit/" + id_e,
                 dataType: "json",

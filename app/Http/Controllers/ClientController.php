@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-
 use Illuminate\Http\Request;
 use App\Client;
 use App\Departement;
@@ -22,7 +21,10 @@ class ClientController extends Controller
     {
         $clients = null;
         $auth = null;
+        $departements = array();
+
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+
         switch ($auth->role_id) {
             case 4:
                 $clients = Client::where('id', $auth->created_by)->get();
@@ -34,7 +36,8 @@ class ClientController extends Controller
                 $clients = Client::withTrashed()->get();
                 break;
         }
-        $departements = array();
+
+
         foreach ($clients as  $client) {
             $departements[] = Departement::withTrashed()->where('client_id', $client->id)->first();
         }
@@ -44,7 +47,6 @@ class ClientController extends Controller
             'departements' => $departements
         ];
 
-
         return response()->json($obj);
     }
 
@@ -52,18 +54,19 @@ class ClientController extends Controller
     {
         $filters = array();
         $clients = null;
+        $departements = array();
+
         $request->client_id == "0" ? $filters[] = ['id', '<>', 0] :  $filters[] = ['id', '=', $request->client_id];
 
-
         if ($request->is_all == "true") {
+
             $clients = Client::where($filters)->withTrashed()->get();
         } else {
 
             $request->is_deleted == 'true' ?  $clients = Client::onlyTrashed()->where($filters)->get() : $clients = Client::where($filters)->get();
         }
-        //return response()->json($request->all());
-        //return response()->json($filters);
-        $departements = array();
+
+
         foreach ($clients as  $client) {
             $departements[] = Departement::withTrashed()->where('client_id', $client->id)->first();
         }
@@ -82,6 +85,7 @@ class ClientController extends Controller
         $clients = null;
         $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+
         switch ($auth->role_id) {
             case 4:
                 $clients = Client::where('id', $auth->created_by)->get();
@@ -102,7 +106,7 @@ class ClientController extends Controller
     {
 
         $done = false;
-        
+
         $temp = Client::find($id);
         $userclient = Clientuser::where('created_by', '=', $temp->id)->first();
         $departement = Departement::where('client_id', $id)->first();
@@ -111,16 +115,11 @@ class ClientController extends Controller
         $userclient->delete();
         $done = true;
 
-
-
-
         $client = Client::withTrashed()
             ->where('id', $id)
             ->first();
 
-
-
-        $check;
+        $check = "";
         if (!$done) {
             $check = "faile";
         } else {
@@ -132,8 +131,10 @@ class ClientController extends Controller
             'client' => $client,
             'departement' => $departement
         ];
+
         return response()->json($objet);
     }
+
     public function restore_client($id)
     {
 
@@ -148,6 +149,7 @@ class ClientController extends Controller
 
         $userclient = Clientuser::withTrashed()
             ->where('created_by', '=', $temp->id)->first();
+
         $temp->restore();
         $departement->restore();
         $userclient->restore();
@@ -158,7 +160,7 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -258,13 +260,11 @@ class ClientController extends Controller
             );
             $client->photo = $path;
             $client->save();
-            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
-
         } else {
-            $client->photo = "clients/placeholder.jpg";
-            $client->save();
-            // copy('/home/marocnst/public_html/storage/app/public/clients/placeholder.jpg', '/home/marocnst/public_html/public/storage/clients/placeholder.jpg');
-
+            if ($request->img_histo == "display: none;") {
+                $client->photo = "clients/placeholder.jpg";
+                $client->save();
+            }
         }
 
 
@@ -275,7 +275,7 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        $check;
+        $check = "";
         if (!$done) {
             $check = "faile";
         } else {
@@ -285,7 +285,8 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'client' => $client,
-            'inputs' => $request->all()
+            'inputs' => $request->all(),
+            'departement' => $departement
         ];
         return response()->json($objet);
     }
@@ -346,16 +347,12 @@ class ClientController extends Controller
             );
             $client->photo = $path;
             $client->save();
-            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
-
         } else {
             $client->photo = "clients/placeholder.jpg";
             $client->save();
-            // copy('/home/marocnst/public_html/storage/app/public/clients/placeholder.jpg', '/home/marocnst/public_html/public/storage/clients/placeholder.jpg');
-
         }
 
-        $check;
+        $check="";
         $count = client::all()->count();
         if (is_null($client)) {
             $check = "faile";
@@ -397,18 +394,9 @@ class ClientController extends Controller
                 break;
         }
 
-        // $chefs = array();
-        // foreach ($departements as $departement) {
-        //     $chefs[] = Clientuser::where([
-        //         ['clientable_id', '=', $departement->id],
-        //         ['clientable_type', "=", "departement"],
-        //     ])
-        //         ->first();
-        // }
+        
         $objet =  [
             'departements' => $departements,
-            //'chefs' => $chefs,
-
         ];
         return response()->json($objet);
     }
@@ -430,57 +418,13 @@ class ClientController extends Controller
             $request->is_deleted == 'true' ?  $departements = Departement::onlyTrashed()->where($filters)->get() : $departements = Departement::where($filters)->get();
         }
 
-
-
-        // $chefs = array();
-        // foreach ($departements as $departement) {
-        //     $chefs[] = Clientuser::where([
-        //         ['clientable_id', '=', $departement->id],
-        //         ['clientable_type', "=", "departement"],
-        //     ])
-        //         ->first();
-        // }
         $objet =  [
-            'departements' => $departements,
-            //'chefs' => $chefs,
-
+            'departements' => $departements
         ];
         return response()->json($objet);
     }
 
-    // public function affecter(Request $request, $id_c)
-    // {
-    //     if ($request->current_u != 0) {
-    //         $current_user =  Clientuser::where('id', $request->current_u)
-    //             ->first();
-
-    //         $current_user->clientable_id = null;
-    //         $current_user->clientable_type = null;
-    //         $current_user->is_affected = false;
-    //         $current_user->save();
-    //     }
-
-
-
-    //     $user = Clientuser::where('id', $request->id_u)
-    //         ->first();
-
-    //     $user->clientable_id = $request->id_d;
-    //     $user->clientable_type = "departement";
-    //     $user->is_affected = true;
-    //     $user->save();
-
-    //     $departement = Departement::withTrashed()
-    //         ->where('id', $request->id_d)
-    //         ->first();
-
-    //     $objet =  [
-    //         'departement' => $departement,
-    //         'chef' => $user,
-
-    //     ];
-    //     return response()->json($objet);
-    // }
+  
 
     public function delete_departement($id_c, $id)
     {
@@ -496,13 +440,7 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        // $chef = Clientuser::where([
-        //     ['clientable_id', '=', $departement->id],
-        //     ['clientable_type', "=", "departement"],
-        // ])
-        //     ->first();
-
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -511,8 +449,7 @@ class ClientController extends Controller
 
         $objet =  [
             'check' => $check,
-            'departement' => $departement,
-            // 'chef' => $chef,
+            'departement' => $departement
         ];
         return response()->json($objet);
     }
@@ -532,13 +469,9 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        // $chef = Clientuser::where([
-        //     ['clientable_id', '=', $departement->id],
-        //     ['clientable_type', "=", "departement"],
-        // ])
-        //     ->first();
+      
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -547,8 +480,7 @@ class ClientController extends Controller
 
         $objet =  [
             'check' => $check,
-            'departement' => $departement,
-            // 'chef' => $chef,
+            'departement' => $departement
         ];
         return response()->json($objet);
     }
@@ -556,8 +488,6 @@ class ClientController extends Controller
     public function edit_departement(Request $request, $id_c, $id)
     {
         $done = false;
-
-
 
         $departement = Departement::withTrashed()
             ->where('id', $id)
@@ -585,13 +515,7 @@ class ClientController extends Controller
         $departement->save();
         $done = true;
 
-        // $chef = Clientuser::where([
-        //     ['clientable_id', '=', $departement->id],
-        //     ['clientable_type', "=", "departement"],
-        // ])
-        //     ->first();
-
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -601,7 +525,6 @@ class ClientController extends Controller
         $objet =  [
             'check' => $check,
             'departement' => $departement,
-            //'chef' => $chef,
             'inputs' => $request->all()
         ];
         return response()->json($objet);
@@ -629,8 +552,10 @@ class ClientController extends Controller
         $departement->email = $request->email;
         $departement->tel = $request->tel;
         $departement->save();
-        $check;
+
+        $check="";
         $count = Departement::all()->count();
+
         if (is_null($departement)) {
             $check = "faile";
         } else {
@@ -664,25 +589,23 @@ class ClientController extends Controller
                 break;
         }
 
-
-
-           $chefs = array();
+        $chefs = array();
         $villes = array();
         $souscriptions = array();
         foreach ($agences as $agence) {
             $chefs[] = Clientuser::withTrashed()
-            ->where([
-                ['clientable_id', '=', $agence->id],
-                ['clientable_type', "=", "agence"],
-            ])->first();
+                ->where([
+                    ['clientable_id', '=', $agence->id],
+                    ['clientable_type', "=", "agence"],
+                ])->first();
             $villes[] = $agence->ville;
 
             $souscriptions[] = [
                 'id' => $agence->id,
                 'produits'  => DB::table('views_detail_souscription')
-                    ->select('prod_id', 'prod_nom', 'prod_etat')
+                    ->select('prod_id', 'prod_nom', 'prod_etat', 'souscription_deleted_at')
                     ->groupBy('prod_id', 'prod_etat')
-                    ->where('agence_id', $agence->id)
+                    ->where([['agence_id', $agence->id], ['souscription_deleted_at', null]])
                     ->get()
 
             ];
@@ -718,24 +641,24 @@ class ClientController extends Controller
             $request->is_deleted == 'true' ?  $agences = Agence::onlyTrashed()->where($filters)->get() : $agences = Agence::where($filters)->get();
         }
 
-          $chefs = array();
+        $chefs = array();
         $villes = array();
         $souscriptions = array();
         foreach ($agences as $agence) {
             $chefs[] = Clientuser::withTrashed()
-            ->where([
-                ['clientable_id', '=', $agence->id],
-                ['clientable_type', "=", "agence"],
-            ])
+                ->where([
+                    ['clientable_id', '=', $agence->id],
+                    ['clientable_type', "=", "agence"],
+                ])
                 ->first();
             $villes[] = $agence->ville;
 
             $souscriptions[] = [
                 'id' => $agence->id,
                 'produits'  => DB::table('views_detail_souscription')
-                    ->select('prod_id', 'prod_nom', 'prod_etat')
+                    ->select('prod_id', 'prod_nom', 'prod_etat', 'souscription_deleted_at')
                     ->groupBy('prod_id', 'prod_etat')
-                    ->where('agence_id', $agence->id)
+                    ->where([['agence_id', $agence->id], ['souscription_deleted_at', null]])
                     ->get()
 
             ];
@@ -753,8 +676,6 @@ class ClientController extends Controller
     }
 
 
-
-
     public function delete_agence($id_c, $id_d, $id)
     {
 
@@ -762,32 +683,38 @@ class ClientController extends Controller
 
         $temp = Agence::find($id);
         $userclient = Clientuser::where('email', '=', $temp->email)->first();
-        // return response()->json($userclient);
         $temp->delete();
         $userclient->delete();
         $done = true;
-
 
         $agence = Agence::withTrashed()
             ->where('id', $id)
             ->first();
 
+        $dep = Departement::withTrashed()
+            ->where('id', $agence->departement_id)
+            ->first();
+
+        $agence_client =  Client::withTrashed()
+            ->where('id', $dep->client_id)
+            ->first();
+
         $chef = Clientuser::withTrashed()
-        ->where([
-            ['clientable_id', '=', $agence->id],
-            ['clientable_type', "=", "agence"],
-        ])->first();
+            ->where([
+                ['clientable_id', '=', $agence->id],
+                ['clientable_type', "=", "agence"],
+            ])->first();
         $souscription = [
             'id' => $agence->id,
             'produits'  => DB::table('views_detail_souscription')
-                ->select('prod_id', 'prod_nom', 'prod_etat')
+                ->select('prod_id', 'prod_nom', 'prod_etat', 'souscription_deleted_at')
                 ->groupBy('prod_id', 'prod_etat')
-                ->where('agence_id', $agence->id)
+                ->where([['agence_id', $agence->id], ['souscription_deleted_at', null]])
                 ->get()
 
         ];
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -799,7 +726,8 @@ class ClientController extends Controller
             'agence' => $agence,
             'chef' => $chef,
             'souscription' => $souscription,
-            'ville' => $agence->ville
+            'ville' => $agence->ville,
+            'agence_client' => $agence_client
         ];
         return response()->json($objet);
     }
@@ -811,34 +739,44 @@ class ClientController extends Controller
         $temp =  Agence::withTrashed()
             ->where('id', $id)
             ->first();
+
         $userclient = Clientuser::withTrashed()
             ->where('email', '=', $temp->email)->first();
+
         $temp->restore();
         $userclient->restore();
         $done = true;
-
 
         $agence = Agence::withTrashed()
             ->where('id', $id)
             ->first();
 
+        $dep = Departement::withTrashed()
+            ->where('id', $agence->departement_id)
+            ->first();
+
+        $agence_client =  Client::withTrashed()
+            ->where('id', $dep->client_id)
+            ->first();
+
+
         $chef = Clientuser::withTrashed()
-        ->where([
-            ['clientable_id', '=', $agence->id],
-            ['clientable_type', "=", "agence"],
-        ])->first();
+            ->where([
+                ['clientable_id', '=', $agence->id],
+                ['clientable_type', "=", "agence"],
+            ])->first();
 
         $souscription = [
             'id' => $agence->id,
             'produits'  => DB::table('views_detail_souscription')
-                ->select('prod_id', 'prod_nom', 'prod_etat')
+                ->select('prod_id', 'prod_nom', 'prod_etat', 'souscription_deleted_at')
                 ->groupBy('prod_id', 'prod_etat')
-                ->where('agence_id', $agence->id)
+                ->where([['agence_id', $agence->id], ['souscription_deleted_at', null]])
                 ->get()
 
         ];
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -850,7 +788,8 @@ class ClientController extends Controller
             'agence' => $agence,
             'chef' => $chef,
             'souscription' => $souscription,
-            'ville' => $agence->ville
+            'ville' => $agence->ville,
+            'agence_client' => $agence_client
         ];
         return response()->json($objet);
     }
@@ -863,7 +802,7 @@ class ClientController extends Controller
             ->where('id', $id)
             ->first();
 
-        $validator;
+        $validator = null;
         if (count(explode('@', $request->email)) < 2) {
             $request->email = $request->email . '@gmail.com';
         }
@@ -895,12 +834,10 @@ class ClientController extends Controller
             return response()->json(['error' => $validator->errors(), 'inputs' => $request->all()]);
         }
 
-       
-
         $userclient = Clientuser::withTrashed()
             ->where('email', '=',  $agence->email)->first();
         $temp = explode("@", $request->email);
-       // return response()->json($userclient);
+
         $userclient->name = $temp[0];
         $userclient->email = $request->email;
         $userclient->save();
@@ -915,22 +852,22 @@ class ClientController extends Controller
         $done = true;
 
         $chef = Clientuser::withTrashed()
-        ->where([
-            ['clientable_id', '=', $agence->id],
-            ['clientable_type', "=", "agence"],
-        ])->first();
+            ->where([
+                ['clientable_id', '=', $agence->id],
+                ['clientable_type', "=", "agence"],
+            ])->first();
 
         $souscription = [
             'id' => $agence->id,
             'produits'  => DB::table('views_detail_souscription')
-                ->select('prod_id', 'prod_nom', 'prod_etat')
+                ->select('prod_id', 'prod_nom', 'prod_etat', 'souscription_deleted_at')
                 ->groupBy('prod_id', 'prod_etat')
-                ->where('agence_id', $agence->id)
+                ->where([['agence_id', $agence->id], ['souscription_deleted_at', null]])
                 ->get()
 
         ];
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {
@@ -992,8 +929,16 @@ class ClientController extends Controller
         $user->clientable_type = "agence";
         $user->save();
 
+        $dep = Departement::withTrashed()
+            ->where('id', $agence->departement_id)
+            ->first();
 
-        $check;
+        $agence_client =  Client::withTrashed()
+            ->where('id', $dep->client_id)
+            ->first();
+
+
+        $check="";
         $count = Agence::all()->count();
         if (is_null($agence)) {
             $check = "faile";
@@ -1007,53 +952,10 @@ class ClientController extends Controller
             'agence' => $agence,
             'chef' => $user,
             'ville' => $agence->ville,
-            'inputs' => $request->all()
+            'inputs' => $request->all(),
+            'agence_client' => $agence_client
         ];
         return response()->json($objet);
     }
-    // public function affecter_agence(Request $request, $id_c, $id_d)
-    // {
-    //     if ($request->current_u != 0) {
-    //         $current_user =  Clientuser::where('id', $request->current_u)
-    //             ->first();
-
-    //         $current_user->clientable_id = null;
-    //         $current_user->clientable_type = null;
-    //         $current_user->is_affected = false;
-    //         $current_user->save();
-    //     }
-
-
-
-    //     $user = Clientuser::where('id', $request->id_u)
-    //         ->first();
-
-    //     $user->clientable_id = $request->id_a;
-    //     $user->clientable_type = "agence";
-    //     $user->is_affected = true;
-    //     $user->save();
-
-    //     $agence = Agence::withTrashed()
-    //         ->where('id', $request->id_a)
-    //         ->first();
-
-    //     $souscription = [
-    //         'id' => $agence->id,
-    //         'produits'  => DB::table('views_detail_souscription')
-    //             ->select('prod_id', 'prod_nom', 'prod_etat')
-    //             ->groupBy('prod_id', 'prod_etat')
-    //             ->where('agence_id', $agence->id)
-    //             ->get()
-
-    //     ];
-
-    //     $objet =  [
-    //         'agence' => $agence,
-    //         'chef' => $user,
-    //         'souscription' => $souscription,
-    //         'ville' => $agence->ville
-
-    //     ];
-    //     return response()->json($objet);
-    // }
+    
 }

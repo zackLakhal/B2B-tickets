@@ -54,22 +54,19 @@ class Handler extends ExceptionHandler
 
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        if($request->expectsJson())
-        {
-            return response()->json(['error' => 'Unauthenticated.'], 401);  
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
         $guard = array_get($exception->guards(), 0);
 
-        switch($guard)
-        {
-            case 'client' :
+        switch ($guard) {
+            case 'client':
                 $this->authenticationCheck($guard) ? $login = "client.login" : $login = 'client.login';
                 break;
-            case 'nst' :
+            case 'nst':
                 $this->authenticationCheck($guard) ? $login = "nst.login" : $login = 'nst.login';
                 break;
-           
         }
         return redirect()->guest(route($login));
     }
@@ -78,12 +75,10 @@ class Handler extends ExceptionHandler
     {
         $guards = array("client", "nst");
         $authenticated = false;
-        $index = array_search($guard,$guards);
-        $i=0;
-        while($i<2 && !$authenticated)
-        {
-            if($i != $index)
-            {
+        $index = array_search($guard, $guards);
+        $i = 0;
+        while ($i < 2 && !$authenticated) {
+            if ($i != $index) {
                 Auth::guard($guards[$i])->check() ?  $authenticated = true :  $authenticated = false;
             }
             $i++;

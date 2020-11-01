@@ -86,7 +86,7 @@ class RoleController extends Controller
         $role = new Role();
         $role->value = $request->value;
         $role->save();
-        $check;
+        $check="";
         $count = Role::all()->count();
         if (is_null($role)) {
             $check = "faile";
@@ -163,7 +163,7 @@ class RoleController extends Controller
             ->where('id', $id)
             ->first();
 
-        $check;
+        $check="";
         if (!$done) {
             $check = "faile";
         } else {

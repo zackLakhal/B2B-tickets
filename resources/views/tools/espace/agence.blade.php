@@ -501,6 +501,7 @@
                 message = "votre mot de passe n'est pas changé";
             }
             $('#content').html(message);
+            
 
 
         });

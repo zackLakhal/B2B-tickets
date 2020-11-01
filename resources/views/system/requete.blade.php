@@ -7,7 +7,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item text-themecolor"><a href="javascript:void(0)">Home</a></li>
             <li class="breadcrumb-item text-themecolor">Système</li>
-            <li class="breadcrumb-item active">Gérer les requests</li>
+            <li class="breadcrumb-item active">Contact</li>
         </ol>
     </div>
     <div class="col-md-7 col-4 align-self-center">

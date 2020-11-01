@@ -8,21 +8,19 @@ use Illuminate\Http\Request;
 use App\Reclamation;
 use App\Client;
 use App\Departement;
-use App\Equipement;
-use App\Exports\PvsExport;
-use App\Produit;
+
 use App\Souscription;
-use Maatwebsite\Excel\Facades\Excel;
-use mikehaertl\wkhtmlto\Pdf;
+
 use App\Nstuser;
 use App\Affectation;
 use App\Clientuser;
 use App\Closed;
+
+use App\Mailpend;
 use App\Pending;
 use Illuminate\Support\Facades\DB;
-use DateTime;
 use Illuminate\Support\Facades\Auth;
-use Zipper;
+
 class ReclamationController extends Controller
 {
     public function index()
@@ -103,7 +101,6 @@ class ReclamationController extends Controller
 
 
         $user = intval($request->role_id) == 4 || intval($request->role_id) == 5 ? Clientuser::find(intval($request->id)) : Nstuser::find(intval($request->id));
-        // return response()->json($request->all());
         $agencewhere = [['etats.id', '<>', intval($request->is_agence)]];
         switch ($user->role_id) {
             case 3:
@@ -272,9 +269,28 @@ class ReclamationController extends Controller
                 'equipements.nom as equip_nom',
                 'agences.nom as agence_nom',
                 'departements.nom as depart_nom',
-                'clients.nom as client_nom'
+                'clients.nom as client_nom',
+                'clients.id as client_id'
             )->where('reclamations.ref', '=', $request->ref)
             ->groupBy('reclamations.id')->first();
+
+
+        $staff = "";
+        $userstmp = Nstuser::where('role_id', 1)->get();
+        $clientemp = Clientuser::where('created_by', $reclamation->client_id)->first();
+
+        foreach ($userstmp as $user) {
+            $staff = $staff . "_" . $user->id;
+        }
+        $staff = $request->id_u . "" . $staff;
+
+
+        $mail = new Mailpend();
+        $mail->client = $clientemp->id;
+        $mail->staff = $staff;
+        $mail->reclamations = $reclamation->reclamation_id;
+        $mail->action = "affected";
+        $mail->save();
 
         return response()->json($reclamation);
     }
@@ -332,9 +348,27 @@ class ReclamationController extends Controller
                 'equipements.nom as equip_nom',
                 'agences.nom as agence_nom',
                 'departements.nom as depart_nom',
-                'clients.nom as client_nom'
+                'clients.nom as client_nom',
+                'clients.id as client_id'
             )->where('reclamations.ref', '=', $request->ref)
             ->groupBy('reclamations.id')->first();
+
+        $staff = "";
+        $userstmp = Nstuser::whereIn('role_id', [1, 2])->get();
+        $clientemp = Clientuser::where('created_by', $reclamation->client_id)->first();
+
+        foreach ($userstmp as $user) {
+            $staff = $staff . "_" . $user->id;
+        }
+        $staff = $affect->nstuser_id . "" . $staff;
+
+
+        $mail = new Mailpend();
+        $mail->client = $clientemp->id;
+        $mail->staff = $staff;
+        $mail->reclamations = $reclamation->reclamation_id;
+        $mail->action = "accepted";
+        $mail->save();
 
         return response()->json($reclamation);
     }
@@ -344,22 +378,27 @@ class ReclamationController extends Controller
 
         $rec = Reclamation::where('ref', $request->ref)->first();
         $affect = Affectation::where('reclamation_id', $rec->id)->first();
-        $agence = $rec->souscription->agence;
+
+        $souscriptiontemp = Souscription::withTrashed()->where('id', $rec->souscription_id)->first();
+        $agence = $souscriptiontemp->agence;
         $rapport = null;
         $folder = "";
         $type = "";
+        $rapport_type = "";
         if ($request->etat_id == 2) {
             $rapport =  new Pending();
             $folder = "pending_pvs";
             $type = "pending";
             $rec->etat_id = 2;
             $rec->checked_at = date('Y-m-d H:i:s');
+            $rapport_type = "pending";
         } else {
             $rapport = new Closed();
             $folder = "closed_pvs";
             $type = "closed";
             $rec->etat_id = 3;
             $rec->finished_at = date('Y-m-d H:i:s');
+            $rapport_type = "closed";
         }
         $rec->save();
 
@@ -374,14 +413,12 @@ class ReclamationController extends Controller
 
         if ($request->with_pv == 'true' && $request->file('pv_image')) {
             $file = $request->file('pv_image');
-            $image = $agence->nom.'_'.$rec->ref."_".$type.'.' . $file->getClientOriginalExtension();
+            $image = $agence->nom . '_' . $rec->ref . "_" . $type . '.' . $file->getClientOriginalExtension();
             $path = $request->file('pv_image')->storeAs(
                 $folder,
                 $rec->id . "_" . $image
             );
             $rapport->pv = $path;
-            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
-
 
         }
         $rapport->save();
@@ -431,9 +468,28 @@ class ReclamationController extends Controller
                 'equipements.nom as equip_nom',
                 'agences.nom as agence_nom',
                 'departements.nom as depart_nom',
-                'clients.nom as client_nom'
+                'clients.nom as client_nom',
+                'clients.id as client_id'
             )->where('reclamations.ref', '=', $request->ref)
             ->groupBy('reclamations.id')->first();
+
+        $staff = "";
+        $userstmp = Nstuser::whereIn('role_id', [1, 2])->get();
+        $clientemp = Clientuser::where('created_by', $reclamation->client_id)->first();
+
+        foreach ($userstmp as $user) {
+            $staff = $staff . "_" . $user->id;
+        }
+        $staff = $affect->nstuser_id . "" . $staff;
+
+
+        $mail = new Mailpend();
+        $mail->client = $clientemp->id;
+        $mail->staff = $staff;
+        $mail->reclamations = $reclamation->reclamation_id;
+        $mail->action = $rapport_type;
+        $mail->save();
+
 
         return response()->json($reclamation);
     }
@@ -464,7 +520,6 @@ class ReclamationController extends Controller
             ->leftJoin('agences', 'souscriptions.agence_id', '=', 'agences.id')
             ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
             ->leftJoin('clients', 'departements.client_id', '=', 'clients.id')
-            // ->leftJoin('clientusers', 'agences.id', '=', 'clientusers.clientable_id')
             ->select(
                 'reclamations.id as reclamation_id',
                 'reclamations.ref as reclamation_ref',
@@ -517,15 +572,17 @@ class ReclamationController extends Controller
         $rapport = null;
         $folder = "";
         $type = "";
+        $rapport_type = "";
         if ($request->etat_id == 2) {
             $rapport =   Pending::find($request->rapport_id);
             $folder = "pending_pvs";
             $type = "pending";
-
+            $rapport_type = "en traitement";
         } else {
             $rapport =  Closed::find($request->rapport_id);
             $folder = "closed_pvs";
             $type = "closed";
+            $rapport_type = "clôturé";
         }
 
         if ($request->etat_id == 3) {
@@ -536,13 +593,12 @@ class ReclamationController extends Controller
 
         if ($request->with_pv == 'true' && $request->file('pv_image')) {
             $file = $request->file('pv_image');
-            $image = $agence->nom.'_'.$rec->ref."_".$type.'.' . $file->getClientOriginalExtension();
+            $image = $agence->nom . '_' . $rec->ref . "_" . $type . '.' . $file->getClientOriginalExtension();
             $path = $request->file('pv_image')->storeAs(
                 $folder,
                 $rec->id . "_" . $image
             );
             $rapport->pv = $path;
-            // copy('/home/marocnst/public_html/storage/app/public/'.$path, '/home/marocnst/public_html/public/storage/'.$path);
 
         }
         $rapport->save();
@@ -592,9 +648,26 @@ class ReclamationController extends Controller
                 'equipements.nom as equip_nom',
                 'agences.nom as agence_nom',
                 'departements.nom as depart_nom',
-                'clients.nom as client_nom'
+                'clients.nom as client_nom',
+                'clients.id as client_id'
             )->where('reclamations.ref', '=', $request->ref)
             ->groupBy('reclamations.id')->first();
+
+        $staff = "";
+        $userstmp = Nstuser::whereIn('role_id', [1, 2])->get();
+        $clientemp = Clientuser::where('created_by', $reclamation->client_id)->first();
+
+        foreach ($userstmp as $user) {
+            $staff = $staff . "_" . $user->id;
+        }
+        $staff = $reclamation->tech_id . "" . $staff;
+
+        $mail = new Mailpend();
+        $mail->client = $clientemp->id;
+        $mail->staff = $staff;
+        $mail->reclamations = $reclamation->reclamation_id;
+        $mail->action = $rapport_type;
+        $mail->save();
 
         return response()->json($reclamation);
     }
@@ -606,7 +679,7 @@ class ReclamationController extends Controller
         $clientwhere = array();
 
         $user = Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
-      
+
         $agencewhere = [['etats.id', '<>', intval($request->is_agence)]];
         switch ($user->role_id) {
             case 3:
@@ -679,83 +752,11 @@ class ReclamationController extends Controller
             ];
         }
 
-        //////////////////
-
-        // $clients = array();
-
-        // $clienttemps = null;
-        // $request->id == "0" ? $clienttemps =  Client::all() : $clienttemps =  Client::where('id', $request->id)->get();
-
-
-
-
-        // foreach ($clienttemps as $key => $clienttemp) {
-        //     $agences = array();
-
-        //     $temps = DB::table('agences')
-        //         ->leftJoin('souscriptions', 'agences.id', '=', 'souscriptions.agence_id')
-        //         ->leftJoin('reclamations', 'souscriptions.id', '=', 'reclamations.souscription_id')
-        //         ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
-        //         ->select(
-        //             'reclamations.ref as reclamation_ref',
-        //             'agences.nom as agence_nom',
-        //             'agences.id as agence_id',
-        //             'departements.client_id as client_id',
-        //         )->where('departements.client_id', '=', $clienttemp->id)
-        //         ->groupBy('agences.id')
-        //         ->orderBy('reclamation_ref', 'desc')->get();
-
-        //     foreach ($temps as $key => $temp) {
-        //         $agences[] = [
-        //             'agence' => $temp,
-        //             'reclamations' => DB::table('reclamations')
-        //                 ->leftJoin('etats', 'reclamations.etat_id', '=', 'etats.id')
-        //                 ->leftJoin('souscriptions', 'reclamations.souscription_id', '=', 'souscriptions.id')
-        //                 ->leftJoin('agences', 'souscriptions.agence_id', '=', 'agences.id')
-        //                 ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
-        //                 ->select(
-
-        //                     'reclamations.ref as reclamation_ref',
-        //                     'reclamations.created_at',
-        //                     'etats.id as etat_id',
-        //                     'etats.value as etat',
-        //                     'agences.nom as agence_nom',
-        //                     'agences.id as agence_id',
-        //                     'departements.client_id as client_id',
-        //                 )->where([
-        //                     ['agences.id', '=', $temp->agence_id],
-        //                     ['etats.id', '<>', 3],
-        //                 ])->groupBy('reclamations.id')
-        //                 ->orderBy('reclamation_ref', 'desc')->get()
-        //         ];
-        //     }
-
-        //     $clients[] = [
-        //         'client' => $clienttemp,
-        //         'agences' => $agences
-        //     ];
-        // }
-
         return response()->json($clients);
     }
 
     public function fill_list()
     {
-
-        // $data = array(
-        //     'fv_client' => Client::withTrashed()->get(),
-        //     'fv_departement'  => Departement::withTrashed()->get(),
-        //     'fv_agence'  => Agence::withTrashed()->get(),
-        //     'fv_produit' => Produit::withTrashed()->get(),
-        //     'fv_equipement' => Equipement::all(),
-        //     'fv_ref_equip' => Souscription::where('equip_ref', '<>', null)->get(),
-        //    
-        //     'auth' => (Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id))
-        // );
-
-        // return response()->json($data);
-        // $auth = Auth::user()->role_id == 4 || Auth::user()->role_id == 5 ? Clientuser::find(Auth::user()->id) : Nstuser::find(Auth::user()->id);
-
 
         $ids = ['fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip'];
         $input_values = array();
@@ -764,6 +765,7 @@ class ReclamationController extends Controller
 
         $auth = null;
         Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
+       
         foreach ($ids as $id) {
             $input_values[$id] = 0;
         }
@@ -1053,9 +1055,6 @@ class ReclamationController extends Controller
         $where = array();
         $having = array();
 
-        // $ids = ['fv_reclamation','fv_client', 'fv_departement', 'fv_agence', 'fv_produit', 'fv_equipement', 'fv_ref_equip', 'fv_anomalie', 'fv_tech'];
-        // $dates = ['created', 'accepted', 'pending', 'closed'];
-        // $date_types = ['year', 'mois', 'day'];
         array_push($having, " `reclamations`.`id` <> '0' ");
         if ($request->fv_reclamation != "0") {
             array_push($where, " `reclamations`.`id` =  '" . $request->fv_reclamation . "' ");
@@ -1070,8 +1069,6 @@ class ReclamationController extends Controller
             $request->fv_equipement == "0" ?:  array_push($where, " `souscriptions`.`equipement_id` =  '" . $request->fv_equipement . "' ");
             $request->fv_ref_equip == "0" ?:  array_push($where, " `souscriptions`.`equip_ref` =  '" . $request->fv_ref_equip . "' ");
             $request->fv_anomalie == "0" ?:  array_push($where, " `anomalies`.`id` =  '" . $request->fv_anomalie . " ");
-
-
 
             if (!($request->non_affected == "true" &&  $request->is_accepted == "false" && $request->is_pending == "false")) {
 
@@ -1230,8 +1227,6 @@ class ReclamationController extends Controller
             $WhereQuery = substr($WhereQuery, 0, -4);
         }
 
-
-
         $havingQuery = "";
 
         if (count($having) != 0) {
@@ -1254,7 +1249,6 @@ class ReclamationController extends Controller
             ->leftJoin('agences', 'souscriptions.agence_id', '=', 'agences.id')
             ->leftJoin('departements', 'agences.departement_id', '=', 'departements.id')
             ->leftJoin('clients', 'departements.client_id', '=', 'clients.id')
-            // ->leftJoin('clientusers', 'agences.id', '=', 'clientusers.clientable_id')
             ->select(
                 'reclamations.id as reclamation_id',
                 'reclamations.ref as reclamation_ref',
@@ -1293,37 +1287,5 @@ class ReclamationController extends Controller
         return response()->json($reclamations);
     }
 
-    public function print()
-    {
-        // ['date' => $date,'iffac' => $iffac,'purcent'=>$purcent,'partner'=>$partner, 'details'=>$details , 'comission_partner'=>$comission_partner, 'prix_total'=>$prix_total, 'comission_demander'=>$comission_demander , 'quantitys'=>$quantitys]
-        // return Excel::download(new PvsExport(), 'pvs.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
-        // return (new PvsExport)->download('invoices.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
-        // $path = 'http://127.0.0.1:8000/storage/pending_pvs/3_1592164489.jpg';
-        // $type = pathinfo($path, PATHINFO_EXTENSION);
-        // $data = file_get_contents($path);
-        // $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-        // $pdf = PDF::loadView('exports.pdf_pv', ['data' => $base64]);
-
-        //  $pdf->save(storage_path().'_pvs.pdf');
-        // return $pdf->download('pvs.pdf');
-
-        // $pdf = new Pdf;
-
-        // $pdf->addPage('<html><h2> Reclamation Ref : ilhbflhkcbdjhbf</h2>
-        // <br><br>
-        // <img src="'.$base64.'" alt="" width="100%" height="100%"></html>');
-
-        // On some systems you may have to set the path to the wkhtmltopdf executable
-        // $pdf->binary = 'C:\...';
-
-        $headers = ["Content-Type"=>"application/zip"];
-        $files = glob(public_path('storage\pending_pvs\*'));
-        //dd($files);
-        Zipper::make('storage\documents\mytest3.zip')->add($files)->close();
-        return response()->download(public_path('storage\documents\mytest3.zip'),'mytest3.zip',$headers);
-
-
-       
-        
-    }
+  
 }

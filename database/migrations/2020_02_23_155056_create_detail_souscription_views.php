@@ -18,7 +18,8 @@ class CreateDetailSouscriptionViews extends Migration
         SELECT souscriptions.id AS ref_id, agences.id as agence_id, produits.id AS prod_id, 
         produits.nom AS prod_nom, souscriptions.active AS prod_etat,
         equipements.id AS equip_id, equipements.nom AS equip_nom,
-        souscriptions.equip_ref AS ref
+        equipements.deleted_at as equip_deleted_at,souscriptions.equip_ref AS ref,
+        souscriptions.deleted_at AS souscription_deleted_at
 
         FROM `souscriptions`
           LEFT JOIN `agences` ON agences.id=souscriptions.agence_id

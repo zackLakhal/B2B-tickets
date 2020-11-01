@@ -66,21 +66,23 @@
                 <div class="navbar-header">
                     <a class="navbar-brand" href="/">
                         <!-- Logo icon -->
-                        <b style="font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 30px ;color : white">
+                        <span id="nst_min" style="font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 30px ;color : white">
                             <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                             <!-- Dark Logo icon -->
                             <!-- <img src="{{ asset('images/logo-icon.png') }}" alt="homepage" class="dark-logo" /> -->
                             <!-- Light Logo icon -->
                             <!-- <img src="{{ asset('images/logo-light-icon.png') }}" alt="homepage" class="light-logo" /> -->
-                            <b>NST</b>
-                        </b>
+                            <!-- <b></b> -->
+                            Maroc -
+                        </span>
                         <!--End Logo icon -->
                         <!-- Logo text -->
-                        <span style="font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 30px ;color : white">
+                        <b id="nst_max" style="font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 30px ;color : white">
                             <!-- dark Logo text -->
                             <!-- <img src="{{ asset('images/logo-text.png') }}" alt="homepage" class="dark-logo" /> -->
                             <!-- Light Logo text -->
-                        </span> </a>
+                            NST
+                        </b> </a>
                 </div>
                 <!-- ============================================================== -->
                 <!-- End Logo -->
@@ -281,19 +283,20 @@
                             </ul>
                         </li>
                         @endif
-                        @if(auth::user()->role_id == 6 || auth::user()->role_id == 1)
+                        @if(auth::user()->role_id == 6 || auth::user()->role_id == 1 || auth::user()->role_id == 4 || auth::user()->role_id == 5)
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-cellphone-link"></i><span class="hide-menu">Outils</span></a>
                             <ul aria-expanded="false" class="collapse">
 
                                 <!-- <li><a href="/outils/espace-client">Espace client</a></li> -->
-                                @if(auth::user()->role_id != 2 && auth::user()->role_id != 3)
+                               
 
                                 <li><a href="/outils/espace-agence">Espace agences</a></li>
 
-                                @endif
+                               
                                 
-
+                                 @if(auth::user()->role_id != 4 && auth::user()->role_id != 5)
                                 <li><a href="/outils/produits">Gérer les produits</a></li>
+                                 @endif
 
                             </ul>
                         </li>
@@ -320,7 +323,7 @@
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-brightness-7"></i><span class="hide-menu"> Système</span></a>
                             <ul aria-expanded="false" class="collapse">
                                 @if(auth::user()->role_id == 6 || auth::user()->role_id == 1)
-                                <li><a href="/system/request">Gérer les requests</a></li>
+                                <li><a href="/system/request">Contact</a></li>
                                 <li><a href="/system/ville">Gérer les villes</a></li>
                                 @endif
                                 @if(auth::user()->role_id == 6)

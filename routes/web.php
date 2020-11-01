@@ -14,8 +14,11 @@ use App\Agence;
 |
 */
 
+
+
+
 Route::get('/', function () {
-    Artisan::call('config:cache');
+    //Artisan::call('config:cache');
     return view('old_nst.index');
 });
 
@@ -34,9 +37,25 @@ Route::get('/projects', function () {
 Route::get('/services', function () {
     return view('old_nst.services');
 });
-
 Route::get('/send', 'RequestController@sendmail');
 
+
+Auth::routes();
+
+
+Route::get('/client-login', function () {
+    return view('auth.client_login');
+});
+Route::post('/client-login', 'Auth\ClientLoginController@login')->name('client.login');
+
+Route::get('/nst-login', function () {
+    return view('auth.nst_login');
+});
+Route::post('/nst-login', 'Auth\NstLoginController@login')->name('nst.login');
+
+Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/client-home', 'HomeClientController@index')->middleware('auth:client')->name('client');
+Route::get('/nst-home', 'HomeNstController@index')->middleware('auth:nst,client')->name('nst');
 
 
 Route::prefix('/statistiques')->group(function () {
@@ -52,17 +71,11 @@ Route::prefix('/statistiques')->group(function () {
 });
 
 Route::get('/dashboard', function () {
-    $auth = null;
-    //Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
-
     return view('statistique.dashboard');
 })->middleware('auth:nst,client');
 
 
 Route::get('/dashboard_agence', function () {
-    $auth = null;
-    //Auth::guard('nst')->check() ? $auth = Nstuser::find(Auth::guard('nst')->user()->id) : $auth = Clientuser::find(Auth::guard('client')->user()->id);
-
     return view('statistique.dashboard_agence');
 })->middleware('auth:nst,client');
 
@@ -70,33 +83,9 @@ Route::get('/dashboard/reclamations/detail/{type}/{value}', function ($type, $va
     return view('statistique.detail', ['type' => $type, 'value' => $value]);
 })->middleware('auth:nst,client');
 
-
-
 Route::get('/dashboard/agence_dash', 'ReclamationController@agence_dash')->middleware('auth:nst,client');
 Route::post('/dashboard/filter_agence_dash', 'ReclamationController@filter_agence_dash')->middleware('auth:nst,client');
 
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/client-login', function () {
-    return view('auth.client_login');
-});
-Route::get('/nst-login', function () {
-    return view('auth.nst_login');
-});
-
-Route::post('/client-login', 'Auth\ClientLoginController@login')->name('client.login');
-Route::post('/nst-login', 'Auth\NstLoginController@login')->name('nst.login');
-
-Route::get('/client-home', 'HomeClientController@index')->middleware('auth:client')->name('client');
-
-Route::get('/nst-home', 'HomeNstController@index')->middleware('auth:nst,client')->name('nst');
-
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
 
 Route::prefix('/system')->group(function () {
     Route::prefix('/role')->group(function () {
@@ -118,8 +107,6 @@ Route::prefix('/system')->group(function () {
         Route::get('/', function () {
             return view('system.ville');
         })->middleware('auth:nst,client');
-        //   Route::get('/active_index', 'RoleController@active_index')->middleware('auth');
-
     });
 
     Route::prefix('/request')->group(function () {
@@ -132,8 +119,6 @@ Route::prefix('/system')->group(function () {
         Route::get('/', function () {
             return view('system.requete');
         })->middleware('auth:nst,client');
-        //   Route::get('/active_index', 'RoleController@active_index')->middleware('auth');
-
     });
 });
 
@@ -172,7 +157,6 @@ Route::prefix('/reclamation')->group(function () {
         Route::post('/edit_raport', 'ReclamationController@edit_raport');
         Route::get('/{edit}/{id}', 'ReclamationController@edit');
         Route::get('/create', 'ReclamationController@store');
-        // Route::get('/print', 'ReclamationController@print');
         Route::get('/', function () {
             return view('reclamation.recls');
         })->middleware('auth:nst,client');
@@ -266,7 +250,8 @@ Route::prefix('/outils')->group(function () {
         Route::post('/attach_prod', 'ProduitController@attach_prod');
         Route::get('/detach_prod', 'ProduitController@detach_prod');
         Route::get('/active_index', 'ProduitController@active_produits');
-        Route::get('/save_ref', 'ProduitController@save_ref');
+        Route::post('/save_ref', 'ProduitController@save_ref');
+        Route::get('/delete_ref', 'ProduitController@delete_ref');
         Route::post('/edit/{id_c}', 'ProduitController@edit_produit');
         Route::post('/delete/{id_c}', 'ProduitController@delete_produit');
         Route::post('/restore/{id_c}', 'ProduitController@restore_produit');

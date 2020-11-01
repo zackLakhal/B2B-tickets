@@ -12,7 +12,7 @@
             <a href="#" class="link">marocnst@gmail.com</a>
             <p>.................................................................... </p>
             <div class="map img-border">
-              <img src="{{ asset('old_nst/images/gl-internet3.jpg') }}" alt="" class="img-border">
+              <img src="https://www.marocnst.ma/public/old_nst/images/gl-internet3.jpg" alt="" class="img-border">
             </div>
             <br>
             <dl>
@@ -86,7 +86,7 @@
       data: inputs
     }).responseText;
     jsonData = JSON.parse(StringData);
-    // console.log(jsonData)
+    console.log(jsonData)
     if ($.isEmptyObject(jsonData.error)) {
 
       clearInputs(jsonData.inputs);

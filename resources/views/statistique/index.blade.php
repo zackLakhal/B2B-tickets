@@ -1086,9 +1086,9 @@
             data: form_data
         }).responseText;
          jsonData = JSON.parse(StringData);
-        
-         var url = "{{ asset('storage/documents')}}/"+jsonData.file;
-         console.log(url)
+        console.log(jsonData)
+         var url = "{{ asset('storage/documents')}}/"+jsonData.output;
+         console.log(jsonData)
          window.open(url);
      //   $('#'+form_data['stat_by']+'_link').attr('href', "{{ asset('storage')}}/excel_stats/"+form_data['stat_by']+"s/"+form_data['stat_by']+"_"+jsonData+"_stat.xlsx")
      //   $('#'+form_data['stat_by']+'_link').css('color','green');

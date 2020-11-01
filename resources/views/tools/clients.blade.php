@@ -140,8 +140,7 @@
 
                 <div class="form-group" id="pic_id">
 
-                    <label for="avatar">avatar</label>
-                    <input type="file" id="avatar" name="avatar" class="dropify" data-default-file="{{ asset('storage/clients/placeholder.jpg') }}" />
+                    
                 </div>
 
 
@@ -454,7 +453,6 @@
         }).responseText;
 
         jsonData = JSON.parse(StringData);
-        console.log(jsonData)
         message("client", "restoré", jsonData.check);
 
         if (jsonData.client.deleted_at == null) {
@@ -507,6 +505,7 @@
             form_data.append("email", $('#email').val());
             form_data.append("tel", $('#tel').val());
             form_data.append("adress", $('#adress').val());
+            form_data.append("img_histo",$('#dropify-preview-id').attr('style'));
 
             var StringData = $.ajax({
                 url: "http://127.0.0.1:8000/outils/clients/edit/" + id,

@@ -3,28 +3,29 @@
 <section id="content">
             <div id="slide" class="box-shadow">
                 <div class="slider">
-                    <ul class="items">
-                        <li><img src="{{ asset('old_nst/images/slider-9.jpg') }}" alt="" />
+                   <ul class="items">
+                        <li><img src="https://www.marocnst.ma/public/old_nst/images/slider-9.jpg" alt="" />
                             <div class="banner">Système de Gestion file d'Attente&nbsp;</div>
                         </li>
-                        <li><img src="{{ asset('old_nst/images/slider-2.jpg') }}" alt="" />
+                        <li><img src="https://www.marocnst.ma/public/old_nst/images/slider-2.jpg" alt="" />
                             <div class="banner">Système de Gestion des Points de vente&nbsp;</div>
                         </li>
-                        <li><img src="{{ asset('old_nst/images/slider-3.jpg') }}" alt="" />
+                        <li><img src="https://www.marocnst.ma/public/old_nst/images/slider-3.jpg" alt="" />
                             <div class="banner">Balances et Etiquetages&nbsp;</div>
                         </li>
-                        <li><img src="{{ asset('old_nst/images/slider-4.jpg') }}" alt="" />
+                        <li><img src="https://www.marocnst.ma/public/old_nst/images/slider-4.jpg" alt="" />
                             <div class="banner">Système de Pointage & contôle d'Accés&nbsp;</div>
                         </li>
-                        <li><img src="{{ asset('old_nst/images/slider-5.jpg') }}" alt="" />
+                        <li><img src="https://www.marocnst.ma/public/old_nst/images/slider-5.jpg" alt="" />
                             <div class="banner">Système de Sécurité & Vidéosurveillance&nbsp;</div>
                         </li>
-                        <li><img src="{{ asset('old_nst/images/slider-6.jpg') }}" alt="" />
+                        <li><img src="https://www.marocnst.ma/public/old_nst/images/slider-6.jpg" alt="" />
                             <div class="banner">Réseaux informatique & Electrique&nbsp;</div>
                         </li>
-                        <li><img src="{{ asset('old_nst/images/slider-7.jpg') }}" alt="" />
+                        <li><img src="https://www.marocnst.ma/public/old_nst/images/slider-7.jpg" alt="" />
                             <div class="banner">Nos Clients les Plus Respectés &nbsp;</div>
                         </li>
+                         
                     </ul>
                 </div>
             </div>
@@ -72,19 +73,19 @@
                     <div class="wrap block-1 pad-1">
                         <div>
                             <h3>Nos Travaille c'est Vous!</h3>
-                            <img src="{{ asset('old_nst/images/page1-img1.jpg') }}" alt="" class="img-border">
+                            <img src="https://www.marocnst.ma/public/old_nst/images/page1-img1.jpg" alt="" class="img-border">
                             <p>La satisfaction du client est notre priorité...... </p>
                             <a href="#" class="button">Plus</a>
                         </div>
                         <div>
                             <h3>Nos Stratégies</h3>
-                            <img src="{{ asset('old_nst/images/page1-img2x.jpg') }}" alt="" class="img-border">
+                            <img src="https://www.marocnst.ma/public/old_nst/images/page1-img2x.jpg" alt="" class="img-border">
                             <p>La Qualité de prestation, L’innovation et La proximité </p>
                             <a href="#" class="button">Plus</a>
                         </div>
                         <div class="last">
                             <h3>Les clients nous choisir</h3>
-                            <img src="{{ asset('old_nst/images/page1-img3.jpg') }}" alt="" class="img-border">
+                            <img src="https://www.marocnst.ma/public/old_nst/images/page1-img3.jpg" alt="" class="img-border">
                             <p>Nous allons vous montrer la voie du succès!! </p>
                             <a href="#" class="button">Plus</a>
                         </div>

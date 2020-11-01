@@ -312,7 +312,7 @@
                 async: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            // console.log(jsonData);
+             console.log(jsonData);
 
 
             $('#produit_list').html(" <option  value=\"0\"selected disabled >selectioner un produit </option>");
@@ -333,7 +333,7 @@
                 async: false,
             }).responseText;
             jsonData = JSON.parse(StringData);
-            //    console.log(jsonData);
+            console.log(jsonData);
             $('#anomalie').html(" <option  value=\"0\"selected disabled >selectioner une anomalie </option>")
 
             for (let ind = 0; ind < jsonData.length; ind++) {
