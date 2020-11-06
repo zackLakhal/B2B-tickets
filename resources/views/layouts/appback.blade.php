@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Maroc-NST') }}</title>
+    <title>{{ config('app.name', 'B2B-Tickets') }}</title>
 
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon.png') }}">
 
@@ -73,7 +73,7 @@
                             <!-- Light Logo icon -->
                             <!-- <img src="{{ asset('images/logo-light-icon.png') }}" alt="homepage" class="light-logo" /> -->
                             <!-- <b></b> -->
-                            Maroc -
+                            Tickets-
                         </span>
                         <!--End Logo icon -->
                         <!-- Logo text -->
@@ -81,7 +81,7 @@
                             <!-- dark Logo text -->
                             <!-- <img src="{{ asset('images/logo-text.png') }}" alt="homepage" class="dark-logo" /> -->
                             <!-- Light Logo text -->
-                            NST
+                            B2B
                         </b> </a>
                 </div>
                 <!-- ============================================================== -->

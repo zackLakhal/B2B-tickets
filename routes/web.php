@@ -19,25 +19,10 @@ use App\Agence;
 
 Route::get('/', function () {
     //Artisan::call('config:cache');
-    return view('old_nst.index');
+    return view('welcome');
 });
 
-Route::get('/about', function () {
-    return view('old_nst.about');
-});
-Route::get('/clients', function () {
-    return view('old_nst.clients');
-});
-Route::get('/contacts', function () {
-    return view('old_nst.contacts');
-});
-Route::get('/projects', function () {
-    return view('old_nst.projects');
-});
-Route::get('/services', function () {
-    return view('old_nst.services');
-});
-Route::get('/send', 'RequestController@sendmail');
+
 
 
 Auth::routes();
